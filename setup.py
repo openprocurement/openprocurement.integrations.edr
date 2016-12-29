@@ -27,7 +27,7 @@ databridge_requires = requires + [
 
 entry_points = {
     'console_scripts': [
-        'edr_data_bridge = openprocurement.integrations.edr.databridge:main'
+        'integrations_edr_data_bridge = openprocurement.integrations.edr.databridge:main'
     ]
 }
 
