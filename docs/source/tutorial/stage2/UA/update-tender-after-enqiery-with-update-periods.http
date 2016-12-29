@@ -1,0 +1,191 @@
+PATCH /api/2.3/tenders/c3c7a59ead604eba9eea2117d411c4a2?acc_token=4fe7b55f3f85463baee8e3606ed041e0 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 153
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "items": [
+      {
+        "deliveryDate": {
+          "endDate": "2017-01-27T14:52:47.433579+02:00"
+        }
+      }
+    ], 
+    "tenderPeriod": {
+      "endDate": "2017-01-05T14:52:37.521225+02:00"
+    }
+  }
+}
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "procurementMethod": "selective", 
+    "complaintPeriod": {
+      "startDate": "2016-11-30T14:52:37.343249+02:00", 
+      "endDate": "2017-01-01T00:00:00+02:00"
+    }, 
+    "enquiryPeriod": {
+      "startDate": "2016-11-30T14:52:37.343249+02:00", 
+      "clarificationsUntil": "2016-12-29T14:52:37.521225+02:00", 
+      "endDate": "2016-12-26T14:52:37.521225+02:00", 
+      "invalidationDate": "2016-12-28T14:52:37.581753+02:00"
+    }, 
+    "submissionMethod": "electronicAuction", 
+    "next_check": "2017-01-05T14:52:37.521225+02:00", 
+    "procuringEntity": {
+      "contactPoint": {
+        "url": "http://sch10.edu.vn.ua/", 
+        "name": "Куца Світлана Валентинівна", 
+        "telephone": "+380 (432) 46-53-02"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "21725150", 
+        "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\""
+      }, 
+      "name": "ЗОСШ #10 м.Вінниці", 
+      "kind": "special", 
+      "address": {
+        "postalCode": "21027", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Стахурського. 22", 
+        "region": "м. Вінниця", 
+        "locality": "м. Вінниця"
+      }
+    }, 
+    "questions": [
+      {
+        "description": "Просимо додати таблицю потрібної калорійності харчування", 
+        "dateAnswered": "2016-12-28T14:52:37.220315+02:00", 
+        "title": "Калорійність", 
+        "date": "2016-12-28T14:52:37.119954+02:00", 
+        "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
+        "id": "4112f3ccb06c4139a410bb967b50a5b8", 
+        "questionOf": "tender"
+      }
+    ], 
+    "owner": "broker", 
+    "id": "c3c7a59ead604eba9eea2117d411c4a2", 
+    "documents": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "title": "Notice.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/ef03f19fdc8d46ab8a7bdd606b90de79?KeyID=fec4a383&Signature=wVn3j4Iy1Abw4BkJtCWtDaLqN5A%252B2A6S31bdJ0L%2FHn3l6psBkh6sxx2VwCpUuLC1ZXzbLuvqqW0tos0qf2lKCA%253D%253D", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:36.737149+02:00", 
+        "id": "fa8751b55d694f108500a9b397d571cd", 
+        "dateModified": "2016-12-28T14:52:36.737170+02:00"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "title": "AwardCriteria.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/b49033095a884966a864c9a4118fb74a?KeyID=fec4a383&Signature=uqc9LgW6FZRgeV5d%2FKG%2FbpbppyE3v8Ob0%252BEm1tdz4pvPphjD9R0gU40kc%2FLJimDw1ncsHSiPNhEuMwNK5lJDCQ%253D%253D", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:36.853436+02:00", 
+        "id": "d347eda6cef74625b574b19fa821f681", 
+        "dateModified": "2016-12-28T14:52:36.853467+02:00"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "title": "AwardCriteria-2.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/86c65cecaf5342e6889db8a31276d25e?KeyID=fec4a383&Signature=uD2zDgpEV1zStgWsbxtACsjQ4gXkxpa9vpS%252BPe0BxgiCIkL4gsay5jrDZ9bngFZTKi3H9Zn9Ryy1RAgjUsr1BQ%253D%253D", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:36.853436+02:00", 
+        "id": "d347eda6cef74625b574b19fa821f681", 
+        "dateModified": "2016-12-28T14:52:36.971447+02:00"
+      }
+    ], 
+    "title": "футляри до державних нагород", 
+    "shortlistedFirms": [
+      {
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»"
+      }, 
+      {
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Книга»"
+      }, 
+      {
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137228", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Кенгуру»"
+      }
+    ], 
+    "tenderID": "UA-2016-12-28-000001", 
+    "dateModified": "2016-12-28T14:52:37.584149+02:00", 
+    "status": "active.tendering", 
+    "tenderPeriod": {
+      "startDate": "2016-11-30T14:52:37.343249+02:00", 
+      "endDate": "2017-01-05T14:52:37.521225+02:00"
+    }, 
+    "auctionPeriod": {
+      "shouldStartAfter": "2017-01-06T00:00:00+02:00"
+    }, 
+    "procurementMethodType": "competitiveDialogueUA.stage2", 
+    "date": "2016-12-28T14:52:36.583580+02:00", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "items": [
+      {
+        "description": "Послуги шкільних їдалень", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Test", 
+          "id": "37810000-9"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "Послуги шкільних їдалень"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-01-17T14:51:17.551789+02:00", 
+          "endDate": "2017-01-27T14:52:47.433579+02:00"
+        }, 
+        "id": "dcb0d090155b4b46a232357587ee25b0", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 1
+      }
+    ], 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "awardCriteria": "lowestCost"
+  }
+}
+

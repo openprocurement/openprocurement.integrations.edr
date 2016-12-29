@@ -1,0 +1,87 @@
+POST /api/2.3/tenders/b02837237aa446fc89834caae9d827c3/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 958
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "selfEligible": true, 
+    "selfQualified": true, 
+    "lotValues": [
+      {
+        "relatedLot": "7e10c7d27c3f4287b7459171c1cfce1c", 
+        "subcontractingDetails": "ДКП «Орфей», Україна"
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "telephone": "+380 (432) 21-69-30", 
+          "name": "Сергій Олексюк", 
+          "email": "soleksuk@gmail.com"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "21100", 
+          "region": "м. Вінниця", 
+          "streetAddress": "вул. Островського, 33", 
+          "locality": "м. Вінниця"
+        }
+      }
+    ]
+  }
+}
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b02837237aa446fc89834caae9d827c3/bids/65ec0423061a4844900093b27c427b3b
+{
+  "access": {
+    "token": "c3b30187397a4b3b813ad655c98c61d6"
+  }, 
+  "data": {
+    "status": "pending", 
+    "selfEligible": true, 
+    "lotValues": [
+      {
+        "relatedLot": "7e10c7d27c3f4287b7459171c1cfce1c", 
+        "date": "2016-12-28T14:51:55.479134+02:00", 
+        "status": "pending", 
+        "subcontractingDetails": "ДКП «Орфей», Україна"
+      }
+    ], 
+    "selfQualified": true, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "soleksuk@gmail.com", 
+          "telephone": "+380 (432) 21-69-30", 
+          "name": "Сергій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»", 
+        "address": {
+          "postalCode": "21100", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 33", 
+          "region": "м. Вінниця", 
+          "locality": "м. Вінниця"
+        }
+      }
+    ], 
+    "date": "2016-12-28T14:51:55.478807+02:00", 
+    "id": "65ec0423061a4844900093b27c427b3b"
+  }
+}
+

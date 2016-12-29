@@ -1,0 +1,89 @@
+PATCH /api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/contracts/1bec9281eaa84fbcac6edd6184241366?acc_token=70c750e1bef74c30b496d1d9bc8160df HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 68
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "contractNumber": "contract#1", 
+    "value": {
+      "amount": 238
+    }
+  }
+}
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "status": "pending", 
+    "items": [
+      {
+        "description": "Послуги шкільних їдалень", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Test", 
+          "id": "37810000-9"
+        }, 
+        "description_en": "Services in school canteens", 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "Послуги шкільних їдалень"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-01-17T14:51:17.551711+02:00", 
+          "endDate": "2017-01-27T14:52:30.287510+02:00"
+        }, 
+        "id": "70c0baf1707b42c898233ee68efdd1b3", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 1
+      }
+    ], 
+    "suppliers": [
+      {
+        "contactPoint": {
+          "email": "aagt@gmail.com", 
+          "telephone": "+380 (322) 91-69-30", 
+          "name": "Андрій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Книга»", 
+        "address": {
+          "postalCode": "79013", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 34", 
+          "region": "м. Львів", 
+          "locality": "м. Львів"
+        }
+      }
+    ], 
+    "contractNumber": "contract#1", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 238.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "awardID": "1b3dc2749ae9466a8ba3514f6557e7ba", 
+    "id": "1bec9281eaa84fbcac6edd6184241366", 
+    "contractID": "UA-2016-12-28-000001-1"
+  }
+}
+

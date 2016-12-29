@@ -1,0 +1,76 @@
+POST /api/2.3/tenders/e1c191962ff249a4981368400261b2de/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 727
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "selfEligible": true, 
+    "selfQualified": true, 
+    "value": {
+      "amount": 5
+    }, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Іваненко", 
+          "email": "fake@mail.com"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137227", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Снігур»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "79013", 
+          "region": "м. Львів", 
+          "streetAddress": "вул. Островського, 35", 
+          "locality": "м. Львів"
+        }
+      }
+    ]
+  }
+}
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/e1c191962ff249a4981368400261b2de/bids/b053dfc9befe44e38171cd4c6f266919
+{
+  "access": {
+    "token": "807c863e1eed44c2b781bdafbe424695"
+  }, 
+  "data": {
+    "status": "pending", 
+    "selfEligible": true, 
+    "selfQualified": true, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "fake@mail.com", 
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Іваненко"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137227", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Снігур»", 
+        "address": {
+          "postalCode": "79013", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 35", 
+          "region": "м. Львів", 
+          "locality": "м. Львів"
+        }
+      }
+    ], 
+    "date": "2016-12-28T14:52:14.008411+02:00", 
+    "id": "b053dfc9befe44e38171cd4c6f266919"
+  }
+}
+

@@ -1,0 +1,159 @@
+GET /api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids?acc_token=70c750e1bef74c30b496d1d9bc8160df HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": [
+    {
+      "status": "active", 
+      "documents": [
+        {
+          "hash": "md5:00000000000000000000000000000000", 
+          "confidentiality": "public", 
+          "language": "uk", 
+          "title": "Proposal.pdf", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/4bd4e3e917fc4a6ba6838890a0ec0d6f?KeyID=1db479fa&Signature=DcEfaMHreF7fJxA%2FMVvklSp08m4lQ7zZaMdnRdTzkMjBkx5Obu8OpktxAwIoqjO5sz%252BlaDwVWHNoOQ2IlQ5uDQ%253D%253D", 
+          "format": "application/pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-12-28T14:52:20.730618+02:00", 
+          "id": "b129be0aafd843cd8260404e69bc2643", 
+          "dateModified": "2016-12-28T14:52:20.730639+02:00"
+        }, 
+        {
+          "hash": "md5:00000000000000000000000000000000", 
+          "confidentiality": "buyerOnly", 
+          "language": "uk", 
+          "format": "application/pdf", 
+          "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/026b4cc6aef2495a9da7551a78cb3cf7/documents/c7ffef4f5d4b4c309c0a072ab549546f?download=6c846ff82fac44d1856042ae7f9b6e25", 
+          "confidentialityRationale": "Only our company sells badgers with pink hair.", 
+          "title": "Proposal_top_secrets.pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-12-28T14:52:20.842132+02:00", 
+          "id": "c7ffef4f5d4b4c309c0a072ab549546f", 
+          "dateModified": "2016-12-28T14:52:20.842260+02:00"
+        }
+      ], 
+      "id": "026b4cc6aef2495a9da7551a78cb3cf7", 
+      "tenderers": [
+        {
+          "contactPoint": {
+            "email": "soleksuk@gmail.com", 
+            "telephone": "+380 (432) 21-69-30", 
+            "name": "Сергій Олексюк"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00137256", 
+            "uri": "http://www.sc.gov.ua/"
+          }, 
+          "name": "ДКП «Школяр»", 
+          "address": {
+            "postalCode": "21100", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Островського, 33", 
+            "region": "м. Вінниця", 
+            "locality": "м. Вінниця"
+          }
+        }
+      ]
+    }, 
+    {
+      "status": "active", 
+      "id": "683e61642fdb4c67b0860abad5bbf12f", 
+      "tenderers": [
+        {
+          "contactPoint": {
+            "email": "aagt@gmail.com", 
+            "telephone": "+380 (322) 91-69-30", 
+            "name": "Андрій Олексюк"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00137226", 
+            "uri": "http://www.sc.gov.ua/"
+          }, 
+          "name": "ДКП «Книга»", 
+          "address": {
+            "postalCode": "79013", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Островського, 34", 
+            "region": "м. Львів", 
+            "locality": "м. Львів"
+          }
+        }
+      ]
+    }, 
+    {
+      "status": "unsuccessful", 
+      "documents": [
+        {
+          "hash": "md5:00000000000000000000000000000000", 
+          "confidentiality": "public", 
+          "language": "uk", 
+          "title": "Proposal_part1.pdf", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/e672ce230a6346f7b5d2aab1861343c8?KeyID=1db479fa&Signature=edh5zNI4jfY1MEzh4O1nf%252B8726GkltRG2QQpbSOlsYdEAGK9BgHvMHI6PTf3uw6HqFOjdslOoL9rffX6%2FvZbAA%253D%253D", 
+          "format": "application/pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-12-28T14:52:21.999702+02:00", 
+          "id": "c823d08c82324ada8e2600b814b4e884", 
+          "dateModified": "2016-12-28T14:52:21.999744+02:00"
+        }, 
+        {
+          "hash": "md5:00000000000000000000000000000000", 
+          "confidentiality": "buyerOnly", 
+          "language": "uk", 
+          "format": "application/pdf", 
+          "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4/documents/6e7593e73bcc468686813cc41fa6950e?download=26b30f7bc7724d95ad6fb190ce9498e6", 
+          "confidentialityRationale": "Only our company sells badgers with pink hair.", 
+          "title": "Proposal_part2.pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-12-28T14:52:22.000638+02:00", 
+          "id": "6e7593e73bcc468686813cc41fa6950e", 
+          "dateModified": "2016-12-28T14:52:22.000679+02:00"
+        }
+      ], 
+      "eligibilityDocuments": [
+        {
+          "hash": "md5:00000000000000000000000000000000", 
+          "confidentiality": "public", 
+          "language": "uk", 
+          "title": "eligibility_doc.pdf", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/17ce90c201c541e6836ae7ce64b17fda?KeyID=1db479fa&Signature=ZA5pFp41f71zjRai9euSXxPgN6uxsgmJ5D%2FqgUeY71gHjzOPnn8%252BN%2Fkx3WiLnQxALtL27j6heVzAWet9pAq2CQ%253D%253D", 
+          "format": "application/pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-12-28T14:52:22.002348+02:00", 
+          "id": "c066e8bee2514f52b730fb7ed3eb786a", 
+          "dateModified": "2016-12-28T14:52:22.002369+02:00"
+        }
+      ], 
+      "selfEligible": true, 
+      "selfQualified": true, 
+      "tenderers": [
+        {
+          "contactPoint": {
+            "email": "fake@mail.com", 
+            "telephone": "+380 (322) 12-34-56", 
+            "name": "Іван Карпенко"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00137228", 
+            "uri": "http://www.sc.gov.ua/"
+          }, 
+          "name": "«Кенгуру»", 
+          "address": {
+            "postalCode": "79013", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Коцюбинського, 15", 
+            "region": "м. Запоріжжя", 
+            "locality": "м. Запоріжя"
+          }
+        }
+      ], 
+      "id": "f9523222b7a1436c877a574dd1131be4"
+    }
+  ]
+}
+

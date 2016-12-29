@@ -1,0 +1,190 @@
+POST /api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 2644
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "documents": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/e672ce230a6346f7b5d2aab1861343c8?KeyID=1db479fa&Signature=UYAISMdRiAaj30sO%2F4sGs%2B7bvj%2FRIegYprwntjRdGyxpzDiHCKC8VkkJMh5d%2Fign%2Fh3FukhQtBJ7l26aGHtHDQ%3D%3D", 
+        "title": "Proposal_part1.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "buyerOnly", 
+        "title": "Proposal_part2.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/26b30f7bc7724d95ad6fb190ce9498e6?KeyID=1db479fa&Signature=iZfVsrm4vwDCzioT%2BuZrbwQuOTfXV5JEnGNIa2k%2BRbEc8qOrN88Rqq%2Bw6ctAtT4nPls5XWHQXDEcQZPxSZ3iCw%3D%3D", 
+        "confidentialityRationale": "Only our company sells badgers with pink hair.", 
+        "format": "application/pdf"
+      }
+    ], 
+    "eligibilityDocuments": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/17ce90c201c541e6836ae7ce64b17fda?KeyID=1db479fa&Signature=3JbFrhNAfTlYwc8K4xcQ41jejomCG6pukQD2BWLbxD83zaSSj1svkGQL9BRnaM59X31K1%2BItnm5HQU2T4%2B04DA%3D%3D", 
+        "title": "eligibility_doc.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ], 
+    "selfEligible": true, 
+    "value": {
+      "amount": 5
+    }, 
+    "selfQualified": true, 
+    "financialDocuments": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/89c16739fdc847a6b0788917f77c14f2?KeyID=1db479fa&Signature=OA1YGsUQwPq1hh7CL7WdoGC%2BI6bVhWqNmLjAIQv0f%2BGIUftbG16P8EqCF%2BLjcTLucaRpt9fFAG%2BnRlvxQJocBQ%3D%3D", 
+        "title": "financial_doc.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "fake@mail.com", 
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Карпенко"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137228", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Кенгуру»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "79013", 
+          "region": "м. Запоріжжя", 
+          "streetAddress": "вул. Коцюбинського, 15", 
+          "locality": "м. Запоріжя"
+        }
+      }
+    ], 
+    "qualificationDocuments": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/376b123ffecf4afbb369c5dfb12be59c?KeyID=1db479fa&Signature=%2BVa3fsqD5%2Fjm%2BJH1AzHI%2FuS3to%2BOYxlupfzfNGequaEnQJBzt9aOpKisPopJ%2FfEuM6mOP3LGG8%2BjVJJGsLoACQ%3D%3D", 
+        "title": "qualification_document.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ]
+  }
+}
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4
+{
+  "access": {
+    "token": "c2f0e5a3352440fd8ffcb15fe94643bc"
+  }, 
+  "data": {
+    "status": "pending", 
+    "documents": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "public", 
+        "language": "uk", 
+        "title": "Proposal_part1.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4/documents/c823d08c82324ada8e2600b814b4e884?download=e672ce230a6346f7b5d2aab1861343c8", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:21.999702+02:00", 
+        "id": "c823d08c82324ada8e2600b814b4e884", 
+        "dateModified": "2016-12-28T14:52:21.999744+02:00"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "buyerOnly", 
+        "language": "uk", 
+        "format": "application/pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4/documents/6e7593e73bcc468686813cc41fa6950e?download=26b30f7bc7724d95ad6fb190ce9498e6", 
+        "confidentialityRationale": "Only our company sells badgers with pink hair.", 
+        "title": "Proposal_part2.pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:22.000638+02:00", 
+        "id": "6e7593e73bcc468686813cc41fa6950e", 
+        "dateModified": "2016-12-28T14:52:22.000679+02:00"
+      }
+    ], 
+    "eligibilityDocuments": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "public", 
+        "language": "uk", 
+        "title": "eligibility_doc.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4/eligibility_documents/c066e8bee2514f52b730fb7ed3eb786a?download=17ce90c201c541e6836ae7ce64b17fda", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:22.002348+02:00", 
+        "id": "c066e8bee2514f52b730fb7ed3eb786a", 
+        "dateModified": "2016-12-28T14:52:22.002369+02:00"
+      }
+    ], 
+    "selfEligible": true, 
+    "id": "f9523222b7a1436c877a574dd1131be4", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 5.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "selfQualified": true, 
+    "financialDocuments": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "public", 
+        "language": "uk", 
+        "title": "financial_doc.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4/financial_documents/f2aa6d16448d40f5adf0398f7636d69c?download=89c16739fdc847a6b0788917f77c14f2", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:22.001598+02:00", 
+        "id": "f2aa6d16448d40f5adf0398f7636d69c", 
+        "dateModified": "2016-12-28T14:52:22.001638+02:00"
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "fake@mail.com", 
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Карпенко"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137228", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Кенгуру»", 
+        "address": {
+          "postalCode": "79013", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Коцюбинського, 15", 
+          "region": "м. Запоріжжя", 
+          "locality": "м. Запоріжя"
+        }
+      }
+    ], 
+    "date": "2016-12-28T14:52:21.998576+02:00", 
+    "qualificationDocuments": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "public", 
+        "language": "uk", 
+        "title": "qualification_document.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/f9523222b7a1436c877a574dd1131be4/qualification_documents/e24dc292ad0642a69c877e2b0958f5ae?download=376b123ffecf4afbb369c5dfb12be59c", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:52:22.002922+02:00", 
+        "id": "e24dc292ad0642a69c877e2b0958f5ae", 
+        "dateModified": "2016-12-28T14:52:22.002950+02:00"
+      }
+    ]
+  }
+}
+

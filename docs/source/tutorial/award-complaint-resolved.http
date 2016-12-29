@@ -1,0 +1,80 @@
+PATCH /api/2.3/tenders/93a34505e28949968652b33e54ad87d6/awards/8d075a15b29c4125bbd97a9e71c60379/complaints/1544187ffb3949f287a94b8bbc317f9e?acc_token=ca7dff26ef2849148e152a6fffeaf4ad HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 361
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "status": "resolved", 
+    "tendererAction": "Умови виправлено, вибір переможня буде розгянуто повторно"
+  }
+}
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "status": "resolved", 
+    "dateDecision": "2016-12-28T14:51:35.613619+02:00", 
+    "tendererActionDate": "2016-12-28T14:51:36.614144+02:00", 
+    "description": "Умови виставлені замовником не містять достатньо інформації, щоб заявка мала сенс.", 
+    "author": {
+      "contactPoint": {
+        "email": "soleksuk@gmail.com", 
+        "telephone": "+380 (432) 21-69-30", 
+        "name": "Сергій Олексюк"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "legalName": "Державне комунальне підприємство громадського харчування «Школяр»", 
+        "id": "13313462", 
+        "uri": "http://sch10.edu.vn.ua/"
+      }, 
+      "name": "ДКП «Школяр»", 
+      "address": {
+        "postalCode": "21100", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Островського, 33", 
+        "region": "м. Вінниця", 
+        "locality": "м. Вінниця"
+      }
+    }, 
+    "title": "Недостатньо інформації", 
+    "id": "1544187ffb3949f287a94b8bbc317f9e", 
+    "tendererAction": "Умови виправлено, вибір переможня буде розгянуто повторно", 
+    "dateSubmitted": "2016-12-28T14:51:33.996815+02:00", 
+    "complaintID": "UA-2016-12-28-000001.1", 
+    "date": "2016-12-28T14:51:36.619237+02:00", 
+    "acceptance": true, 
+    "type": "complaint", 
+    "documents": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "author": "complaint_owner", 
+        "language": "uk", 
+        "title": "Complaint_Attachement.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/b4f3d0cd8a1d4ed1880ea1afaea96d6e?KeyID=171e0025&Signature=adjKILamHmPLOxRhH0IAryXkkNPCtzlAx6hafKcl9omqOGrSjJaPBIbt4pI9LUv2Z%2FJLKtoDxOmzf4IVxJ0KCg%253D%253D", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:51:33.888242+02:00", 
+        "id": "7233530b0adb4e22b33804dcfe011263", 
+        "dateModified": "2016-12-28T14:51:33.888266+02:00"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "author": "aboveThresholdReviewers", 
+        "language": "uk", 
+        "title": "ComplaintResolution.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/f36933df66594567b7d2529a69c52cf9?KeyID=171e0025&Signature=q2hFUYtOxTYlbYl15gV02DJz8%252BZsU3bN7arrKAEyekdsJA%252Bvx7xDQzhOJTRhd6mMo81tuJb9a01%252BrZ3x9UPMBg%253D%253D", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-12-28T14:51:35.415592+02:00", 
+        "id": "befa3f2fda9f48b68973c29dbd9cb20f", 
+        "dateModified": "2016-12-28T14:51:35.415615+02:00"
+      }
+    ], 
+    "dateAccepted": "2016-12-28T14:51:34.763322+02:00"
+  }
+}
+

@@ -1,0 +1,78 @@
+POST /api/2.3/tenders/e1c191962ff249a4981368400261b2de/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 2628
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "documents": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/fa97f56018114fc393250d5117d64b1c?KeyID=217af5e1&Signature=%2FBrQ0RUKHZS1qoQ3lDr2yoU3e7lsiKETm0IAnjOcg%2FFQZjYMJypukDrcv17XBSvAXUAG3KaENESjbjCc31OnDw%3D%3D", 
+        "title": "Proposal_part1.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "confidentiality": "buyerOnly", 
+        "title": "Proposal_part2.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/9de65d9090ba4a82ae9cee8bfd774d85?KeyID=217af5e1&Signature=2p3yG1w9muLq%2FbYjuOluU26g9PZYwo%2BXjTkamksqkAH1EkAdO1vmljwnTzN%2F2DNoXjB7C4hszIm67abLVYrwDQ%3D%3D", 
+        "confidentialityRationale": "Only our company sells badgers with pink hair.", 
+        "format": "application/pdf"
+      }
+    ], 
+    "eligibilityDocuments": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/90329268dd8043f285d8e3bfc8e2cd09?KeyID=217af5e1&Signature=oOTdayWrvPQcOf8gWmyZS%2F7le2Znj2CcOHzskS7%2F7APzfHn9EpiZs1CP7qasP7F%2BiG%2BcLoj8hEiov%2Bcrx452Aw%3D%3D", 
+        "title": "eligibility_doc.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ], 
+    "selfEligible": true, 
+    "value": {
+      "amount": 5
+    }, 
+    "selfQualified": true, 
+    "financialDocuments": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/ded81f9b0db2495dba2237fb507a6237?KeyID=217af5e1&Signature=AiQmg09dWJcBayl0NABL%2FHvHep2PQVGx5AJkFKVh6LrWLsq1Sx2tZ%2BSHKOck2Rquke8zmDdENbxjTyyJO2eeDA%3D%3D", 
+        "title": "financial_doc.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "fake@mail.com", 
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Карпенко"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137228", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Кенгуру»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "79013", 
+          "region": "м. Запоріжжя", 
+          "streetAddress": "вул. Коцюбинського, 15", 
+          "locality": "м. Запоріжя"
+        }
+      }
+    ], 
+    "qualificationDocuments": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/077844e764e141d5a977ca6e3ffb6348?KeyID=217af5e1&Signature=FV3IKCXotm1MURA9q%2BzhZmhxhStykDpSitqKWQxfOWVWwgJygnvKdmoXLgxkXeX9HvphU69614eM97kmsVOCAg%3D%3D", 
+        "title": "qualification_document.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ]
+  }
+}
+

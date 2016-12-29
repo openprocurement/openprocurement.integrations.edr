@@ -1,0 +1,95 @@
+POST /api/2.3/tenders/b02837237aa446fc89834caae9d827c3/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 975
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "selfEligible": true, 
+    "selfQualified": true, 
+    "lotValues": [
+      {
+        "relatedLot": "7e10c7d27c3f4287b7459171c1cfce1c"
+      }, 
+      {
+        "relatedLot": "16a24f0e7e2941e8ae02248baa4e555d", 
+        "subcontractingDetails": "ДКП «Укр Прінт», Україна"
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Іваненко", 
+          "email": "fake@mail.com"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137227", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Снігур»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "79013", 
+          "region": "м. Львів", 
+          "streetAddress": "вул. Островського, 35", 
+          "locality": "м. Львів"
+        }
+      }
+    ]
+  }
+}
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b02837237aa446fc89834caae9d827c3/bids/54eb2b429f914823b6fcc3183c63ed55
+{
+  "access": {
+    "token": "8f1be375473b47cd87ad0c4ce768d1a3"
+  }, 
+  "data": {
+    "status": "pending", 
+    "selfEligible": true, 
+    "lotValues": [
+      {
+        "relatedLot": "7e10c7d27c3f4287b7459171c1cfce1c", 
+        "date": "2016-12-28T14:51:55.703558+02:00", 
+        "status": "pending"
+      }, 
+      {
+        "relatedLot": "16a24f0e7e2941e8ae02248baa4e555d", 
+        "date": "2016-12-28T14:51:55.703711+02:00", 
+        "status": "pending", 
+        "subcontractingDetails": "ДКП «Укр Прінт», Україна"
+      }
+    ], 
+    "selfQualified": true, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "fake@mail.com", 
+          "telephone": "+380 (322) 12-34-56", 
+          "name": "Іван Іваненко"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137227", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Снігур»", 
+        "address": {
+          "postalCode": "79013", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 35", 
+          "region": "м. Львів", 
+          "locality": "м. Львів"
+        }
+      }
+    ], 
+    "date": "2016-12-28T14:51:55.703320+02:00", 
+    "id": "54eb2b429f914823b6fcc3183c63ed55"
+  }
+}
+

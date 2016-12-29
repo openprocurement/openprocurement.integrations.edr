@@ -1,0 +1,27 @@
+PATCH /api/2.3/tenders/986d9887495b4e5297253ae7f613e820/qualifications/0767a282e3874f15aadec6fd964c0af3?acc_token=4ff9bc371765466aa38eb1478c8559f6 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 67
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "status": "active", 
+    "qualified": true, 
+    "eligible": true
+  }
+}
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "status": "active", 
+    "eligible": true, 
+    "qualified": true, 
+    "bidID": "66587ea1d24d486286a61fec77249ffd", 
+    "date": "2016-12-27T15:16:03.798237+02:00", 
+    "id": "0767a282e3874f15aadec6fd964c0af3"
+  }
+}
+

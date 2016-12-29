@@ -1,0 +1,23 @@
+POST /api/2.3/tenders/c3c7a59ead604eba9eea2117d411c4a2/contracts/30a3825b12f3478b994ac0557ad45170/documents?acc_token=4fe7b55f3f85463baee8e3606ed041e0 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 200
+Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy532977217951$
+Host: api-sandbox.openprocurement.org
+
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/c3c7a59ead604eba9eea2117d411c4a2/contracts/30a3825b12f3478b994ac0557ad45170/documents/85f2975c54424643b8957ab264bb22c9
+{
+  "data": {
+    "hash": "md5:00000000000000000000000000000000", 
+    "title": "contract_document.doc", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/0a992635dc0f4b6f94fb8a4c42adcc2e?KeyID=fec4a383&Signature=RozqGgmmV4HjQ1Fgk0jL8mLHQih6aia9pD09KbkkSiq22dHdvkK4%252BzioDUKh%252BKyfNE0dy5LoiH0i9kJRTaFlBg%253D%253D", 
+    "format": "application/msword", 
+    "documentOf": "tender", 
+    "datePublished": "2016-12-28T14:52:39.519717+02:00", 
+    "id": "85f2975c54424643b8957ab264bb22c9", 
+    "dateModified": "2016-12-28T14:52:39.519740+02:00"
+  }
+}
+

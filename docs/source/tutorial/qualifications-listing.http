@@ -1,0 +1,43 @@
+GET /api/2.3/tenders/986d9887495b4e5297253ae7f613e820/qualifications HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": [
+    {
+      "status": "pending", 
+      "eligible": false, 
+      "qualified": false, 
+      "bidID": "91fae32d9cc24f46b2e32d99e28fa9b2", 
+      "date": "2016-12-27T15:16:03.272252+02:00", 
+      "id": "87a05c99cee94413849200f662acf07c"
+    }, 
+    {
+      "status": "pending", 
+      "eligible": false, 
+      "qualified": false, 
+      "bidID": "e109724ac8434c768804a536cbb14137", 
+      "date": "2016-12-27T15:16:03.272437+02:00", 
+      "id": "282a525d4c8947348b240f10f1a96d6c"
+    }, 
+    {
+      "status": "pending", 
+      "eligible": false, 
+      "qualified": false, 
+      "bidID": "a4ff0754f1af480988abbb0b87d05e59", 
+      "date": "2016-12-27T15:16:03.272604+02:00", 
+      "id": "4a7cfca9e216433982f72ed20fb1d904"
+    }, 
+    {
+      "status": "pending", 
+      "eligible": false, 
+      "qualified": false, 
+      "bidID": "66587ea1d24d486286a61fec77249ffd", 
+      "date": "2016-12-27T15:16:03.272772+02:00", 
+      "id": "0767a282e3874f15aadec6fd964c0af3"
+    }
+  ]
+}
+

@@ -1,0 +1,139 @@
+PATCH /api/2.3/tenders/c3c7a59ead604eba9eea2117d411c4a2?acc_token=4fe7b55f3f85463baee8e3606ed041e0 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 40
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "status": "active.tendering"
+  }
+}
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "procurementMethod": "selective", 
+    "status": "active.tendering", 
+    "tenderID": "UA-2016-12-28-000001", 
+    "tenderPeriod": {
+      "startDate": "2016-12-28T14:52:36.148473+02:00", 
+      "endDate": "2017-01-27T14:52:46.426890+02:00"
+    }, 
+    "title": "футляри до державних нагород", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "enquiryPeriod": {
+      "startDate": "2016-12-28T14:52:36.148473+02:00", 
+      "clarificationsUntil": "2017-01-20T14:52:46.426890+02:00", 
+      "endDate": "2017-01-17T14:52:46.426890+02:00", 
+      "invalidationDate": "2016-12-28T14:52:36.582062+02:00"
+    }, 
+    "complaintPeriod": {
+      "startDate": "2016-12-28T14:52:36.148473+02:00", 
+      "endDate": "2017-01-23T00:00:00+02:00"
+    }, 
+    "procurementMethodType": "competitiveDialogueUA.stage2", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "submissionMethod": "electronicAuction", 
+    "shortlistedFirms": [
+      {
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»"
+      }, 
+      {
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Книга»"
+      }, 
+      {
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137228", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "«Кенгуру»"
+      }
+    ], 
+    "date": "2016-12-28T14:52:36.583580+02:00", 
+    "next_check": "2017-01-27T14:52:46.426890+02:00", 
+    "procuringEntity": {
+      "contactPoint": {
+        "url": "http://sch10.edu.vn.ua/", 
+        "name": "Куца Світлана Валентинівна", 
+        "telephone": "+380 (432) 46-53-02"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "21725150", 
+        "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\""
+      }, 
+      "name": "ЗОСШ #10 м.Вінниці", 
+      "kind": "special", 
+      "address": {
+        "postalCode": "21027", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Стахурського. 22", 
+        "region": "м. Вінниця", 
+        "locality": "м. Вінниця"
+      }
+    }, 
+    "auctionPeriod": {
+      "shouldStartAfter": "2017-01-28T00:00:00+02:00"
+    }, 
+    "owner": "broker", 
+    "dateModified": "2016-12-28T14:52:36.583580+02:00", 
+    "items": [
+      {
+        "description": "Послуги шкільних їдалень", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Test", 
+          "id": "37810000-9"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "Послуги шкільних їдалень"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-01-17T14:51:17.551789+02:00", 
+          "endDate": "2017-02-16T14:51:17.551801+02:00"
+        }, 
+        "id": "dcb0d090155b4b46a232357587ee25b0", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 1
+      }
+    ], 
+    "id": "c3c7a59ead604eba9eea2117d411c4a2", 
+    "awardCriteria": "lowestCost"
+  }
+}
+

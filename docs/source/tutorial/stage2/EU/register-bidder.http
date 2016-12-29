@@ -1,0 +1,84 @@
+POST /api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 936
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "status": "draft", 
+    "selfEligible": true, 
+    "value": {
+      "amount": 500
+    }, 
+    "subcontractingDetails": "ДКП «Орфей», Україна", 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "soleksuk@gmail.com", 
+          "telephone": "+380 (432) 21-69-30", 
+          "name": "Сергій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "21100", 
+          "region": "м. Вінниця", 
+          "streetAddress": "вул. Островського, 33", 
+          "locality": "м. Вінниця"
+        }
+      }
+    ], 
+    "selfQualified": true
+  }
+}
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/16a6ec1ed36341f3b3a6e63ef3dab7b8/bids/026b4cc6aef2495a9da7551a78cb3cf7
+{
+  "access": {
+    "token": "99a0b30453754326836fb1b8dd0c5ff5"
+  }, 
+  "data": {
+    "status": "draft", 
+    "selfEligible": true, 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "subcontractingDetails": "ДКП «Орфей», Україна", 
+    "selfQualified": true, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "soleksuk@gmail.com", 
+          "telephone": "+380 (432) 21-69-30", 
+          "name": "Сергій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»", 
+        "address": {
+          "postalCode": "21100", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 33", 
+          "region": "м. Вінниця", 
+          "locality": "м. Вінниця"
+        }
+      }
+    ], 
+    "date": "2016-12-28T14:52:20.509201+02:00", 
+    "id": "026b4cc6aef2495a9da7551a78cb3cf7"
+  }
+}
+
