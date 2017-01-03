@@ -88,7 +88,7 @@ class EdrDataBridge(object):
         response = self.initialize_sync(params=params, direction=direction)
 
         while not (params.get('descending') and not len(response.data) and params.get('offset') == response.next_page.offset):
-            tenders = response and response.data or []
+            tenders = response.data if response else []
             params['offset'] = response.next_page.offset
             for tender in tenders:
                 if (tender['status'] == "active.qualification" and
