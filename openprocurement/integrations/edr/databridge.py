@@ -169,40 +169,48 @@ class EdrDataBridge(object):
                 gevent.sleep(self.delay)
             else:
                 gevent.wait([self.until_too_many_requests_event])
-                response = self.edrApiClient.get_by_code(tender_data.code)
-                response_json = response.json()
-                if response_json:
-                    if response.status_code == 200:
-                        file_ = StringIO()
-                        file_.name = 'edr_request.json'
-                        file_.write(response_json)
-                        file_.seek(0)
-                        # create patch request to award/qualification with document to upload
-                        if tender_data.obj_type == 'award':
-                            self.client.upload_award_document(file_, tender, tender_data.obj_id)
-                        elif tender_data.obj_type == 'qualification':
-                            self.client.upload_qualification_document(file_, tender, tender_data.obj_id)
-                    elif response.status_code == 401:
-                        logger.info('Not Authorized (invalid token) for tender {}'.format(tender_data.tender_id),
-                                    extra=journal_context({"MESSAGE_ID": DATABRIDGE_UNAUTHORIZED_EDR},
-                                                          {"TENDER_ID": tender['id']}))
-                        raise Exception('Invalid EDR API token')
-                    elif response.status_code == 429:
-                        self.until_too_many_requests_event.clear()
-                        gevent.sleep(response.headers.get('Retry-After'))
-                        self.until_too_many_requests_event.set()
-                    elif response.status_code == 402:
-                        logger.info('Payment required for requesting info to EDR. '
-                                    'Error description: {err}'.format(err=response_json[0].get('errors')),
-                                    extra=journal_context(params={"TENDER_ID": tender_data.tender_id}))
-                    else:
-                        logger.info('Error appeared while requesting to EDR. '
-                                    'Description: {err}'.format(err=response_json[0].get('errors')),
-                                    extra=journal_context(params={"TENDER_ID": tender_data.tender_id}))
+                response = self.edrApiClient.get_subject(tender_data.code)
+                if response.status_code == 200:
+                    for subject in response.json():
+                        response = self.edrApiClient.get_subject_details(subject['id'])
+                        if response.status_code == 200:
+                            fields = ['names', 'founders', 'management', 'activity_kinds', 'address', 'bankruptcy']
+                            details = {key: value for key, value in response.iteritems() if key in fields}
+                            file_ = StringIO()
+                            file_.name = 'edr_request.json'
+                            file_.write(details)
+                            file_.seek(0)
+                        else:
+                            self.handle_status_response(response, tender.tender_id)
+                    # TODO upload file to award not bid
+                    # create patch request to award/qualification with document to upload
+                    if tender_data.obj_type == 'award':
+                        self.client.upload_award_document(file_, tender, tender_data.obj_id)
+                    elif tender_data.obj_type == 'qualification':
+                        self.client.upload_qualification_document(file_, tender, tender_data.obj_id)
                 else:
-                    logger.info('Response for {} and obj id {} is empty'.format(tender_data.tender_id, tender_data.obj_id),
-                                extra=journal_context({"MESSAGE_ID": DATABRIDGE_EMPTY_RESPONSE},
-                                                      params={"TENDER_ID": tender_data.tender_id}))
+                    self.handle_status_response(response, tender.tender_id)
+                # TODO raise error if response is empty
+
+    def handle_status_response(self, response, tender_id):
+        if response.status_code == 401:
+            logger.info('Not Authorized (invalid token) for tender {}'.format(tender_id),
+                        extra=journal_context({"MESSAGE_ID": DATABRIDGE_UNAUTHORIZED_EDR}, {"TENDER_ID": tender_id}))
+            raise Exception('Invalid EDR API token')
+
+        elif response.status_code == 429:
+            self.until_too_many_requests_event.clear()
+            gevent.sleep(response.headers.get('Retry-After'))
+            self.until_too_many_requests_event.set()
+
+        elif response.status_code == 402:
+            logger.info('Payment required for requesting info to EDR. '
+                        'Error description: {err}'.format(err=response.json()[0].get('errors')),
+                        extra=journal_context(params={"TENDER_ID": tender_id}))
+        else:
+            logger.info('Error appeared while requesting to EDR. '
+                        'Description: {err}'.format(err=response.json()[0].get('errors')),
+                        extra=journal_context(params={"TENDER_ID": tender_id}))
 
     def get_tenders_forward(self):
         logger.info('Start forward data sync worker...')
