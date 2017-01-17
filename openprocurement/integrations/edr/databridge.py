@@ -141,19 +141,22 @@ class EdrDataBridge(object):
                         logger.info('Processing tender {} award {}'.format(tender['id'], award['id']),
                                     extra=journal_context({"MESSAGE_ID": DATABRIDGE_TENDER_PROCESS},
                                     params={"TENDER_ID": tender['id']}))
-                        if award['status'] == 'pending':
+                        if award['status'] == 'pending' and not [document for document in award.get('documents')
+                                                                 if document.get('documentType') == 'registerExtract']:
                             for supplier in award['suppliers']:
-                                tender_data = Data(tender['id'], award['id'], supplier['identifier']['id'], 'award')
+                                tender_data = Data(tender['id'], award['id'], supplier['identifier']['id'], 'awards')
                                 self.data_queue.put(tender_data)
                         else:
                             logger.info('Tender {} award {} is not in status pending.'.format(tender_id, award['id']),
                                         extra=journal_context(params={"TENDER_ID": tender['id']}))
                 elif 'bids' in tender:
                     for qualification in tender['qualifications']:
-                        if qualification['status'] == 'pending':
+                        if qualification['status'] == 'pending' and \
+                                not [document for document in qualification.get('documents')
+                                     if document.get('documentType') == 'registerExtract']:
                             appropriate_bid = [b for b in tender['bids'] if b['id'] == qualification['bidID']][0]
                             tender_data = Data(tender['id'], qualification['id'],
-                                               appropriate_bid['tenderers'][0]['identifier']['id'], 'qualification')
+                                               appropriate_bid['tenderers'][0]['identifier']['id'], 'qualifications')
                             self.data_queue.put(tender_data)
                             logger.info('Processing tender {} bid {}'.format(tender['id'], appropriate_bid['id']),
                                         extra=journal_context({"MESSAGE_ID": DATABRIDGE_TENDER_PROCESS},
@@ -228,18 +231,34 @@ class EdrDataBridge(object):
                     else:
                         self.handle_status_response(response, tender.tender_id)
                 # create patch request to award/qualification with document to upload
-                if tender_data.obj_type == 'award':
-                    self.client.upload_award_document(file_, tender, tender_data.obj_id)
-                    logger.info('Successfully uploaded file for tender {} award {}'.format(
-                                tender_data.tender_id, tender_data.obj_id),
-                                extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
-                                                      params={"TENDER_ID": tender_data.tender_id}))
-                elif tender_data.obj_type == 'qualification':
-                    self.client.upload_qualification_document(file_, tender, tender_data.obj_id)
-                    logger.info('Successfully uploaded file for tender {} qualification {}'.format(
-                                tender_data.tender_id, tender_data.obj_id),
-                                extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
-                                                      params={"TENDER_ID": tender_data.tender_id}))
+                if tender_data.obj_type == 'awards':
+                    try:
+                        document = self.client.upload_award_document(file_, tender, tender_data.obj_id)
+                        self.client._patch_resource_item('{}/{}/{}/{}/documents/{}'.format(
+                            self.client.prefix_path, tender_data.tender_id, 'awards', tender_data.obj_id, document['data']['id']),
+                            payload={"data": {"documentType": "registerExtract"}},
+                            headers={'X-Access-Token':
+                                         getattr(getattr(tender, 'access', ''), 'token', '')})
+                        logger.info('Successfully uploaded file for tender {} award {}'.format(
+                                    tender_data.tender_id, tender_data.obj_id),
+                                    extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
+                                                          params={"TENDER_ID": tender_data.tender_id}))
+                    except Exception as e:
+                        logger.info('Exception while uploading file to tender {} award {}. Message: {}'.format(
+                                    tender_data.tender_id, tender_data.obj_id, e.message))
+                elif tender_data.obj_type == 'qualifications':
+                    try:
+                        document = self.client.upload_qualification_document(file_, tender, tender_data.obj_id)
+                        self.client._patch_resource_item('{}/{}/qualifications/{}/documents/{}'.format(
+                            '/api/2.3/tenders', tender_data.tender_id, tender_data.obj_id, document['data']['id']),
+                            payload={"data": {"documentType": "registerExtract"}})
+                        logger.info('Successfully uploaded file for tender {} qualification {}'.format(
+                                    tender_data.tender_id, tender_data.obj_id),
+                                    extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
+                                                          params={"TENDER_ID": tender_data.tender_id}))
+                    except Exception, e:
+                        logger.info('Exception while uploading file to tender {} qualification {}. Message: {}'.format(
+                                    tender_data.tender_id, tender_data.obj_id, e.message))
 
     def handle_status_response(self, response, tender_id):
         if response.status_code == 401:
@@ -270,7 +289,7 @@ class EdrDataBridge(object):
                             extra=journal_context({"MESSAGE_ID": DATABRIDGE_TENDER_PROCESS},
                                                   {"TENDER_ID": tender['id']}))
                 self.filtered_tenders_queue.put(tender['id'])
-        except Exception as e:
+        except Exception, e:
             logger.warn('Forward worker died!', extra=journal_context({"MESSAGE_ID": DATABRIDGE_WORKER_DIED}, {}))
             logger.exception(e)
         else:
@@ -285,7 +304,7 @@ class EdrDataBridge(object):
                             extra=journal_context({"MESSAGE_ID": DATABRIDGE_TENDER_PROCESS},
                                                   {"TENDER_ID": tender['id']}))
                 self.filtered_tenders_queue.put(tender['id'])
-        except Exception as e:
+        except Exception, e:
             logger.warn('Backward worker died!', extra=journal_context({"MESSAGE_ID": DATABRIDGE_WORKER_DIED}, {}))
             logger.exception(e)
         else:
