@@ -99,7 +99,7 @@ class EdrDataBridge(object):
     def get_tenders(self, params={}, direction=""):
         response = self.initialize_sync(params=params, direction=direction)
 
-        while not (params.get('descending') and not len(response.data) and
+        while not (params.get('descending') and not len(response.data) and \
                    params.get('offset') == response.next_page.offset):
             tenders = response.data if response else []
             params['offset'] = response.next_page.offset
@@ -252,13 +252,13 @@ class EdrDataBridge(object):
                     self.client.patch_item_document(tender, {"data": {"documentType": "registerExtract",
                                                                       "documentOf": tender_data.item_name}},
                                                     tender_data.item_name, tender_data.item_id, document['data']['id'])
-                    logger.info('Successfully updated file for tender {} award {}'.format(
-                                tender_data.tender_id, tender_data.item_id),
+                    logger.info('Successfully updated file for tender {} {} {}'.format(
+                                tender_data.tender_id, tender_data.item_name, tender_data.item_id),
                                 extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
                                                       params={"TENDER_ID": tender_data.tender_id}))
                 except Exception as e:
-                    logger.info('Exception while uploading file to tender {} award {}. Message: {}'.format(
-                                    tender_data.tender_id, tender_data.item_id, e.message))
+                    logger.info('Exception while uploading file to tender {} {} {}. Message: {}'.format(
+                                    tender_data.tender_id, tender_data.item_name, tender_data.item_id, e.message))
                     raise e
 
     def handle_status_response(self, response, tender_id):
