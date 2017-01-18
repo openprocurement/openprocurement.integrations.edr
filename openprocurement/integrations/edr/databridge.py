@@ -104,7 +104,7 @@ class EdrDataBridge(object):
             for tender in tenders:
                 if (tender['status'] == "active.qualification" and
                     tender['procurementMethodType'] in ('aboveThresholdUA', 'aboveThresholdUA.defense', 'aboveThresholdEU',
-                                                        'competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2'))\
+                                                        'competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2')) \
                     or (tender['status'] == 'active.pre-qualification' and
                         tender['procurementMethodType'] in ('aboveThresholdEU', 'competitiveDialogueUA',
                                                             'competitiveDialogueEU')):
@@ -141,26 +141,32 @@ class EdrDataBridge(object):
                         logger.info('Processing tender {} award {}'.format(tender['id'], award['id']),
                                     extra=journal_context({"MESSAGE_ID": DATABRIDGE_TENDER_PROCESS},
                                     params={"TENDER_ID": tender['id']}))
-                        if award['status'] == 'pending' and not [document for document in award.get('documents')
+                        if award['status'] == 'pending' and not [document for document in award.get('documents', [])
                                                                  if document.get('documentType') == 'registerExtract']:
                             for supplier in award['suppliers']:
-                                tender_data = Data(tender['id'], award['id'], supplier['identifier']['id'], 'awards')
+                                tender_data = Data(tender['id'], award['id'], supplier['identifier']['id'], 'award')
                                 self.data_queue.put(tender_data)
                         else:
-                            logger.info('Tender {} award {} is not in status pending.'.format(tender_id, award['id']),
+                            logger.info('Tender {} award {} is not in status pending or award has already document '
+                                        'with documentType registerExtract.'.format(tender_id, award['id']),
                                         extra=journal_context(params={"TENDER_ID": tender['id']}))
                 elif 'bids' in tender:
                     for qualification in tender['qualifications']:
                         if qualification['status'] == 'pending' and \
-                                not [document for document in qualification.get('documents')
+                                not [document for document in qualification.get('documents', [])
                                      if document.get('documentType') == 'registerExtract']:
                             appropriate_bid = [b for b in tender['bids'] if b['id'] == qualification['bidID']][0]
                             tender_data = Data(tender['id'], qualification['id'],
-                                               appropriate_bid['tenderers'][0]['identifier']['id'], 'qualifications')
+                                               appropriate_bid['tenderers'][0]['identifier']['id'], 'qualification')
                             self.data_queue.put(tender_data)
                             logger.info('Processing tender {} bid {}'.format(tender['id'], appropriate_bid['id']),
                                         extra=journal_context({"MESSAGE_ID": DATABRIDGE_TENDER_PROCESS},
                                                               params={"TENDER_ID": tender['id']}))
+                        else:
+                            logger.info('Tender {} qualification {} is not in status pending or qualification has '
+                                        'already document with documentType registerExtract.'.format(
+                                            tender_id, qualification['id']),
+                                            extra=journal_context(params={"TENDER_ID": tender['id']}))
 
     def get_subject_id(self):
         while True:
@@ -231,14 +237,12 @@ class EdrDataBridge(object):
                     else:
                         self.handle_status_response(response, tender.tender_id)
                 # create patch request to award/qualification with document to upload
-                if tender_data.obj_type == 'awards':
+                if tender_data.obj_type == 'award':
                     try:
                         document = self.client.upload_award_document(file_, tender, tender_data.obj_id)
-                        self.client._patch_resource_item('{}/{}/{}/{}/documents/{}'.format(
-                            self.client.prefix_path, tender_data.tender_id, 'awards', tender_data.obj_id, document['data']['id']),
-                            payload={"data": {"documentType": "registerExtract"}},
-                            headers={'X-Access-Token':
-                                         getattr(getattr(tender, 'access', ''), 'token', '')})
+                        self.client.patch_award_document(tender, {"data": {"documentType": "registerExtract",
+                                                                           "documentOf": tender_data.obj_type}},
+                                                         tender_data.obj_id, document['data']['id'])
                         logger.info('Successfully uploaded file for tender {} award {}'.format(
                                     tender_data.tender_id, tender_data.obj_id),
                                     extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
@@ -246,12 +250,12 @@ class EdrDataBridge(object):
                     except Exception as e:
                         logger.info('Exception while uploading file to tender {} award {}. Message: {}'.format(
                                     tender_data.tender_id, tender_data.obj_id, e.message))
-                elif tender_data.obj_type == 'qualifications':
+                elif tender_data.obj_type == 'qualification':
                     try:
                         document = self.client.upload_qualification_document(file_, tender, tender_data.obj_id)
-                        self.client._patch_resource_item('{}/{}/qualifications/{}/documents/{}'.format(
-                            '/api/2.3/tenders', tender_data.tender_id, tender_data.obj_id, document['data']['id']),
-                            payload={"data": {"documentType": "registerExtract"}})
+                        self.client.patch_qualification_document(tender, {"data": {"documentType": "registerExtract",
+                                                                                   "documentOf": tender_data.obj_type}},
+                                                                 tender_data.obj_id, document['data']['id'])
                         logger.info('Successfully uploaded file for tender {} qualification {}'.format(
                                     tender_data.tender_id, tender_data.obj_id),
                                     extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
