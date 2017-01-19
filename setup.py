@@ -12,10 +12,6 @@ test_requires = requires + [
     'python-coveralls',
 ]
 
-docs_requires = requires + [
-    'sphinxcontrib-httpdomain',
-]
-
 databridge_requires = requires + [
     'PyYAML',
     'gevent',
@@ -54,6 +50,6 @@ setup(name='openprocurement.integrations.edr',
       install_requires=requires,
       tests_require=test_requires,
       extras_require={'databridge': databridge_requires,
-                      'test': test_requires, 'docs': docs_requires},
+                      'test': test_requires},
       entry_points=entry_points,
       )
