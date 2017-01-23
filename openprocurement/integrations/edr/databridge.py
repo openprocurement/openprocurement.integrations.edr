@@ -11,22 +11,25 @@ import logging
 import logging.config
 import os
 import argparse
-from uuid import uuid4
+import json
 import gevent
-from StringIO import StringIO
+
+from uuid import uuid4
+import io
 from retrying import retry
-from openprocurement_client.client import TendersClientSync, TendersClient
-from openprocurement.integrations.edr.client import EdrClient
 from yaml import load
 from gevent.queue import Queue
 from collections import namedtuple
+
+from openprocurement_client.client import TendersClientSync, TendersClient
+from openprocurement.integrations.edr.client import EdrClient
 from openprocurement.integrations.edr.journal_msg_ids import (
     DATABRIDGE_INFO, DATABRIDGE_SYNC_SLEEP, DATABRIDGE_GET_TENDER_FROM_QUEUE, DATABRIDGE_TENDER_PROCESS,
     DATABRIDGE_EMPTY_RESPONSE, DATABRIDGE_WORKER_DIED, DATABRIDGE_RESTART, DATABRIDGE_START,
     DATABRIDGE_UNAUTHORIZED_EDR, DATABRIDGE_SUCCESS_CREATE_FILE, DATABRIDGE_SUCCESS_UPLOAD_FILE)
 
 logger = logging.getLogger("openprocurement.integrations.edr.databridge")
-Data = namedtuple('Data', ['tender_id', 'item_id', 'code', 'item_type'])
+Data = namedtuple('Data', ['tender_id', 'item_id', 'code', 'item_name'])
 
 
 def generate_req_id():
@@ -40,9 +43,9 @@ def journal_context(record={}, params={}):
 
 
 def create_file(details):
-    temporary_file = StringIO()
+    temporary_file = io.BytesIO()
     temporary_file.name = 'edr_request.json'
-    temporary_file.write(details)
+    temporary_file.write(json.dumps(details, indent=4, separators=(',', ': '), ensure_ascii=False).encode('utf-8'))
     temporary_file.seek(0)
 
     return temporary_file
@@ -99,7 +102,7 @@ class EdrDataBridge(object):
     def get_tenders(self, params={}, direction=""):
         response = self.initialize_sync(params=params, direction=direction)
 
-        while not (params.get('descending') and not len(response.data) and \
+        while not (params.get('descending') and not len(response.data) and
                    params.get('offset') == response.next_page.offset):
             tenders = response.data if response else []
             params['offset'] = response.next_page.offset
@@ -245,19 +248,19 @@ class EdrDataBridge(object):
                         document = self.client.upload_award_document(temporary_file, tender, tender_data.item_id)
                     else:
                         document = self.client.upload_qualification_document(temporary_file, tender, tender_data.item_id)
-                    logger.info('Successfully uploaded file for tender {} award {}'.format(
-                                tender_data.tender_id, tender_data.item_id),
+                    logger.info('Successfully uploaded file for tender {} {} {}'.format(
+                                tender_data.tender_id, tender_data.item_name, tender_data.item_id),
                                 extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
                                                       params={"TENDER_ID": tender_data.tender_id}))
                     self.client.patch_item_document(tender, {"data": {"documentType": "registerExtract",
-                                                                      "documentOf": tender_data.item_name}},
+                                                                      "documentOf": tender_data.item_name[:-1]}},
                                                     tender_data.item_name, tender_data.item_id, document['data']['id'])
                     logger.info('Successfully updated file for tender {} {} {}'.format(
                                 tender_data.tender_id, tender_data.item_name, tender_data.item_id),
                                 extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
                                                       params={"TENDER_ID": tender_data.tender_id}))
                 except Exception as e:
-                    logger.info('Exception while uploading file to tender {} {} {}. Message: {}'.format(
+                    logger.info('Exception while uploading/updating file to tender {} {} {}. Message: {}'.format(
                                     tender_data.tender_id, tender_data.item_name, tender_data.item_id, e.message))
                     raise e
 
