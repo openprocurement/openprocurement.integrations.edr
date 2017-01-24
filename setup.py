@@ -18,6 +18,7 @@ databridge_requires = requires + [
     'redis',
     'LazyDB',
     'ExtendedJournalHandler',
+    'requests',
     'openprocurement_client>=1.0b2'
 ]
 

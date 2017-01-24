@@ -51,6 +51,9 @@ def create_file(details):
 class EdrDataBridge(object):
     """ Edr API Data Bridge """
 
+    pre_qualification_procurementMethodType = ('aboveThresholdEU', 'competitiveDialogueUA', 'competitiveDialogueEU')
+    qualification_procurementMethodType = ('aboveThresholdUA', 'aboveThresholdUA.defense', 'aboveThresholdEU', 'competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2')
+
     def __init__(self, config):
         super(EdrDataBridge, self).__init__()
         self.config = config
@@ -99,17 +102,16 @@ class EdrDataBridge(object):
     def get_tenders(self, params={}, direction=""):
         response = self.initialize_sync(params=params, direction=direction)
 
-        while not (params.get('descending') and not len(response.data) and \
+        while not (params.get('descending') and
+                   not len(response.data) and
                    params.get('offset') == response.next_page.offset):
             tenders = response.data if response else []
             params['offset'] = response.next_page.offset
             for tender in tenders:
                 if (tender['status'] == "active.qualification" and
-                    tender['procurementMethodType'] in ('aboveThresholdUA', 'aboveThresholdUA.defense', 'aboveThresholdEU',
-                                                        'competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2')) \
+                    tender['procurementMethodType'] in self.qualification_procurementMethodType) \
                     or (tender['status'] == 'active.pre-qualification' and
-                        tender['procurementMethodType'] in ('aboveThresholdEU', 'competitiveDialogueUA',
-                                                            'competitiveDialogueEU')):
+                        tender['procurementMethodType'] in self.pre_qualification_procurementMethodType):
                     yield tender
                 else:
                     logger.info('Skipping tender {} with status {} with procurementMethodType {}'.format(
@@ -249,9 +251,16 @@ class EdrDataBridge(object):
                                 tender_data.tender_id, tender_data.item_id),
                                 extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
                                                       params={"TENDER_ID": tender_data.tender_id}))
-                    self.client.patch_item_document(tender, {"data": {"documentType": "registerExtract",
-                                                                      "documentOf": tender_data.item_name}},
-                                                    tender_data.item_name, tender_data.item_id, document['data']['id'])
+                    self.client._patch_resource_item(
+                        '{}/{}/{}/{}/documents/{}'.format(
+                            self.prefix_path, tender_data.tender_id,
+                            tender_data.item_id, tender_data.item_id,
+                            document['data']['id']
+                        ),
+                        payload={"data": {"documentType": "registerExtract"}},
+                        headers={'X-Access-Token': getattr(
+                            getattr(tender, 'access', ''), 'token', '')}
+                    )
                     logger.info('Successfully updated file for tender {} {} {}'.format(
                                 tender_data.tender_id, tender_data.item_name, tender_data.item_id),
                                 extra=journal_context({"MESSAGE_ID": DATABRIDGE_SUCCESS_UPLOAD_FILE},
@@ -274,11 +283,11 @@ class EdrDataBridge(object):
 
         elif response.status_code == 402:
             logger.info('Payment required for requesting info to EDR. '
-                        'Error description: {err}'.format(err=response.json()[0].get('errors')),
+                        'Error description: {err}'.format(err=response.text),
                         extra=journal_context(params={"TENDER_ID": tender_id}))
         else:
             logger.info('Error appeared while requesting to EDR. '
-                        'Description: {err}'.format(err=response.json()[0].get('errors')),
+                        'Description: {err}'.format(err=response.text),
                         extra=journal_context(params={"TENDER_ID": tender_id}))
 
     def get_tenders_forward(self):
@@ -328,7 +337,7 @@ class EdrDataBridge(object):
                               'get_subject_details': gevent.spawn(self.get_subject_details)}
 
     def run(self):
-        logger.error('Start EDR API Data Bridge', extra=journal_context({"MESSAGE_ID": DATABRIDGE_START}, {}))
+        logger.info('Start EDR API Data Bridge', extra=journal_context({"MESSAGE_ID": DATABRIDGE_START}, {}))
         self._start_synchronization_workers()
         self._start_steps()
         backward_worker, forward_worker = self.jobs
