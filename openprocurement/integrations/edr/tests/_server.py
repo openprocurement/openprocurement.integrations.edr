@@ -9,9 +9,8 @@ def setup_routing(app):
         path, method, func = rout
         app.route(path, method, func)
 
+
 # Base routes
-
-
 def verify():
     response.status = 200
     return dumps({"code": "14360570",
