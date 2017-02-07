@@ -7,11 +7,6 @@ requires = [
     'setuptools',
 ]
 
-test_requires = requires + [
-    'webtest',
-    'python-coveralls',
-]
-
 databridge_requires = requires + [
     'PyYAML',
     'gevent',
@@ -39,6 +34,12 @@ api_requires = requires + [
     'rfc6266',
     'setuptools',
     'tzlocal'
+]
+
+test_requires = api_requires + requires + [
+    'webtest',
+    'python-coveralls',
+    'bottle'
 ]
 
 entry_points = {
@@ -75,5 +76,4 @@ setup(name='openprocurement.integrations.edr',
       extras_require={'databridge': databridge_requires,
                       'test': test_requires,
                       'api': api_requires},
-      entry_points=entry_points,
-      )
+      entry_points=entry_points)

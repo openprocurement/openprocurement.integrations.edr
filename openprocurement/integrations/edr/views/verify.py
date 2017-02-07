@@ -16,7 +16,7 @@ class VerifyUResource(APIResource):
         self.request.errors.add('body', 'data', message)
         self.request.errors.status = 403
 
-    @json_view(content_type="application/json", permission='verify')
+    @json_view(permission='verify')
     def get(self):
         edrpou = self.request.matchdict.get('edrpou')
         try:
