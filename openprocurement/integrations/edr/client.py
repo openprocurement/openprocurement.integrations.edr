@@ -4,9 +4,9 @@ import requests
 class EdrClient(object):
     """Base class for making requests to EDR"""
 
-    def __init__(self, server, token, timeout=None):
+    def __init__(self, server, token, timeout=None, port=80):
         self.token = token
-        self.url = '{server}/1.0/subjects'.format(server=server)
+        self.url = '{server}:{port}/1.0/subjects'.format(server=server, port=port)
         self.headers = {"Accept": "application/json",
                         "Authorization": "Token {token}".format(token=self.token)}
         self.timeout = timeout

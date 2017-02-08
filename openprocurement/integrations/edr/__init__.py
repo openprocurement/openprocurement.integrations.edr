@@ -58,7 +58,8 @@ def main(global_config, **settings):
     # Init edr connection
     config.registry.edr_client = EdrClient(settings.get('edr_api_server'),
                                            settings.get('edr_api_token'),
-                                           float(settings.get('edr_timeout')))
+                                           float(settings.get('edr_timeout')),
+                                           float(settings.get('edr_api_port')))
 
     # Include views
     config.scan("openprocurement.integrations.edr.views")

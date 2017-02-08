@@ -21,7 +21,7 @@ class BaseWebTest(_BaseWebTest):
         setup_routing(cls.edr_api_app)
         from paste.deploy.loadwsgi import appconfig
         config = appconfig('config:tests.ini', "main", relative_to=cls.relative_to)
-        cls.server = WSGIServer(('localhost', 80), cls.edr_api_app, log=None)
+        cls.server = WSGIServer(('localhost', 20603), cls.edr_api_app, log=None)
         cls.server.start()
         for _ in range(10):
             try:
