@@ -18,25 +18,25 @@ class VerifyUResource(APIResource):
 
     @json_view(permission='verify')
     def get(self):
-        edrpou = self.request.matchdict.get('edrpou')
+        edrpou = self.request.matchdict.get('edrpou').encode('utf-8')
         try:
             response = self.edr_api.get_subject(edrpou)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
-            self.handle_error('Gateway Timeout Error')
+            self.handle_error([u'Gateway Timeout Error'])
             return
         if response.status_code == 200:
             data = response.json()
             if not data:
                 self.LOGGER.warning('Accept empty response from EDR service for {}'.format(edrpou))
-                self.handle_error('EDRPOU not found')
+                self.handle_error([u'EDRPOU not found'])
                 return
             self.LOGGER.info('Return data from EDR service for {}'.format(edrpou))
             return {'data': data}
         elif response.status_code == 429:
-            self.handle_error('Retry request after {}'.format(response.headers.get('Retry-After')))
+            self.handle_error([u'Retry request after {} seconds.'.format(response.headers.get('Retry-After'))])
             return
         elif response.status_code == 502:
-            self.handle_error('Service is disabled or upgrade.')
+            self.handle_error([u'Service is disabled or upgrade.'])
             return
         else:
             self.handle_error([error['message'] for error in response.json()['errors']])

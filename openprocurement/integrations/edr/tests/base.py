@@ -3,7 +3,6 @@ from gevent.pywsgi import WSGIServer
 import os
 import webtest
 from bottle import Bottle
-from openprocurement.integrations.edr.tests._server import setup_routing
 from openprocurement.api.tests.base import (
     BaseWebTest as _BaseWebTest,
     PrefixedRequestClass)
@@ -18,9 +17,7 @@ class BaseWebTest(_BaseWebTest):
     @classmethod
     def setUpClass(cls):
         cls.edr_api_app = Bottle()
-        setup_routing(cls.edr_api_app)
-        from paste.deploy.loadwsgi import appconfig
-        config = appconfig('config:tests.ini', "main", relative_to=cls.relative_to)
+        # setup_routing(cls.edr_api_app)
         cls.server = WSGIServer(('localhost', 20603), cls.edr_api_app, log=None)
         cls.server.start()
         for _ in range(10):

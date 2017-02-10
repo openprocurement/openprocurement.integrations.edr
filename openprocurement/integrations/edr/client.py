@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 
 
@@ -17,7 +18,7 @@ class EdrClient(object):
         In response we except list of subjects with unique id in each subject.
         List mostly contains 1 subject, but occasionally includes 2 or none.
         """
-        param = 'code' if code.isdigit() and len(code) < 13 else 'passport'  # find out we accept edrpou or passport code
+        param = 'code' if code.isdigit() and (len(code) == 8 or len(code) == 10) else 'passport'  # find out we accept edrpou or passport code
         url = '{url}?{param}={code}'.format(url=self.url, param=param, code=code)
         response = requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
