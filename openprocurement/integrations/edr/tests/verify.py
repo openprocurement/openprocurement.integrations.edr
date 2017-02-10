@@ -3,8 +3,9 @@ import webtest
 import os
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
-from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_passport, check_headers, \
-    payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway, server_error
+from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_passport, \
+    check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway, \
+    server_error
 
 
 class TestVerify(BaseWebTest):
