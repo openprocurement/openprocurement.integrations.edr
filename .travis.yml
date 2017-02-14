@@ -1,11 +1,17 @@
 language: python
-sudo: false
+sudo: required
 python:
   - "2.7"
-services:
-  - couchdb
+before_script:
+  - sudo add-apt-repository ppa:chris-lea/libsodium -y
+  - sudo apt-get -qq update
+  - sudo apt-get install libsodium13 -y
 env:
-  - TZ=Europe/Kiev
+  global:
+    - TZ=Europe/Kiev
+  matrix:
+    - SANDBOX_MODE=
+    - SANDBOX_MODE=True
 cache:
   directories:
     - eggs
@@ -15,14 +21,9 @@ before_install:
 install:
   - bin/buildout -N
 script:
-  - bin/nosetests openprocurement/integrations/edr/tests/
+  - bin/nosetests
 after_success:
   - bin/coveralls
 notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/704095e2e98593158b7b
-    on_success: change  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
-
+  slack:
+    secure: 1PIKPb/kVP83egytUSiXeKvFLyf/jkzoZCkp/VfNEjHpgImF098E1RlbExVnUm6cSdqVGpSbrYbjGFzr0zv7B0H+c6sZBVS0kGdAVG57RNXV7Nob5nF889E7q+nspTaO3tcvK28IHYMwv3b5ft5e8iJ75L2pcQZ5PXRn+mOS8CHWxnglQoqzFFy4wjSCbMrny6TOio0PUXE9e8oyxzuJIZHABQFj/f+GOqtPNG2ibxQsg1rQd7pNL3ePNia2MqnTbICrA5KJAMgcbAVCvw4IAYXiV+GK4M+8KHLARTtsUG7Pg8p4Trrc5t6y5JS1eZwEzm4GSn1Ran98tYJhUkM22Pdw/5KK3E9rFhhW+CMvRg2ivr8W2inpammGKjo/cdLwbkB4eRZ1xIEiH11wGBfeCkX3M/x6Kjsn9/wZNGVIyjKOnbTH5/qxPVQpN532jUNz8MbSjDGkc6GTwAybu9WrNtheXQv8NFT3lN1Oo+fC3VomRbnjrmaq1eutEHjl5NsscTBC7fUTbyOIsyk6/E3edvfTTzqQVc2VK5c1Eu0+w7dtPrVEIwCmL5Gjgfq9ubb/VXX7XvA/IGz1CnV78KiKntBOXfYXCsRDrmArleLr5+1nLazIsM7fwTHNpNuVdtAy+hOaQtG4f0/GTaLY2cgTcEvQ4brUQcdVfDFn5nfBXaY=

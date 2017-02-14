@@ -7,11 +7,6 @@ requires = [
     'setuptools',
 ]
 
-test_requires = requires + [
-    'webtest',
-    'python-coveralls',
-]
-
 databridge_requires = requires + [
     'PyYAML',
     'gevent',
@@ -22,15 +17,43 @@ databridge_requires = requires + [
     'openprocurement_client>=1.0b2'
 ]
 
+api_requires = requires + [
+    'openprocurement.api>=2.3',
+    'barbecue',
+    'chaussette',
+    'cornice',
+    'couchdb-schematics',
+    'gevent',
+    'iso8601',
+    'jsonpatch',
+    'libnacl',
+    'pbkdf2',
+    'pycrypto',
+    'pyramid_exclog',
+    'requests',
+    'rfc6266',
+    'setuptools',
+    'tzlocal'
+]
+
+test_requires = api_requires + requires + [
+    'webtest',
+    'python-coveralls',
+    'bottle'
+]
+
 entry_points = {
     'console_scripts': [
         'integrations_edr_data_bridge = openprocurement.integrations.edr.databridge:main'
-    ]
+    ],
+    'paste.app_factory': [
+        'main = openprocurement.integrations.edr:main'
+    ],
 }
 
 setup(name='openprocurement.integrations.edr',
       version=version,
-      description="",
+      description="openprocurement.integrations.edr",
       long_description=open("README.rst").read(),
       classifiers=[
         "Framework :: Pylons",
@@ -51,6 +74,6 @@ setup(name='openprocurement.integrations.edr',
       install_requires=requires,
       tests_require=test_requires,
       extras_require={'databridge': databridge_requires,
-                      'test': test_requires},
-      entry_points=entry_points,
-      )
+                      'test': test_requires,
+                      'api': api_requires},
+      entry_points=entry_points)
