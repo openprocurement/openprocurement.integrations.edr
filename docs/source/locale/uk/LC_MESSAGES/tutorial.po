@@ -1,0 +1,125 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2014-2015, Quintagroup, Ltd
+# This file is distributed under the same license as the
+# openprocurement.integrations.edr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-15 17:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../source/tutorial.rst:4
+msgid "Tutorial"
+msgstr "Туторіал"
+
+#: ../../source/tutorial.rst:7
+msgid "Basic request"
+msgstr "Базовий запит"
+
+#: ../../source/tutorial.rst:9
+msgid ""
+"In order to get information from EDR by code EDRPOU you need to make a "
+"request to `/verify` endpoint, passing given code in url:"
+msgstr "Для того щоб отримати інформацію з Єдиного Державного реєстру за допомогою ЄДРПОУ Вам необхідно зробити запит"
+" до точки входу `/verify`, передаючи даний ЄДРПОУ в посиланні:"
+
+#: ../../source/tutorial.rst:13
+msgid ""
+"Response consists of the following fields: `id`, `state`, `state_text`, "
+"`code`, `name`, `url`."
+msgstr ""
+"Відповідь складається з наступних полів: `id`, `state`, `state_text`, "
+"`code`, `name`, `url`."
+
+#: ../../source/tutorial.rst:15
+msgid "`Id` - unique identification of the subject,"
+msgstr "`Id` - унікальний ідентифікатор суб'єкта ,"
+
+#: ../../source/tutorial.rst:16
+msgid "`state` - state of the entity,"
+msgstr "`state` - стан суб'єкта,"
+
+#: ../../source/tutorial.rst:17
+msgid "`state_text` - text state of the entity,"
+msgstr "`state_text` - текстове відображення стану суб'єкта,"
+
+#: ../../source/tutorial.rst:18
+msgid ""
+"`code` - EDRPOU; if the subject - an individual entrepreneur - instead of"
+" IPN system returns ten zeros, because the data is confidential,"
+msgstr ""
+"`code` - ЄДРПОУ; якщо суб'єкт - фізична особа підприємець - замість"
+" ІПНа система поверне десять нулів, бо ці дані є конфіденційною інформацією,"
+
+#: ../../source/tutorial.rst:19
+msgid "`name` -  name of the entity,"
+msgstr "`name` -  назва,"
+
+#: ../../source/tutorial.rst:20
+msgid "`url` - link to the entity with detailed information."
+msgstr "`url` - посилання на екземпляр з деталізованою інформацію."
+
+#: ../../source/tutorial.rst:23
+msgid "Request with Individual Tax Number"
+msgstr "Запит з індивідуальним податковим номером"
+
+#: ../../source/tutorial.rst:25
+msgid ""
+"If you need to obtain information about individual entrepreneurs then "
+"send a request with code IPN:"
+msgstr "Якщо Вам необхідно отримати інформацію для фізичних осіб-підприємців тоді "
+"необхідно відправити запит з ІПН:"
+
+#: ../../source/tutorial.rst:31
+msgid "Request with number of passport"
+msgstr "Запит з номером паспорту"
+
+#: ../../source/tutorial.rst:33
+msgid ""
+"If due to religious beliefs a person refused to get IPN code, then you "
+"need to pass a series and number of passport in the url , view like "
+"`АБ123456`:"
+msgstr ""
+"Якщо через релігійні переконання людина відмовилась отримувати ІПН, "
+"тоді в посиланні необхідно  передати серію та номер паспорту наступного вигляду "
+"`АБ123456`:"
+#: ../../source/tutorial.rst:38
+msgid ""
+"If series and number of passport was passed in wrong format, then we get "
+"an error:"
+msgstr ""
+"Якщо серія та номер паспорту мала невірний формат, тоді ми отримаємо помилку:"
+#: ../../source/tutorial.rst:44
+msgid "Errors"
+msgstr "Помилки"
+
+#: ../../source/tutorial.rst:45
+msgid ""
+"Response to the unsuccessful request contains list of errors  with description and code "
+"in response body and status `403 Forbidden`. If EDR service returns "
+"error, then code error presents in list of errors. In case list of errors"
+" contains only text message it means that an error occurred on our proxy "
+"server."
+msgstr ""
+"Відповідь на невдалий запит містить перелік помилок з описанням та кодом помилки в тілі "
+"відповіді та статус відповіді `403 Forbidden`. Якщо ЄДР повертає помилку тоді її код "
+"присутній в переліку помилок. У випадку коли перелік помилок містить лише текстовий опис "
+"помилки, це означає що помилка виникла на стороні нашого proxy-серверу."
+""
+#: ../../source/tutorial.rst:48
+msgid ""
+"When given EDRPOU (IPN or series and number of passport) were not found "
+"in EDR response will contains message `EDRPOU not found`:"
+msgstr ""
+"Коли даний ЄДРПОУ (ІПН або серія на номер паспорту) не знайдений, відповідь містить "
+"повідомлення `EDRPOU not found`."

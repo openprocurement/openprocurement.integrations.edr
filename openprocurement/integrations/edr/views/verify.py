@@ -9,7 +9,7 @@ from openprocurement.integrations.edr.utils import opresource, APIResource
 @opresource(name='Verify customer',
             path='/verify/{edrpou}',
             description="Verify customer by edr code ")
-class VerifyUResource(APIResource):
+class VerifyResource(APIResource):
     """ Verify customer """
 
     def handle_error(self, message):

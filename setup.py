@@ -51,6 +51,11 @@ entry_points = {
     ],
 }
 
+docs_requires = requires + [
+    'sphinxcontrib-httpdomain',
+]
+
+
 setup(name='openprocurement.integrations.edr',
       version=version,
       description="openprocurement.integrations.edr",
@@ -75,5 +80,6 @@ setup(name='openprocurement.integrations.edr',
       tests_require=test_requires,
       extras_require={'databridge': databridge_requires,
                       'test': test_requires,
-                      'api': api_requires},
+                      'api': api_requires,
+                      'docs': docs_requires},
       entry_points=entry_points)
