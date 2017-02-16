@@ -5,7 +5,7 @@ import requests
 class EdrClient(object):
     """Base class for making requests to EDR"""
 
-    def __init__(self, host, token, timeout=None, port=80):
+    def __init__(self, host, token, timeout=None, port=443):
         self.token = token
         self.url = '{host}:{port}/1.0/subjects'.format(host=host, port=port)
         self.headers = {"Accept": "application/json",
