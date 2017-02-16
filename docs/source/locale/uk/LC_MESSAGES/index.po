@@ -49,17 +49,3 @@ msgstr "Індекс"
 msgid ":ref:`search`"
 msgstr "Пошук"
 
-#~ msgid "Вітаємо на сайті документації  по openprocurement.integrations.edr!"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Будь ласка повідомляйте про всі проблеми"
-#~ " та поради покращень через  `розсилку "
-#~ "<http://groups.google.com/group/open-procurement-"
-#~ "general>`_ або через `issue tracker "
-#~ "<https://github.com/openprocurement/openprocurement.integrations.edr/issues>`_."
-#~ msgstr ""
-
-#~ msgid "Зміст:"
-#~ msgstr ""
-
