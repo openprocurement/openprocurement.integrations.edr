@@ -75,7 +75,7 @@ class EdrDataBridge(object):
         self.until_too_many_requests_event = gevent.event.Event()
         self.until_too_many_requests_event.set()
         self.delay = self.config_get('delay') or 15
-        self.edrApiClient = EdrClient(self.config_get('edr_api_server'), self.config_get('edr_api_token'))
+        self.edrApiClient = EdrClient(host=self.config_get('edr_api_server'), token=self.config_get('edr_api_token'), port=self.config_get('edr_api_port'))
         self.required_fields = ['names', 'founders', 'management', 'activity_kinds', 'address', 'bankruptcy']
 
     def config_get(self, name):
@@ -256,8 +256,8 @@ class EdrDataBridge(object):
                                                       params={"TENDER_ID": tender_data.tender_id}))
                     self.client._patch_resource_item(
                         '{}/{}/{}/{}/documents/{}'.format(
-                            self.prefix_path, tender_data.tender_id,
-                            tender_data.item_id, tender_data.item_id,
+                            self.client.prefix_path, tender_data.tender_id,
+                            tender_data.item_name, tender_data.item_id,
                             document['data']['id']
                         ),
                         payload={"data": {"documentType": "registerExtract"}},
