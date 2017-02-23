@@ -1,4 +1,4 @@
-GET /api/2.3/verify/1234567891 HTTP/1.0
+GET /api/2.3/verify?code=1234567891 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 

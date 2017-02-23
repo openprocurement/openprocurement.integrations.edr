@@ -1,4 +1,4 @@
-GET /api/2.3/verify/123 HTTP/1.0
+GET /api/2.3/verify?code=123 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -9,7 +9,9 @@ Content-Type: application/json; charset=UTF-8
   "errors": [
     {
       "description": [
-        "EDRPOU not found"
+        {
+          "message": "EDRPOU not found"
+        }
       ], 
       "location": "body", 
       "name": "data"
