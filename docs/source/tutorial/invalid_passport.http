@@ -1,0 +1,23 @@
+GET /api/2.3/verify?passport=АБВ HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+Response: 403 Forbidden
+Content-Type: application/json; charset=UTF-8
+{
+  "status": "error", 
+  "errors": [
+    {
+      "description": [
+        {
+          "message": "`passport` parameter has wrong value.", 
+          "code": 11
+        }
+      ], 
+      "location": "body", 
+      "name": "data"
+    }
+  ]
+}
+
+

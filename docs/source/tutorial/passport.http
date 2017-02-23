@@ -1,0 +1,18 @@
+GET /api/2.3/verify?passport=АБ123456 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "code": "АБ123456", 
+    "name": "АБ123456", 
+    "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336", 
+    "state": 1, 
+    "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336", 
+    "id": 2842336
+  }
+}
+
+
