@@ -6,6 +6,7 @@ from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_passport, \
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway, \
     server_error
+from openprocurement.integrations.edr.utils import VERSION
 
 
 class TestVerify(BaseWebTest):
@@ -100,7 +101,7 @@ class TestVerify(BaseWebTest):
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('token', ''))
-        response = self.app_copy.get('/api/2.3/verify?code=123', status=403)
+        response = self.app_copy.get('/api/{version}/verify?code=123'.format(version=VERSION), status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
@@ -128,7 +129,7 @@ class TestVerify(BaseWebTest):
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy_2.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('token', ''))
-        response = self.app_copy.get('/api/2.3/verify?code=123', status=403)
+        response = self.app_copy.get('/api/{version}/verify?code=123'.format(version=VERSION), status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
