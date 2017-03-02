@@ -20,14 +20,13 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            {
-                u'code': u'14360570',
-                u'name': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
-                u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                u'state': 1,
-                u'state_text': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                u'id': 2842335
-            })
+            {u'state': {u'code': 1,
+                        u'description': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335'},
+             u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                 u'schema': u'UA-EDR',
+                                 u'id': u'14360570',
+                                 u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+             u'id': 2842335})
 
     def test_passport(self):
         """ Get info by passport number """
@@ -37,14 +36,13 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            {
-                u'code': u'СН012345',
-                u'name': u'СН012345',
-                u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                u'state': 1,
-                u'state_text': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                u'id': 2842336
-            })
+            {u'state': {u'code': 1,
+                        u'description': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336'},
+             u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
+                                 u'schema': u'UA-EDR',
+                                 u'id': u'СН012345',
+                                 u'legalName': u'СН012345'},
+             u'id': 2842336})
 
     def test_new_passport(self):
         """ Get info by new passport number with 13-digits"""
@@ -54,14 +52,13 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            {
-                u'code': u'123456789',
-                u'name': u'123456789',
-                u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                u'state': 1,
-                u'state_text': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                u'id': 2842336
-            })
+            {u'state': {u'code': 1,
+                        u'description': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336'},
+             u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
+                                 u'schema': u'UA-EDR',
+                                 u'id': u'123456789',
+                                 u'legalName': u'123456789'},
+             u'id': 2842336})
 
     def test_ipn(self):
         """ Get info by IPN (physical entity-entrepreneur)"""
@@ -70,14 +67,12 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'],
-            {
-                u'code': u'1234567891',
-                u'name': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
-                u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                u'state': 1,
-                u'state_text': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                u'id': 2842335
-            })
+                         {u'state': {u'code': 1,
+                                     u'description': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335'},
+                          u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                              u'schema': u'UA-EDR', u'id': u'1234567891',
+                                              u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                          u'id': 2842335})
 
     def test_invalid_passport(self):
         """Check invalid passport number АБВ"""
@@ -185,10 +180,19 @@ class TestVerify(BaseWebTest):
                          [{u'message': u'`passport` parameter has wrong value.', u'code': 11}])
 
     def test_empty_request(self):
-        """ Send request with out params  """
+        """ Send request without params  """
         setup_routing(self.edr_api_app, func=response_passport)
         response = self.app.get('/verify', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'],
                          [{u'message': u'Need pass code or passport'}])
+
+    def test_accept_yaml(self):
+        setup_routing(self.edr_api_app, func=response_code)
+        response = self.app.get('/verify?code=14360570', headers={'Accept': 'application/yaml'})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/yaml')
+        with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml'), 'r') as f:
+            test_yaml_data = f.read()
+        self.assertEqual(response.body, test_yaml_data)

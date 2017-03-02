@@ -125,6 +125,7 @@ def set_renderer(event):
     except ValueError:
         json = {}
     pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
+    accept = request.headers.get('Accept')
     jsonp = request.params.get('opt_jsonp')
     if jsonp and pretty:
         request.override_renderer = 'prettyjsonp'
@@ -134,6 +135,9 @@ def set_renderer(event):
         return True
     if pretty:
         request.override_renderer = 'prettyjson'
+        return True
+    if accept == 'application/yaml':
+        request.override_renderer = 'yaml'
         return True
 
 
