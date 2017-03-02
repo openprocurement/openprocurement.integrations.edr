@@ -19,16 +19,14 @@ class VerifyResource(APIResource):
         self.request.errors.add('body', 'data', message)
         self.request.errors.status = 403
 
-    def create_file(self, data):
+    def prepare_data(self, data):
         return {'id': data['id'],
-                'state':
-                    {'code': data['state'],
-                     'description': data['state_text']},
-                'identification':
-                    {'schema': identification_schema,
-                     'id': data['code'],
-                     'legalName': data['name'],
-                     'url': data['url']}}
+                'state': {'code': data['state'],
+                          'description': data['state_text']},
+                'identification': {'schema': identification_schema,
+                                   'id': data['code'],
+                                   'legalName': data['name'],
+                                   'url': data['url']}}
 
     @json_view(permission='verify')
     def get(self):
@@ -53,7 +51,7 @@ class VerifyResource(APIResource):
                 self.handle_error([{u'message': u'EDRPOU not found'}])
                 return
             self.LOGGER.info('Return data from EDR service for {}'.format(details.code))
-            return {'data': self.create_file(data)}
+            return {'data': self.prepare_data(data)}
         elif response.status_code == 429:
             self.handle_error([{u'message': u'Retry request after {} seconds.'.format(response.headers.get('Retry-After'))}])
             return
