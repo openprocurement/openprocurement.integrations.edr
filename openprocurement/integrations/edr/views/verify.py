@@ -20,13 +20,13 @@ class VerifyResource(APIResource):
         self.request.errors.status = 403
 
     def prepare_data(self, data):
-        return {'id': data['id'],
-                'state': {'code': data['state'],
-                          'description': data['state_text']},
+        return {'id': data.get('id'),
+                'state': {'code': data.get('state'),
+                          'description': data.get('state_text')},
                 'identification': {'schema': identification_schema,
-                                   'id': data['code'],
-                                   'legalName': data['name'],
-                                   'url': data['url']}}
+                                   'id': data.get('code'),
+                                   'legalName': data.get('name'),
+                                   'url': data.get('url')}}
 
     @json_view(permission='verify')
     def get(self):
