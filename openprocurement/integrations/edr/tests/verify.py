@@ -95,8 +95,8 @@ class TestVerify(BaseWebTest):
         """Send request without token using tests_copy.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('token', ''))
-        response = self.app_copy.get('/api/{version}/verify?code=123'.format(version=VERSION), status=403)
+        self.app_copy.authorization = ('Basic', ('robot', 'robot'))
+        response = self.app_copy.get('/verify?code=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
@@ -123,8 +123,8 @@ class TestVerify(BaseWebTest):
         """Send request with invalid token 123 using new tests_copy_2.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy_2.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('token', ''))
-        response = self.app_copy.get('/api/{version}/verify?code=123'.format(version=VERSION), status=403)
+        self.app_copy.authorization = ('Basic', ('robot', 'robot'))
+        response = self.app_copy.get('/verify?code=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],

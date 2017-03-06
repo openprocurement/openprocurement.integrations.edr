@@ -19,23 +19,24 @@ def main(global_config, **settings):
     )
     from openprocurement.integrations.edr.utils import (
         forbidden, add_logging_context, set_logging_context,
-        request_params, set_renderer, beforerender, ROUTE_PREFIX
+        request_params, set_renderer, beforerender, Root, read_users
     )
-    from pyramid.authorization import (
-        ACLAuthorizationPolicy as AuthorizationPolicy
-    )
+    from openprocurement.integrations.edr.utils import auth_check
+    from pyramid.authentication import BasicAuthAuthenticationPolicy
+    from pyramid.authorization import ACLAuthorizationPolicy
     from pyramid.config import Configurator
     from pyramid.events import NewRequest, BeforeRender, ContextFound
     from pyramid.renderers import JSON, JSONP
     from pyramid.settings import asbool
 
     LOGGER.info('Start edr api')
+    read_users(settings['auth.file'])
     config = Configurator(
         autocommit=True,
         settings=settings,
-        authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
-        authorization_policy=AuthorizationPolicy(),
-        route_prefix=ROUTE_PREFIX,
+        authentication_policy=BasicAuthAuthenticationPolicy(auth_check, __name__),
+        authorization_policy=ACLAuthorizationPolicy(),
+        root_factory=Root
     )
     config.include('pyramid_exclog')
     config.include("cornice")
@@ -51,8 +52,6 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
-    # config.scan("openprocurement.api.views.spore")  # TODO: UNCOMMENT IT
-    # config.scan("openprocurement.api.views.health")
 
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
@@ -65,6 +64,7 @@ def main(global_config, **settings):
                                            int(settings.get('edr_api_port')))
 
     # Include views
+    config.add_route('verify', '/verify')
     config.scan("openprocurement.integrations.edr.views")
 
     return config.make_wsgi_app()

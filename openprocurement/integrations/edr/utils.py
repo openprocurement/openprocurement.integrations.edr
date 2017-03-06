@@ -9,16 +9,50 @@ from cornice.resource import resource, view
 from webob.multidict import NestedMultiDict
 from datetime import datetime
 from pytz import timezone
-
-from openprocurement.integrations.edr.traversal import factory
+from hashlib import sha512
+from ConfigParser import ConfigParser
+from pyramid.security import Allow
 
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
-ROUTE_PREFIX = '/api/{}'.format(VERSION)
 json_view = partial(view, renderer='json')
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
+USERS = {}
+
+
+class Root(object):
+    __name__ = None
+    __parent__ = None
+    __acl__ = [
+        (Allow, 'g:platforms', 'verify'),
+        (Allow, 'g:robots', 'verify'),
+    ]
+
+    def __init__(self, request):
+        self.request = request
+
+
+def read_users(filename):
+    config = ConfigParser()
+    config.read(filename)
+    for i in config.sections():
+        USERS.update(dict([
+            (
+                j,
+                {
+                    'password': k,
+                    'group': i
+                }
+            )
+            for j, k in config.items(i)
+        ]))
+
+
+def auth_check(username, password, request):
+    if username in USERS and USERS[username]['password'] == sha512(password).hexdigest():
+        return ['g:{}'.format(USERS[username]['group'])]
 
 
 def get_now():
@@ -52,10 +86,6 @@ def error_handler(errors, request_params=True):
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
-    if 'tender' in errors.request.validated:
-        params['TENDER_REV'] = errors.request.validated['tender'].rev
-        params['TENDERID'] = errors.request.validated['tender'].tenderID
-        params['TENDER_STATUS'] = errors.request.validated['tender'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -151,7 +181,7 @@ def fix_url(item, app_url):
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + ROUTE_PREFIX + path
+            item["url"] = app_url + path
             return
         [
             fix_url(item[i], app_url)
@@ -165,14 +195,6 @@ def beforerender(event):
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
-opresource = partial(resource, error_handler=error_handler, factory=factory)
-
-
-class APIResource(object):
-
-    def __init__(self, request, context):
-        self.context = context
-        self.request = request
-        self.server_id = request.registry.server_id
-        self.edr_api = request.registry.edr_client
-        self.LOGGER = getLogger(type(self).__module__)
+def auth_check(username, password, request):
+    if username in USERS and USERS[username]['password'] == sha512(password).hexdigest():
+        return ['g:{}'.format(USERS[username]['group'])]
