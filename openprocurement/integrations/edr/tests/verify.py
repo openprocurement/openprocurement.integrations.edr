@@ -12,6 +12,22 @@ from openprocurement.integrations.edr.utils import VERSION
 class TestVerify(BaseWebTest):
     """ Test verify view """
 
+    def test_permission_deny(self):
+        old = self.app.authorization
+        self.app.authorization = ('Basic', ('', ''))
+        setup_routing(self.edr_api_app, func=response_code)
+        response = self.app.get('/verify?code=14360570')
+        self.assertEqual(response.status, '403 ForbiddenK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json,
+                         [{
+                             "location": "url",
+                             "name": "permission",
+                             "description": "Forbidden"
+                         }]
+        )
+        self.app.authorization = old
+
     def test_edrpou(self):
         """ Get info by custom edrpou """
         setup_routing(self.edr_api_app, func=response_code)
