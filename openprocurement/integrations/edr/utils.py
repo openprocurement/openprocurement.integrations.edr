@@ -28,6 +28,7 @@ class Root(object):
     __acl__ = [
         (Allow, 'g:platforms', 'verify'),
         (Allow, 'g:robots', 'verify'),
+        (Allow, 'g:robots', 'get_details'),
     ]
 
     def __init__(self, request):
@@ -169,30 +170,6 @@ def set_renderer(event):
     if accept == 'application/yaml':
         request.override_renderer = 'yaml'
         return True
-
-
-def fix_url(item, app_url):
-    if isinstance(item, list):
-        [
-            fix_url(i, app_url)
-            for i in item
-            if isinstance(i, dict) or isinstance(i, list)
-        ]
-    elif isinstance(item, dict):
-        if "format" in item and "url" in item and '?download=' in item['url']:
-            path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + path
-            return
-        [
-            fix_url(item[i], app_url)
-            for i in item
-            if isinstance(item[i], dict) or isinstance(item[i], list)
-        ]
-
-
-def beforerender(event):
-    if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
 def auth_check(username, password, request):

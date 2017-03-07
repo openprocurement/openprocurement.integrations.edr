@@ -10,24 +10,22 @@ from openprocurement.integrations.edr.client import EdrClient
 
 
 LOGGER = getLogger("{}.init".format(__name__))
-SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 
 
 def main(global_config, **settings):
     from openprocurement.integrations.edr.auth import (
-        AuthenticationPolicy, authenticated_role, check_accreditation
+        authenticated_role, check_accreditation
     )
     from openprocurement.integrations.edr.utils import (
         forbidden, add_logging_context, set_logging_context,
-        request_params, set_renderer, beforerender, Root, read_users
+        request_params, set_renderer, Root, read_users
     )
     from openprocurement.integrations.edr.utils import auth_check
     from pyramid.authentication import BasicAuthAuthenticationPolicy
     from pyramid.authorization import ACLAuthorizationPolicy
     from pyramid.config import Configurator
-    from pyramid.events import NewRequest, BeforeRender, ContextFound
+    from pyramid.events import NewRequest, ContextFound
     from pyramid.renderers import JSON, JSONP
-    from pyramid.settings import asbool
 
     LOGGER.info('Start edr api')
     read_users(settings['auth.file'])
@@ -51,11 +49,6 @@ def main(global_config, **settings):
     config.add_subscriber(add_logging_context, NewRequest)
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
-    config.add_subscriber(beforerender, BeforeRender)
-
-    config.registry.server_id = settings.get('id', '')
-    config.registry.health_threshold = float(settings.get('health_threshold', 99))
-    config.registry.update_after = asbool(settings.get('update_after', True))
 
     # Init edr connection
     config.registry.edr_client = EdrClient(settings.get('edr_api_server'),
