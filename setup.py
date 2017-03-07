@@ -4,10 +4,10 @@ version = '0.1.0'
 
 requires = [
     'setuptools',
+    'PyYAML',
 ]
 
 databridge_requires = requires + [
-    'PyYAML',
     'gevent',
     'redis',
     'LazyDB',
@@ -45,9 +45,9 @@ entry_points = {
     # 'console_scripts': [
     #     'integrations_edr_data_bridge = openprocurement.integrations.edr.databridge:main'
     # ],
-    # 'paste.app_factory': [
-    #     'main = openprocurement.integrations.edr:main'
-    # ],
+    'paste.app_factory': [
+        'main = openprocurement.integrations.edr:main'
+    ]
 }
 
 docs_requires = requires + [
