@@ -51,11 +51,6 @@ def read_users(filename):
         ]))
 
 
-def auth_check(username, password, request):
-    if username in USERS and USERS[username]['password'] == sha512(password).hexdigest():
-        return ['g:{}'.format(USERS[username]['group'])]
-
-
 def get_now():
     return datetime.now(TZ)
 
@@ -134,18 +129,13 @@ def request_params(request):
 
 def set_logging_context(event):
     request = event.request
-
-    params = {}
+    params = dict()
     params['ROLE'] = str(request.authenticated_role)
     if request.params:
         params['PARAMS'] = str(dict(request.params))
     if request.matchdict:
         for x, j in request.matchdict.items():
             params[x.upper()] = j
-    if 'tender' in request.validated:
-        params['TENDER_REV'] = request.validated['tender'].rev
-        params['TENDERID'] = request.validated['tender'].tenderID
-        params['TENDER_STATUS'] = request.validated['tender'].status
     update_logging_context(request, params)
 
 
