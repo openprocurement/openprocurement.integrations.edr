@@ -12,6 +12,22 @@ from openprocurement.integrations.edr.utils import VERSION
 class TestVerify(BaseWebTest):
     """ Test verify view """
 
+    def test_opt_json(self):
+        setup_routing(self.edr_api_app, func=response_code)
+        response = self.app.get('/verify?code=14360570&opt_jsonp=callback')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertNotIn('{\n    "', response.body)
+        self.assertIn('callback({', response.body)
+
+    def test_pretty_json(self):
+        setup_routing(self.edr_api_app, func=response_code)
+        response = self.app.get('/verify?code=14360570&opt_jsonp=callback&opt_pretty=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertIn('{\n    "', response.body)
+        self.assertIn('callback({', response.body)
+
     def test_permission_deny(self):
         old = self.app.authorization
         self.app.authorization = ('Basic', ('', ''))

@@ -79,9 +79,6 @@ def error_handler(errors, request_params=True):
         params['ROLE'] = str(errors.request.authenticated_role)
         if errors.request.params:
             params['PARAMS'] = str(dict(errors.request.params))
-    if errors.request.matchdict:
-        for x, j in errors.request.matchdict.items():
-            params[x.upper()] = j
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -133,9 +130,6 @@ def set_logging_context(event):
     params['ROLE'] = str(request.authenticated_role)
     if request.params:
         params['PARAMS'] = str(dict(request.params))
-    if request.matchdict:
-        for x, j in request.matchdict.items():
-            params[x.upper()] = j
     update_logging_context(request, params)
 
 
