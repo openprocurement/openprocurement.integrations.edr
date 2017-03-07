@@ -24,7 +24,3 @@ def authenticated_role(request):
             return local_roles[0]
     groups = [g for g in reversed(principals) if g.startswith('g:')]
     return groups[0][2:] if groups else 'anonymous'
-
-
-def check_accreditation(request, level):
-    return "a:{}".format(level) in request.effective_principals

@@ -14,7 +14,7 @@ LOGGER = getLogger("{}.init".format(__name__))
 
 def main(global_config, **settings):
     from openprocurement.integrations.edr.auth import (
-        authenticated_role, check_accreditation
+        authenticated_role
     )
     from openprocurement.integrations.edr.utils import (
         forbidden, add_logging_context, set_logging_context,
@@ -41,7 +41,6 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
-    config.add_request_method(check_accreditation)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
