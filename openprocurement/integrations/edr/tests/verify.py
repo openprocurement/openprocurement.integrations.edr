@@ -17,9 +17,9 @@ class TestVerify(BaseWebTest):
         self.app.authorization = ('Basic', ('', ''))
         setup_routing(self.edr_api_app, func=response_code)
         response = self.app.get('/verify?code=14360570', status=403)
-        self.assertEqual(response.status, '403 ForbiddenK')
+        self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json,
+        self.assertEqual(response.json['errors'],
                          [{
                              "location": "url",
                              "name": "permission",
