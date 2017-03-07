@@ -14,12 +14,12 @@ def response_code():
     if not code.isdigit() or not (len(code) == 10 or len(code) == 8):
         return dumps([])
     response.status = 200
-    return dumps({"code": code,
-                  "name": "АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
-                  "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
-                  "state": 1,
-                  "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
-                  "id": 2842335})
+    return dumps([{"code": code,
+                   "name": "АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
+                   "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
+                   "state": 1,
+                   "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
+                   "id": 2842335}])
 
 
 def response_passport():
@@ -31,12 +31,12 @@ def response_passport():
         response.status = 400
         return dumps({"errors": [{"code": 11, "message": "`passport` parameter has wrong value."}]})
     response.status = 200
-    return dumps({"code": passport,
-                  "name": passport,
-                  "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
-                  "state": 1,
-                  "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
-                  "id": 2842336})
+    return dumps([{"code": passport,
+                   "name": passport,
+                   "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
+                   "state": 1,
+                   "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
+                   "id": 2842336}])
 
 
 def check_headers():

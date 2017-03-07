@@ -50,7 +50,7 @@ def verify_user(request):
             LOGGER.warning('Accept empty response from EDR service for {}'.format(details.code))
             return handle_error(request, [{u'message': u'EDRPOU not found'}])
         LOGGER.info('Return data from EDR service for {}'.format(details.code))
-        return {'data': prepare_data(data)}
+        return {'data': [prepare_data(d) for d in data]}
     elif response.status_code == 429:
         return handle_error(request, [{u'message': u'Retry request after {} seconds.'.format(response.headers.get('Retry-After'))}])
     elif response.status_code == 502:
