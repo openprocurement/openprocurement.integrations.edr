@@ -4,10 +4,10 @@ version = '0.1.0'
 
 requires = [
     'setuptools',
+    'PyYAML',
 ]
 
 databridge_requires = requires + [
-    'PyYAML',
     'gevent',
     'redis',
     'LazyDB',
