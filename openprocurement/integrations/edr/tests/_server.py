@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import requests
-
 from bottle import request, response
 from simplejson import dumps
 
