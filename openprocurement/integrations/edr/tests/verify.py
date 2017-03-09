@@ -6,7 +6,6 @@ from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
     server_error, response_details, too_many_requests_details, bad_gateway_details)
-from openprocurement.integrations.edr.utils import VERSION
 
 
 class TestVerify(BaseWebTest):
@@ -229,6 +228,10 @@ class TestVerify(BaseWebTest):
             test_yaml_data = f.read()
         self.assertEqual(response.body, test_yaml_data)
 
+
+class TestDetails(BaseWebTest):
+    """ Test details view """
+
     def test_details(self):
         """Check data for get_subject_details request"""
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=response_details)
@@ -294,4 +297,10 @@ class TestVerify(BaseWebTest):
         with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
             test_yaml_data = f.read()
         self.assertEqual(response.body, test_yaml_data)
+
+
+class TestVerifyPlatform(TestVerify):
+
+    def setUp(self):
+        self.app.authorization = ('Basic', ('platform', 'platform'))
 

@@ -50,7 +50,7 @@ def verify_user(request):
 
 
 @view_config(route_name='details', renderer='json',
-             request_method='GET', permission='verify')
+             request_method='GET', permission='get_details')
 def user_details(request):
     id = request.matchdict.get('id')
     try:
