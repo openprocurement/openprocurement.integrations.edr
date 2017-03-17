@@ -10,10 +10,10 @@ requires = [
 databridge_requires = requires + [
     'gevent',
     'redis',
-    'LazyDB',
     'ExtendedJournalHandler',
     'requests',
     'openprocurement_client>=1.0b2'
+    'PyYAML',
 ]
 
 api_requires = requires + [
@@ -37,14 +37,15 @@ api_requires = requires + [
 test_requires = api_requires + requires + [
     'webtest',
     'python-coveralls',
-    'bottle'
+    'bottle',
+    'mock==1.0.1',
+    'requests_mock==1.3.0'
 ]
 
 entry_points = {
-    # TODO: future entry
-    # 'console_scripts': [
-    #     'integrations_edr_data_bridge = openprocurement.integrations.edr.databridge:main'
-    # ],
+    'console_scripts': [
+        'integrations_edr_data_bridge = openprocurement.integrations.edr.databridge:main'
+    ],
     'paste.app_factory': [
         'main = openprocurement.integrations.edr:main'
     ]

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
+import base64
 
 
 class EdrClient(object):
@@ -33,3 +34,45 @@ class EdrClient(object):
 
         return response
 
+
+class DocServiceClient(object):
+    """Base class for making requests to Document Service"""
+
+    def __init__(self, host, token, port=6555, timeout=None):
+        self.session = requests.Session()
+        self.token = base64.b64encode(token)
+        self.url = '{host}:{port}/upload'.format(host=host, port=port)
+        self.headers = {"Authorization": "Basic {token}".format(token=self.token)}
+        self.timeout = timeout
+
+    def upload(self, files):
+        files = {'file': files}
+        response = self.session.post(url=self.url, headers=self.headers, timeout=self.timeout, files=files)
+
+        return response
+
+
+class ProxyClient(object):
+    """Base class for making requests to Proxy server"""
+
+    def __init__(self, host, token, timeout=None, port=6547):
+        self.session = requests.Session()
+        self.token = token
+        self.verify_url = '{host}:{port}/verify'.format(host=host, port=port)
+        self.details_url = '{host}:{port}/details'.format(host=host, port=port)
+        self.headers = {"Authorization": "Basic {token}".format(token=self.token)}
+        self.timeout = timeout
+
+    def verify(self, param, code):
+        """Send request to Proxy server to verify EDRPOU code"""
+        url = '{url}?{param}={code}'.format(url=self.verify_url, param=param, code=code)
+        response = self.session.get(url=url, headers=self.headers, timeout=self.timeout)
+
+        return response
+
+    def details(self, id):
+        """ Send request to Proxy server to get details."""
+        url = '{url}/{id}'.format(url=self.details_url, id=id)
+        response = self.session.get(url=url, headers=self.headers, timeout=self.timeout)
+
+        return response
