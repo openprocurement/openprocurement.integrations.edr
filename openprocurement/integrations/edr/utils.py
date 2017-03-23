@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import simplejson
 from logging import getLogger
 from json import dumps
 from pkg_resources import get_distribution
@@ -10,8 +9,6 @@ from pytz import timezone
 from hashlib import sha512
 from ConfigParser import ConfigParser
 from pyramid.security import Allow
-from pyramid.httpexceptions import HTTPError
-from pyramid.response import Response
 from pyramid.httpexceptions import exception_response
 
 
@@ -35,14 +32,6 @@ class Root(object):
 
     def __init__(self, request):
         self.request = request
-
-
-class _JSONError(HTTPError):
-    def __init__(self, errors, status=400):
-        body = {'status': 'error', 'errors': errors}
-        Response.__init__(self, simplejson.dumps(body, use_decimal=True))
-        self.status = status
-        self.content_type = 'application/json'
 
 
 def read_users(filename):
