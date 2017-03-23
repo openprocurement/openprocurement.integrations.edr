@@ -6,16 +6,12 @@ requires = [
     'setuptools',
     'PyYAML',
     'chaussette',
-    'cornice',
     'gevent',
-    'iso8601',
-    'libnacl',
-    'pycrypto',
     'pyramid_exclog',
     'requests',
-    'rfc6266',
     'setuptools',
-    'tzlocal'
+    'pyramid',
+    'pytz'
 ]
 
 test_requires = requires + [
