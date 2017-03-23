@@ -37,7 +37,6 @@ def main(global_config, **settings):
         root_factory=Root
     )
     config.include('pyramid_exclog')
-    config.include("cornice")
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
