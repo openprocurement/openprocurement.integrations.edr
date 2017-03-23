@@ -3,20 +3,17 @@ import requests
 from collections import namedtuple
 from pyramid.view import view_config
 from logging import getLogger
-from openprocurement.integrations.edr.utils import prepare_data_details, prepare_data
+from openprocurement.integrations.edr.utils import prepare_data_details, prepare_data, error_handler
 
 LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 
 
 def handle_error(request, message):
-    request.errors.add('body', 'data', message)
     LOGGER.info('Error on processing request "{}"'.format(message))
-    request.response.status = 403
-    return {
-        "status": "error",
-        "errors": request.errors
-    }
+    return error_handler(request, 403, {"location": "body",
+                                        "name": "data",
+                                        "description": message})
 
 
 @view_config(route_name='verify', renderer='json',

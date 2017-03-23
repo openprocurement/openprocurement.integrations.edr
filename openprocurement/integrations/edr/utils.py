@@ -12,6 +12,7 @@ from ConfigParser import ConfigParser
 from pyramid.security import Allow
 from pyramid.httpexceptions import HTTPError
 from pyramid.response import Response
+from pyramid.httpexceptions import exception_response
 
 
 PKG = get_distribution(__package__)
@@ -82,21 +83,20 @@ def context_unpack(request, msg, params=None):
     return journal_context
 
 
-def error_handler(errors, request_params=True):
-    params = {'ERROR_STATUS': errors.status}
-    if request_params and getattr(errors, 'request'):
-        params['ROLE'] = str(errors.request.authenticated_role)
-        if errors.request.params:
-            params['PARAMS'] = str(dict(errors.request.params))
-    LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
-                extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
-    return _JSONError(errors, errors.status)
-
-
-def forbidden(request):
-    request.errors.add('url', 'permission', 'Forbidden')
-    request.errors.status = 403
-    return error_handler(request.errors)
+def error_handler(request, status, error):
+    params = {
+        'ERROR_STATUS': status
+    }
+    for key, value in error.items():
+        params['ERROR_{}'.format(key)] = value
+    LOGGER.info('Error on processing request "{}"'.format(dumps(error)),
+                extra=context_unpack(request, {'MESSAGE_ID': 'error_handler'}, params))
+    request.response.status = status
+    request.response.content_type = 'application/json'
+    return {
+        "status": "error",
+        "errors": [error]
+    }
 
 
 def add_logging_context(event):
@@ -123,13 +123,21 @@ def request_params(request):
     try:
         params = NestedMultiDict(request.GET, request.POST)
     except UnicodeDecodeError:
-        request.errors.add('body', 'data', 'could not decode params')
-        request.errors.status = 422
-        raise error_handler(request.errors, False)
+        response = exception_response(422)
+        response.body = dumps(error_handler(request, response.code,
+                                            {"location": "body",
+                                             "name": "data",
+                                             "description": "could not decode params"}))
+        response.content_type = 'application/json'
+        raise response
     except Exception as e:
-        request.errors.add('body', str(e.__class__.__name__), str(e))
-        request.errors.status = 422
-        raise error_handler(request.errors, False)
+        response = exception_response(422)
+        response.body = dumps(error_handler(request, response.code,
+                                            {"location": "body",
+                                             "name": str(e.__class__.__name__),
+                                             "description": str(e)}))
+        response.content_type = 'application/json'
+        raise response
     return params
 
 
@@ -178,6 +186,11 @@ def prepare_data(data):
                                'id': data.get('code'),
                                'legalName': data.get('name'),
                                'url': data.get('url')}}
+
+
+def forbidden(request):
+    request.response.json_body = error_handler(request, 403, {"location": "url", "name": "permission","description": "Forbidden"})
+    return request.response
 
 
 def prepare_data_details(data):
