@@ -12,7 +12,7 @@ requires = [
     'setuptools',
     'pyramid',
     'pytz',
-    'cornice'
+    'simplejson'
 ]
 
 test_requires = requires + [

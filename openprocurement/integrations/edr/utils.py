@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
 import os
-from functools import partial
+import simplejson
 from logging import getLogger
 from json import dumps
-from cornice.util import json_error
 from pkg_resources import get_distribution
-from cornice.resource import resource, view
 from webob.multidict import NestedMultiDict
 from datetime import datetime
 from pytz import timezone
 from hashlib import sha512
 from ConfigParser import ConfigParser
 from pyramid.security import Allow
+from pyramid.httpexceptions import HTTPError
+from pyramid.response import Response
 
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
-json_view = partial(view, renderer='json')
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 USERS = {}
 identification_schema = u'UA-EDR'
@@ -35,6 +34,14 @@ class Root(object):
 
     def __init__(self, request):
         self.request = request
+
+
+class _JSONError(HTTPError):
+    def __init__(self, errors, status=400):
+        body = {'status': 'error', 'errors': errors}
+        Response.__init__(self, simplejson.dumps(body, use_decimal=True))
+        self.status = status
+        self.content_type = 'application/json'
 
 
 def read_users(filename):
@@ -77,13 +84,13 @@ def context_unpack(request, msg, params=None):
 
 def error_handler(errors, request_params=True):
     params = {'ERROR_STATUS': errors.status}
-    if request_params:
+    if request_params and getattr(errors, 'request'):
         params['ROLE'] = str(errors.request.authenticated_role)
         if errors.request.params:
             params['PARAMS'] = str(dict(errors.request.params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
-    return json_error(errors)
+    return _JSONError(errors, errors.status)
 
 
 def forbidden(request):
