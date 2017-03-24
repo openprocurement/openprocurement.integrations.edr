@@ -226,8 +226,6 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/yaml')
         with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml'), 'r') as f:
             test_yaml_data = f.read()
-        print(test_yaml_data)
-        print(response.body)
         self.assertEqual(response.body, test_yaml_data)
 
 
