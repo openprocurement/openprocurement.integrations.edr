@@ -168,7 +168,7 @@ def auth_check(username, password, request):
 
 
 def prepare_data(data):
-    return {'id': data.get('id'),
+    return {'x_edrInternalId': data.get('id'),
             'state': {'code': data.get('state'),
                       'description': data.get('state_text')},
             'identification': {'schema': identification_schema,
