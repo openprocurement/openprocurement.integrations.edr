@@ -1,6 +1,5 @@
 data:
-- id: 2842335
-  identification:
+- identification:
     id: '14360570'
     legalName: АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК "ПРИВАТБАНК"
     schema: UA-EDR
@@ -8,3 +7,4 @@ data:
   state:
     code: 1
     description: https://zqedr-api.nais.gov.ua/1.0/subjects/2842335
+  x_edrInternalId: 2842335
