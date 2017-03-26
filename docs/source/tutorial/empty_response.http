@@ -1,0 +1,22 @@
+GET /1.0/verify?code=123 HTTP/1.0
+Authorization: Basic cGxhdGZvcm06cGxhdGZvcm0=
+Host: api-sandbox.openprocurement.org
+
+Response: 403 Forbidden
+Content-Type: application/json; charset=UTF-8
+{
+  "status": "error", 
+  "errors": [
+    {
+      "description": [
+        {
+          "message": "EDRPOU not found"
+        }
+      ], 
+      "name": "data", 
+      "location": "body"
+    }
+  ]
+}
+
+
