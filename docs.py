@@ -22,7 +22,7 @@ class DumpsTestAppwebtest(TestApp):
     def do_request(self, req, status=None, expect_errors=None):
         req.headers.environ["HTTP_HOST"] = "api-sandbox.openprocurement.org"
         origin_path = req.headers.environ["PATH_INFO"]  # save original path
-        req.headers.environ["PATH_INFO"] = '/1.0{original_path}'.format(original_path=origin_path)  # add version
+        req.headers.environ["PATH_INFO"] = '/api/1.0{original_path}'.format(original_path=origin_path)  # add version
 
         if hasattr(self, 'file_obj') and not self.file_obj.closed:
             self.file_obj.write(req.as_bytes(True))

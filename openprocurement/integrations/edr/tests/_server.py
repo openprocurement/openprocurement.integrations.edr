@@ -18,7 +18,7 @@ def response_code():
                    "name": "АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
                    "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
                    "state": 1,
-                   "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
+                   "state_text": "зареєстровано",
                    "id": 2842335}])
 
 
@@ -35,7 +35,7 @@ def response_passport():
                    "name": passport,
                    "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
                    "state": 1,
-                   "state_text": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
+                   "state_text": "зареєстровано",
                    "id": 2842336}])
 
 
