@@ -6,7 +6,7 @@ Tutorial
 Basic request
 -------------
 
-In order to get information from EDR by code EDRPOU you need to make a request to `/1.0/verify` endpoint, passing code as GET parameter:
+In order to get information from EDR by code EDRPOU you need to make a request to `api/1.0/verify` endpoint, passing code as GET parameter:
 
 .. include:: tutorial/basic_request.http
    :code:

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-27 14:30+0300\n"
+"POT-Creation-Date: 2017-03-27 16:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,13 +27,14 @@ msgid "Basic request"
 msgstr "Базовий запит"
 
 #: ../../source/tutorial.rst:9
+#, fuzzy
 msgid ""
 "In order to get information from EDR by code EDRPOU you need to make a "
-"request to `/1.0/verify` endpoint, passing code as GET parameter:"
+"request to `api/1.0/verify` endpoint, passing code as GET parameter:"
 msgstr ""
 "Для того щоб отримати інформацію з Єдиного Державного реєстру за "
 "допомогою ЄДРПОУ Вам необхідно зробити запит до точки входу "
-"`/1.0/verify`, передаючи даний ЄДРПОУ як GET параметр:"
+"`api/1.0/verify`, передаючи даний ЄДРПОУ як GET параметр:"
 
 #: ../../source/tutorial.rst:13
 #, fuzzy
