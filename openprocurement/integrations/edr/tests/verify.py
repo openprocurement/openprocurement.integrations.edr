@@ -262,16 +262,64 @@ class TestDetails(BaseWebTest):
                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
             u"address": {u"postalCode": u"49094",
                         u"countryName": u"УКРАЇНА",
-                        u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район ВУЛИЦЯ НАБЕРЕЖНА ПЕРЕМОГИ буд. 50"},
-            u"founders": [{u"role_text": u"засновник",
+                        u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+            u"founders": [{
+                          u"capital": None,
+                          u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
                           u"address": None,
-                          u"capital": 18100740000}],
+                         }],
             u"activityKind": {u"scheme": u"КВЕД",
                              u"id": u"64.19",
                              u"description": u"Інші види грошового посередництва"}
         })
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], {
+            u"activityKind": {
+            u"description": u"Інші види грошового посередництва",
+            u"id": u"64.19",
+            u"scheme": u"КВЕД"},
+            u"additionalActivityKinds": [
+        {
+            u"description": u"Інші види кредитування",
+            u"id": u"64.92",
+            u"scheme": u"КВЕД"},
+        {
+            u"description": u"Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у.",
+            u"id": u"64.99",
+            u"scheme": u"КВЕД"},
+        {
+            u"description": u"Управління фінансовими ринками",
+            u"id": u"66.11",
+            u"scheme": u"КВЕД"},
+        {
+            u"description": u"Посередництво за договорами по цінних паперах або товарах",
+            u"id": u"66.12",
+            u"scheme": u"КВЕД"},
+        {
+            u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення",
+            u"id": u"66.19",
+            u"scheme": u"КВЕД"}],
+        u"address": {
+            u"countryName": u"УКРАЇНА",
+            u"postalCode": u"49094",
+            u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+        u"founders": [
+            {
+            u"address": None,
+            u"capital": None,
+            u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
+            u"role": 4,
+            u"role_text": u"засновник"
+            }],
+        u"identification": {
+        u"id": u"14360570",
+        u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
+        u"scheme": u"UA-EDR"},
+        u"management": u"ЗАГАЛЬНІ ЗБОРИ",
+        u"name": u"ПАТ КБ \"ПРИВАТБАНК\""})
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
