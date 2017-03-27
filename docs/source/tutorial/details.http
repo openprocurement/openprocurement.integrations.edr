@@ -1,4 +1,4 @@
-GET /1.0/details/2842335 HTTP/1.0
+GET /api/1.0/details/2842335 HTTP/1.0
 Authorization: Basic cm9ib3Q6cm9ib3Q=
 Host: api-sandbox.openprocurement.org
 
