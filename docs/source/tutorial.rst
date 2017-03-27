@@ -28,19 +28,6 @@ If you need to obtain information about individual entrepreneurs then send a req
 .. include:: tutorial/ipn.http
    :code:
 
-Request with number of passport
--------------------------------
-
-If due to religious beliefs a person refused to get IPN code, then you need to pass a series and number of passport, view like `АБ123456`:
-
-.. include:: tutorial/passport.http
-   :code:
-
-If series and number of passport was passed in wrong format, then we get an error:
-
-.. include:: tutorial/invalid_passport.http
-   :code:
-
 Errors
 ------
 

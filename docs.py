@@ -6,7 +6,7 @@ from datetime import datetime
 import openprocurement.integrations.edr.tests.base as base_test
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
-from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_passport, response_details
+from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_details
 from webtest import TestApp
 
 now = datetime.now()
@@ -80,26 +80,6 @@ class TenderResourceTest(BaseWebTest):
         setup_routing(self.edr_api_app, func=response_code)
 
         # request with individual tax number
-
-        with open('docs/source/tutorial/ipn.http', 'w') as self.app.file_obj:
-            self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('code', ipn))
-            self.assertEqual(response.status, '200 OK')
-            self.app.file_obj.write("\n")
-
-        setup_routing(self.edr_api_app, func=response_passport)
-
-        # request with number of passport
-
-        with open('docs/source/tutorial/passport.http', 'w') as self.app.file_obj:
-            self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('passport', passport.encode('utf-8')))
-            self.assertEqual(response.status, '200 OK')
-            self.app.file_obj.write("\n")
-
-        setup_routing(self.edr_api_app, func=response_passport)
-
-        # request with number of passport
 
         with open('docs/source/tutorial/invalid_passport.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))

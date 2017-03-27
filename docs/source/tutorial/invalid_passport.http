@@ -10,8 +10,7 @@ Content-Type: application/json; charset=UTF-8
     {
       "description": [
         {
-          "message": "`passport` parameter has wrong value.", 
-          "code": 11
+          "message": "EDRPOU not found"
         }
       ], 
       "name": "data", 

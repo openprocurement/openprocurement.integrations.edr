@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-27 16:49+0300\n"
+"POT-Creation-Date: 2017-03-27 17:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,31 +94,10 @@ msgstr ""
 " необхідно відправити запит з ІПН:"
 
 #: ../../source/tutorial.rst:32
-msgid "Request with number of passport"
-msgstr "Запит з номером паспорту"
-
-#: ../../source/tutorial.rst:34
-msgid ""
-"If due to religious beliefs a person refused to get IPN code, then you "
-"need to pass a series and number of passport, view like `АБ123456`:"
-msgstr ""
-"Якщо через релігійні переконання людина відмовилась отримувати ІПН, тоді "
-"необхідно  передати серію та номер паспорту наступного вигляду "
-"`АБ123456`:"
-
-#: ../../source/tutorial.rst:39
-msgid ""
-"If series and number of passport was passed in wrong format, then we get "
-"an error:"
-msgstr ""
-"Якщо серія та номер паспорту мала невірний формат, тоді ми отримаємо "
-"помилку:"
-
-#: ../../source/tutorial.rst:45
 msgid "Errors"
 msgstr "Помилки"
 
-#: ../../source/tutorial.rst:47
+#: ../../source/tutorial.rst:34
 msgid ""
 "Response to the unsuccessful request contains list of errors  with "
 "description and code in response body and status `403 Forbidden`. If EDR "
@@ -132,7 +111,7 @@ msgstr ""
 " перелік помилок містить лише текстовий опис помилки, це означає що "
 "помилка виникла на стороні нашого proxy-серверу."
 
-#: ../../source/tutorial.rst:50
+#: ../../source/tutorial.rst:37
 msgid ""
 "When given EDRPOU (IPN or series and number of passport) were not found "
 "in EDR response will contains message `EDRPOU not found`:"
@@ -140,11 +119,11 @@ msgstr ""
 "Коли даний ЄДРПОУ (ІПН або серія на номер паспорту) не знайдений, "
 "відповідь містить повідомлення `EDRPOU not found`."
 
-#: ../../source/tutorial.rst:57
+#: ../../source/tutorial.rst:44
 msgid "File-reference"
 msgstr "Файл-довідка"
 
-#: ../../source/tutorial.rst:58
+#: ../../source/tutorial.rst:45
 msgid ""
 "There are another endpoint `/details/x_edrInternalId` to process request "
 "to EDR to get detailed information using parameter `x_edrInternalId`, "
@@ -156,4 +135,28 @@ msgstr ""
 "параметр `x_edrInternalId`, який надходить у відповідь на перший запит. "
 "Тільки користувач з группи `robot` має права на здійснення данного "
 "запиту. Запит має наступний вигляд: "
+
+#~ msgid "Request with number of passport"
+#~ msgstr "Запит з номером паспорту"
+
+#~ msgid ""
+#~ "If due to religious beliefs a "
+#~ "person refused to get IPN code, "
+#~ "then you need to pass a series "
+#~ "and number of passport, view like "
+#~ "`АБ123456`:"
+#~ msgstr ""
+#~ "Якщо через релігійні переконання людина "
+#~ "відмовилась отримувати ІПН, тоді необхідно"
+#~ "  передати серію та номер паспорту "
+#~ "наступного вигляду `АБ123456`:"
+
+#~ msgid ""
+#~ "If series and number of passport "
+#~ "was passed in wrong format, then "
+#~ "we get an error:"
+#~ msgstr ""
+#~ "Якщо серія та номер паспорту мала "
+#~ "невірний формат, тоді ми отримаємо "
+#~ "помилку:"
 
