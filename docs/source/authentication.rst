@@ -9,5 +9,5 @@ In this scheme:
 
  * **Username** is broker's id
 
- * **Password** is API key for Document Service
+ * **Password** is API key for EDR Proxy
 
