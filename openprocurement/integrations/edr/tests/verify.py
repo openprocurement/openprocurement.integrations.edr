@@ -51,8 +51,8 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            [{u'state': {u'code': 1,
-                        u'description': u'зареєстровано'},
+            [{u'state': {u'registrationStatusDetails': u'зареєстровано',
+                         u'registrationStatus': u'registered'},
              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
                                  u'schema': u'UA-EDR',
                                  u'id': u'14360570',
@@ -67,8 +67,8 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            [{u'state': {u'code': 1,
-                        u'description': u'зареєстровано'},
+            [{u'state': {u'registrationStatusDetails': u'зареєстровано',
+                         u'registrationStatus': u'registered'},
              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
                                  u'schema': u'UA-EDR',
                                  u'id': u'СН012345',
@@ -83,8 +83,8 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            [{u'state': {u'code': 1,
-                        u'description': u'зареєстровано'},
+            [{u'state': {u'registrationStatusDetails': u'зареєстровано',
+                         u'registrationStatus': u'registered'},
              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
                                  u'schema': u'UA-EDR',
                                  u'id': u'123456789',
@@ -98,8 +98,8 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'],
-                         [{u'state': {u'code': 1,
-                                     u'description': u'зареєстровано'},
+                         [{u'state': {u'registrationStatusDetails': u'зареєстровано',
+                                      u'registrationStatus': u'registered'},
                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
                                               u'schema': u'UA-EDR', u'id': u'1234567891',
                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
