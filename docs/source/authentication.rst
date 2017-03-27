@@ -3,7 +3,7 @@
 Authentication
 ==============
 
-For Document Service authentication **Basic Authenication scheme** (see :rfc:`2617#section-2`) is used.
+For EDR Proxy authentication **Basic Authenication scheme** (see :rfc:`2617#section-2`) is used.
 
 In this scheme:
 

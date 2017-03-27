@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-27 10:50+0000\n"
+"POT-Creation-Date: 2017-03-27 11:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,10 +24,10 @@ msgstr "Аутентифікація"
 
 #: ../../source/authentication.rst:6
 msgid ""
-"For Document Service authentication **Basic Authenication scheme** (see "
+"For EDR Proxy authentication **Basic Authenication scheme** (see "
 ":rfc:`2617#section-2`) is used."
 msgstr ""
-"Для аутентифікації Document Service використовується **схема базової "
+"Для аутентифікації EDR Proxy використовується **схема базової "
 "аутентифікації** (див. :rfc:`2617#section-2`)."
 
 #: ../../source/authentication.rst:8
