@@ -6,7 +6,7 @@ from datetime import datetime
 import openprocurement.integrations.edr.tests.base as base_test
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
-from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_passport
+from openprocurement.integrations.edr.tests._server import setup_routing, response_code, response_passport, response_details
 from webtest import TestApp
 
 now = datetime.now()
@@ -16,6 +16,7 @@ ipn = u"1234567891"
 passport = u"АБ123456"
 invalid_passport = u"АБВ"
 invalid_edrpou = u"123"
+x_edrInternalId = u"2842335"
 
 
 class DumpsTestAppwebtest(TestApp):
@@ -65,6 +66,7 @@ class TenderResourceTest(BaseWebTest):
 
     def test_docs_tutorial(self):
         request_path = '/verify?{}={}'
+        details_path = '/details/{}'
         setup_routing(self.edr_api_app, func=response_code)
 
         # Basic request
@@ -115,5 +117,12 @@ class TenderResourceTest(BaseWebTest):
             self.assertEqual(response.status, '403 Forbidden')
             self.app.file_obj.write("\n")
 
+        setup_routing(self.edr_api_app, path='/1.0/subjects/{}'.format(x_edrInternalId), func=response_details)
+        # details
+        with open('docs/source/tutorial/details.http', 'w') as self.app.file_obj:
+            self.app.authorization = ('Basic', ('robot', 'robot'))
+            response = self.app.get(details_path.format(x_edrInternalId))
+            self.assertEqual(response.status, '200 OK')
+            self.app.file_obj.write("\n")
 
 

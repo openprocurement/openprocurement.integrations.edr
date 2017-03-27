@@ -51,3 +51,13 @@ When given EDRPOU (IPN or series and number of passport) were not found in EDR r
 
 .. include:: tutorial/empty_response.http
    :code:
+
+
+File-reference
+------
+There are another endpoint `/details/x_edrInternalId` to process request to EDR to get detailed information using
+parameter `x_edrInternalId`, received in first response. Only user from group `robot` have permissions to process
+given request. Request looks like:
+
+.. include:: tutorial/details.http
+   :code:

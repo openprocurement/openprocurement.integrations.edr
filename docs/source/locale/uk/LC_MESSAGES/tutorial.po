@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-26 14:27+0000\n"
+"POT-Creation-Date: 2017-03-27 14:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: ../../source/tutorial.rst:4
 msgid "Tutorial"
@@ -32,8 +32,8 @@ msgid ""
 "request to `/1.0/verify` endpoint, passing code as GET parameter:"
 msgstr ""
 "Для того щоб отримати інформацію з Єдиного Державного реєстру за "
-"допомогою ЄДРПОУ Вам необхідно зробити запит до точки входу `/1.0/verify`, "
-"передаючи даний ЄДРПОУ як GET параметр:"
+"допомогою ЄДРПОУ Вам необхідно зробити запит до точки входу "
+"`/1.0/verify`, передаючи даний ЄДРПОУ як GET параметр:"
 
 #: ../../source/tutorial.rst:13
 #, fuzzy
@@ -42,9 +42,9 @@ msgid ""
 "`state.code`, `state.description`, `identification.schema`, "
 "`identification.code`, `identification.legalName`, `identification.url`."
 msgstr ""
-"Відповідь складається з наступних полів: `x_edrInternalId`, "
-"`state.code`, `state.description`, `identification.schema`, "
-"`identification.code`, `identification.legalName`, `identification.url`."
+"Відповідь складається з наступних полів: `x_edrInternalId`, `state.code`,"
+" `state.description`, `identification.schema`, `identification.code`, "
+"`identification.legalName`, `identification.url`."
 
 #: ../../source/tutorial.rst:15
 msgid "`x_edrInternalId` - unique identification of the subject,"
@@ -138,4 +138,21 @@ msgid ""
 msgstr ""
 "Коли даний ЄДРПОУ (ІПН або серія на номер паспорту) не знайдений, "
 "відповідь містить повідомлення `EDRPOU not found`."
+
+#: ../../source/tutorial.rst:57
+msgid "File-reference"
+msgstr "Файл-довідка"
+
+#: ../../source/tutorial.rst:58
+msgid ""
+"There are another endpoint `/details/x_edrInternalId` to process request "
+"to EDR to get detailed information using parameter `x_edrInternalId`, "
+"received in first response. Only user from group `robot` have permissions"
+" to process given request. Request looks like:"
+msgstr ""
+"Існує також інша вхідна точка `/details/x_edrInternalId` для здійснення "
+"запитів до ЕДР для отримання деталізованної інформації, використовуючи "
+"параметр `x_edrInternalId`, який надходить у відповідь на перший запит. "
+"Тільки користувач з группи `robot` має права на здійснення данного "
+"запиту. Запит має наступний вигляд: "
 
