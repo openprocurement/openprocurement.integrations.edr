@@ -73,7 +73,7 @@ class TenderResourceTest(BaseWebTest):
 
         with open('docs/source/tutorial/basic_request.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('code', edrpou))
+            response = self.app.get(request_path.format('id', edrpou))
             self.assertEqual(response.status, '200 OK')
             self.app.file_obj.write("\n")
 
@@ -81,20 +81,19 @@ class TenderResourceTest(BaseWebTest):
 
         # request with individual tax number
 
-        with open('docs/source/tutorial/invalid_passport.http', 'w') as self.app.file_obj:
+        with open('docs/source/tutorial/ipn.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('passport', invalid_passport.encode('utf-8')), status=403)
-            self.assertEqual(response.status, '403 Forbidden')
+            response = self.app.get(request_path.format('id', ipn))
+            self.assertEqual(response.status, '200 OK')
             self.app.file_obj.write("\n")
-
         setup_routing(self.edr_api_app, func=response_code)
 
         # empty response
 
         with open('docs/source/tutorial/empty_response.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('code', invalid_edrpou), status=403)
-            self.assertEqual(response.status, '403 Forbidden')
+            response = self.app.get(request_path.format('id', invalid_edrpou), status=404)
+            self.assertEqual(response.status, '404 Not Found')
             self.app.file_obj.write("\n")
 
         setup_routing(self.edr_api_app, path='/1.0/subjects/{}'.format(x_edrInternalId), func=response_details)
