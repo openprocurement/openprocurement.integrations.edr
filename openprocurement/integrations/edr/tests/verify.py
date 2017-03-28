@@ -262,12 +262,14 @@ class TestDetails(BaseWebTest):
                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
             u"address": {u"postalCode": u"49094",
                         u"countryName": u"УКРАЇНА",
-                        u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район ВУЛИЦЯ НАБЕРЕЖНА ПЕРЕМОГИ буд. 50"},
-            u"founders": [{u"role_text": u"засновник",
+                        u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+            u"founders": [{
+                          u"capital": None,
+                          u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
                           u"address": None,
-                          u"capital": 18100740000}],
+                         }],
             u"activityKind": {u"scheme": u"КВЕД",
                              u"id": u"64.19",
                              u"description": u"Інші види грошового посередництва"}
