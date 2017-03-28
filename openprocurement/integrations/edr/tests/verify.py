@@ -13,7 +13,7 @@ class TestVerify(BaseWebTest):
 
     def test_opt_json(self):
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=14360570&opt_jsonp=callback')
+        response = self.app.get('/verify?id=14360570&opt_jsonp=callback')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
         self.assertNotIn('{\n    "', response.body)
@@ -21,7 +21,7 @@ class TestVerify(BaseWebTest):
 
     def test_pretty_json(self):
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=14360570&opt_jsonp=callback&opt_pretty=1')
+        response = self.app.get('/verify?id=14360570&opt_jsonp=callback&opt_pretty=1')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
         self.assertIn('{\n    "', response.body)
@@ -31,7 +31,7 @@ class TestVerify(BaseWebTest):
         old = self.app.authorization
         self.app.authorization = ('Basic', ('', ''))
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=14360570', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'],
@@ -46,7 +46,7 @@ class TestVerify(BaseWebTest):
     def test_edrpou(self):
         """ Get info by custom edrpou """
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=14360570')
+        response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
@@ -94,7 +94,7 @@ class TestVerify(BaseWebTest):
     def test_ipn(self):
         """ Get info by IPN (physical entity-entrepreneur)"""
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=1234567891')
+        response = self.app.get('/verify?id=1234567891')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'],
@@ -117,9 +117,9 @@ class TestVerify(BaseWebTest):
     def test_invalid_code(self):
         """Check invalid EDRPOU(IPN) number 123"""
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=123', status=403)
+        response = self.app.get('/verify?id=123', status=404)
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'EDRPOU not found'}])
 
     def test_unauthorized(self):
@@ -127,7 +127,7 @@ class TestVerify(BaseWebTest):
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('robot', 'robot'))
-        response = self.app_copy.get('/verify?code=123', status=403)
+        response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
@@ -136,7 +136,7 @@ class TestVerify(BaseWebTest):
     def test_payment_required(self):
         """Check 402 status EDR response"""
         setup_routing(self.edr_api_app, func=payment_required)
-        response = self.app.get('/verify?code=14360570', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Paiment required.', u'code': 5}])
@@ -144,7 +144,7 @@ class TestVerify(BaseWebTest):
     def test_forbidden(self):
         """Check 403 status EDR response"""
         setup_routing(self.edr_api_app, func=forbidden)
-        response = self.app.get('/verify?code=14360570', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
@@ -155,7 +155,7 @@ class TestVerify(BaseWebTest):
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy_2.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('robot', 'robot'))
-        response = self.app_copy.get('/verify?code=123', status=403)
+        response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
@@ -164,7 +164,7 @@ class TestVerify(BaseWebTest):
     def test_not_acceptable(self):
         """Check 406 status EDR response"""
         setup_routing(self.edr_api_app, func=not_acceptable)
-        response = self.app.get('/verify?code=123', status=403)
+        response = self.app.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Message.'}])
@@ -172,7 +172,7 @@ class TestVerify(BaseWebTest):
     def test_too_many_requests(self):
         """Check 429 status EDR response(too many requests)"""
         setup_routing(self.edr_api_app, func=too_many_requests)
-        response = self.app.get('/verify?code=123', status=403)
+        response = self.app.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
@@ -180,7 +180,7 @@ class TestVerify(BaseWebTest):
     def test_server_error(self):
         """Check 500 status EDR response"""
         setup_routing(self.edr_api_app, func=server_error)
-        response = self.app.get('/verify?code=123', status=403)
+        response = self.app.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Internal error.', u'code': 20}])
@@ -188,7 +188,7 @@ class TestVerify(BaseWebTest):
     def test_bad_gateway(self):
         """Check 502 status EDR response"""
         setup_routing(self.edr_api_app, func=bad_gateway)
-        response = self.app.get('/verify?code=123', status=403)
+        response = self.app.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Service is disabled or upgrade.'}])
@@ -196,7 +196,7 @@ class TestVerify(BaseWebTest):
     def test_two_error_messages(self):
         """Check when EDR passes two errors in response"""
         setup_routing(self.edr_api_app, func=two_error_messages)
-        response = self.app.get('/verify?code=123', status=403)
+        response = self.app.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'code': 0, u'message': u'Message1.'},
@@ -217,11 +217,11 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'],
-                         [{u'message': u'Need pass code or passport'}])
+                         [{u'message': u'Need pass id or passport'}])
 
     def test_accept_yaml(self):
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?code=14360570', headers={'Accept': 'application/yaml'})
+        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
         with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml'), 'r') as f:
