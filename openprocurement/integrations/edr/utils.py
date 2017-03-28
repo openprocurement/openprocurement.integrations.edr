@@ -166,11 +166,18 @@ def auth_check(username, password, request):
     if username in USERS and USERS[username]['password'] == sha512(password).hexdigest():
         return ['g:{}'.format(USERS[username]['group'])]
 
+registration_statuses = {-1: 'cancelled', 1: 'registered',
+                         2: 'beingTerminated', 3: 'terminated',
+                         4: 'banckruptcyFiled', 5: 'banckruptcyReorganization',
+                         6: 'invalidRegistraton'}
+
+registration_status_by_code = lambda x: registration_statuses.get(x, 'other')
+
 
 def prepare_data(data):
     return {'x_edrInternalId': data.get('id'),
-            'state': {'code': data.get('state'),
-                      'description': data.get('state_text')},
+            'state': {'registrationStatus': registration_status_by_code(data.get('state')),
+                      'registrationStatusDetails': data.get('state_text')},
             'identification': {'schema': identification_schema,
                                'id': data.get('code'),
                                'legalName': data.get('name'),

@@ -9,9 +9,9 @@ LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 
 
-def handle_error(request, message):
+def handle_error(request, message, status=403):
     LOGGER.info('Error on processing request "{}"'.format(message))
-    return error_handler(request, 403, {"location": "body",
+    return error_handler(request, status, {"location": "body",
                                         "name": "data",
                                         "description": message})
 
@@ -19,12 +19,12 @@ def handle_error(request, message):
 @view_config(route_name='verify', renderer='json',
              request_method='GET', permission='verify')
 def verify_user(request):
-    code = request.params.get('code', '').encode('utf-8')
+    code = request.params.get('id', '').encode('utf-8')
     details = EDRDetails('code', code)
     if not code:
         passport = request.params.get('passport', '').encode('utf-8')
         if not passport:
-            return handle_error(request, [{u'message': u'Need pass code or passport'}])
+            return handle_error(request, [{u'message': u'Need pass id or passport'}])
         details = EDRDetails('passport', passport)
     try:
         response = request.registry.edr_client.get_subject(**details._asdict())
@@ -35,7 +35,7 @@ def verify_user(request):
         data = response.json()
         if not data:
             LOGGER.warning('Accept empty response from EDR service for {}'.format(details.code))
-            return handle_error(request, [{u'message': u'EDRPOU not found'}])
+            return handle_error(request, [{u'message': u'EDRPOU not found'}], 404)
         LOGGER.info('Return data from EDR service for {}'.format(details.code))
         return {'data': [prepare_data(d) for d in data]}
     elif response.status_code == 429:
