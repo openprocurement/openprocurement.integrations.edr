@@ -24,11 +24,10 @@ data:
   address:
     countryName: УКРАЇНА
     postalCode: '49094'
-    streetAddress: Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район ВУЛИЦЯ
-      НАБЕРЕЖНА ПЕРЕМОГИ буд. 50
+    streetAddress: Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район
   founders:
   - address: null
-    capital: 18100740000
+    capital: null
     name: АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ
     role: 4
     role_text: засновник
