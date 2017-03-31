@@ -77,7 +77,7 @@ def error_handler(request, status, error):
         'ERROR_STATUS': status
     }
     for key, value in error.items():
-        params['ERROR_{}'.format(key)] = value
+        params['ERROR_{}'.format(key)] = str(value)
     LOGGER.info('Error on processing request "{}"'.format(dumps(error)),
                 extra=context_unpack(request, {'MESSAGE_ID': 'error_handler'}, params))
     request.response.status = status
