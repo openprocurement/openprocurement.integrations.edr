@@ -213,9 +213,7 @@ def prepare_data_details(data):
               'activityKind': primary_activity_kind or None,
               'additionalActivityKinds': additional_activity_kinds or None,
               'address': get_address(data)}
-    if not result['additionalActivityKinds']:
-        del result['additionalActivityKinds']
-    return result
+    return {k: v for k, v in result.iteritems() if v}
 
 
 def get_address(data):
