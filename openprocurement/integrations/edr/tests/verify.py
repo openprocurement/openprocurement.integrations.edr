@@ -276,7 +276,9 @@ class TestDetails(BaseWebTest):
                           u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                          u"address": None,
+                          u"address": {u'postalCode': None,
+                                       u'countryName': None,
+                                       u'streetAddress': None}
                          }],
             u"activityKind": {u"scheme": u"КВЕД",
                              u"id": u"64.19",

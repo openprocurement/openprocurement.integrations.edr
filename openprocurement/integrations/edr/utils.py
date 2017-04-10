@@ -190,6 +190,9 @@ def forbidden(request):
 
 
 def prepare_data_details(data):
+    founders = data.get('founders')
+    for founder in founders:
+        founder['address'] = get_address(founder)
     additional_activity_kinds = []
     primary_activity_kind = {}
     for activity_kind in data.get('activity_kinds', []):
@@ -201,14 +204,21 @@ def prepare_data_details(data):
             additional_activity_kinds.append({'id': activity_kind.get('code'),
                                               'scheme': activityKind_scheme,
                                               'description': activity_kind.get('name')})
-    return {'name': data.get('names').get('short') if data.get('names') else None,
-            'identification': {'scheme': identification_schema,
-                               'id': data.get('code'),
-                               'legalName': data.get('names').get('display') if data.get('names') else None},
-            'founders': data.get('founders'),
-            'management': data.get('management'),
-            'activityKind': primary_activity_kind or None,
-            'additionalActivityKinds': additional_activity_kinds or None,
-            'address': {'streetAddress': data.get('address').get('address') if data.get('address') else None,
-                        'postalCode': data.get('address').get('zip') if data.get('address') else None,
-                        'countryName': data.get('address').get('country') if data.get('address') else None}}
+    result = {'name': data.get('names').get('short') if data.get('names') else None,
+              'identification': {'scheme': identification_schema,
+                                 'id': data.get('code'),
+                                 'legalName': data.get('names').get('display') if data.get('names') else None},
+              'founders': founders,
+              'management': data.get('management'),
+              'activityKind': primary_activity_kind or None,
+              'additionalActivityKinds': additional_activity_kinds or None,
+              'address': get_address(data)}
+    if not result['additionalActivityKinds']:
+        del result['additionalActivityKinds']
+    return result
+
+
+def get_address(data):
+    return {'streetAddress': data.get('address').get('address') if data.get('address') else None,
+            'postalCode': data.get('address').get('zip') if data.get('address') else None,
+            'countryName': data.get('address').get('country') if data.get('address') else None}
