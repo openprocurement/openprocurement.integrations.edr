@@ -269,3 +269,112 @@ def wrong_ip_address_detailed_request():
     response.status = 403
     response.content_type = 'text/html'
     return '<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body bgcolor="white">\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>nginx/1.10.1</center>\r\n</body>\r\n</html>\r\n'
+
+
+def null_fields():
+    response.status = 200
+    response.content_type = 'application/json'
+    return dumps({
+      "id": 2842335,
+      "state": 1,
+      "state_text": "зареєстровано",
+      "code": "14360570",
+      "olf_code": "230",
+      "olf_name": "АКЦІОНЕРНЕ ТОВАРИСТВО",
+      "founding_document": None,
+      "executive_power": None,
+      "object_name": "Реєстраційна служба",
+      "founders": [
+        {
+          "capital": None,
+          "role_text": "засновник",
+          "name": "АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
+          "address": None,
+          "role": 4
+        }
+      ],
+      "management": "ЗАГАЛЬНІ ЗБОРИ",
+      "heads": [
+        {
+          "appointment_date": None,
+          "role_text": "підписант",
+          "last_name": "Прізвище",
+          "first_middle_name": "Імʼя По-батькові",
+          "restriction": "Повноваження згідно положень статуту",
+          "role": 2
+        },
+      ],
+      "managing_paper": None,
+      "is_modal_statute": False,
+      "activity_kinds": [
+        {
+          "name": "Інші види грошового посередництва",
+          "is_primary": True,
+          "code": "64.19"
+        }
+      ],
+      "branches": [
+        {
+          "type": 122,
+          "name": "Ім'я",
+          "address": {
+            "country": "Країна",
+            "address": "Адреса",
+            "zip": ""
+          },
+          "code": "",
+          "type_text": "Філія (інший відокремлений підрозділ)"
+        }
+      ],
+      "address": {
+        "country": "УКРАЇНА",
+        "address": "Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район",
+        "zip": "49094"
+      },
+      "registraion": {
+        "record_date": "1900-01-01",
+        "is_transformation": False,
+        "is_division": False,
+        "date": "1900-01-01",
+        "is_merge": False,
+        "record_number": "",
+        "is_separation": False
+      },
+      "bankruptcy": None,
+      "termination": None,
+      "termination_cancel": None,
+      "assignees": [],
+      "predecessors": [],
+      "registrations": [
+        {
+          "start_date": "1900-01-01",
+          "name": "ГОЛОВНЕ УПРАВЛІННЯ",
+          "start_num": None,
+          "end_num": None,
+          "type": "",
+          "code": "00000000",
+          "end_date": None,
+          "description": None
+        },
+      ],
+      "primary_activity_kind": {
+        "name": "Інші види грошового посередництва",
+        "reg_number": "04030339603",
+        "code": "64.19",
+        "class": "5"
+      },
+      "prev_registration_end_term": None,
+      "open_enforcements": [
+        "1900-01-01",
+        "1900-01-01"
+      ],
+      "contacts": {
+        "tel": [
+          "+38000000000",
+          "+38000000000"
+        ],
+        "web_page": "www.privatbank.ua",
+        "fax": "",
+        "email": ""
+      }
+    })
