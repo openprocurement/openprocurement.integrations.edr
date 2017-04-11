@@ -272,13 +272,9 @@ class TestDetails(BaseWebTest):
                         u"countryName": u"УКРАЇНА",
                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
-                          u"capital": None,
                           u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                          u"address": {u'postalCode': None,
-                                       u'countryName': None,
-                                       u'streetAddress': None}
                          }],
             u"activityKind": {u"scheme": u"КВЕД",
                              u"id": u"64.19",
@@ -306,8 +302,10 @@ class TestDetails(BaseWebTest):
         response = self.app.get('/details/2842335', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
+        print response.body
         with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
             test_yaml_data = f.read()
+        print test_yaml_data
         self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip_details(self):
@@ -325,19 +323,14 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.json['data'], {
             u"management": u"ЗАГАЛЬНІ ЗБОРИ",
             u"identification": {u"scheme": u"UA-EDR",
-                                u"id": u"14360570",
-                                u"legalName": None},
+                                u"id": u"14360570"},
             u"address": {u"postalCode": u"49094",
                          u"countryName": u"УКРАЇНА",
                          u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
-                          u"capital": None,
                           u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                          u"address": {u'postalCode': None,
-                                       u'countryName': None,
-                                       u'streetAddress': None}
                          }],
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",

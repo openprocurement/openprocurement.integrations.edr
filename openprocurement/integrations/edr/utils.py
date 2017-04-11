@@ -213,10 +213,22 @@ def prepare_data_details(data):
               'activityKind': primary_activity_kind or None,
               'additionalActivityKinds': additional_activity_kinds or None,
               'address': get_address(data)}
-    return {k: v for k, v in result.iteritems() if v}
+    return remove_null_fields(result)
 
 
 def get_address(data):
     return {'streetAddress': data.get('address').get('address') if data.get('address') else None,
             'postalCode': data.get('address').get('zip') if data.get('address') else None,
             'countryName': data.get('address').get('country') if data.get('address') else None}
+
+
+def remove_null_fields(data):
+    for k, v in data.items():
+        if isinstance(v, dict):
+            remove_null_fields(v)
+        if isinstance(v, list):
+            for element in v:
+                remove_null_fields(element)
+        if not data[k]:
+            del data[k]
+    return data
