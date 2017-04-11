@@ -302,10 +302,8 @@ class TestDetails(BaseWebTest):
         response = self.app.get('/details/2842335', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
-        print response.body
         with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
             test_yaml_data = f.read()
-        print test_yaml_data
         self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip_details(self):
@@ -316,6 +314,7 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
 
     def test_null_fields(self):
+        """Check that fields with null values removed"""
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=null_fields)
         response = self.app.get('/details/2842335')
         self.assertEqual(response.status, '200 OK')
