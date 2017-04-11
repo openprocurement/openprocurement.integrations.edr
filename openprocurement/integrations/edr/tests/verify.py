@@ -6,7 +6,7 @@ from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
-    wrong_ip_address_detailed_request)
+    wrong_ip_address_detailed_request, null_fields)
 
 
 class TestVerify(BaseWebTest):
@@ -272,11 +272,9 @@ class TestDetails(BaseWebTest):
                         u"countryName": u"УКРАЇНА",
                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
-                          u"capital": None,
                           u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                          u"address": None,
                          }],
             u"activityKind": {u"scheme": u"КВЕД",
                              u"id": u"64.19",
@@ -314,6 +312,28 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
+
+    def test_null_fields(self):
+        """Check that fields with null values removed"""
+        setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=null_fields)
+        response = self.app.get('/details/2842335')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], {
+            u"management": u"ЗАГАЛЬНІ ЗБОРИ",
+            u"identification": {u"scheme": u"UA-EDR",
+                                u"id": u"14360570"},
+            u"address": {u"postalCode": u"49094",
+                         u"countryName": u"УКРАЇНА",
+                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+            u"founders": [{
+                          u"role_text": u"засновник",
+                          u"role": 4,
+                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
+                         }],
+            u"activityKind": {u"scheme": u"КВЕД",
+                              u"id": u"64.19",
+                              u"description": u"Інші види грошового посередництва"}})
 
 
 class TestVerifyPlatform(TestVerify):
