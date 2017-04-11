@@ -272,13 +272,9 @@ class TestDetails(BaseWebTest):
                         u"countryName": u"УКРАЇНА",
                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
-                          u"capital": None,
                           u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                          u"address": {u'postalCode': None,
-                                       u'countryName': None,
-                                       u'streetAddress': None}
                          }],
             u"activityKind": {u"scheme": u"КВЕД",
                              u"id": u"64.19",
@@ -318,6 +314,7 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
 
     def test_null_fields(self):
+        """Check that fields with null values removed"""
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=null_fields)
         response = self.app.get('/details/2842335')
         self.assertEqual(response.status, '200 OK')
@@ -325,19 +322,14 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.json['data'], {
             u"management": u"ЗАГАЛЬНІ ЗБОРИ",
             u"identification": {u"scheme": u"UA-EDR",
-                                u"id": u"14360570",
-                                u"legalName": None},
+                                u"id": u"14360570"},
             u"address": {u"postalCode": u"49094",
                          u"countryName": u"УКРАЇНА",
                          u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
-                          u"capital": None,
                           u"role_text": u"засновник",
                           u"role": 4,
                           u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                          u"address": {u'postalCode': None,
-                                       u'countryName': None,
-                                       u'streetAddress': None}
                          }],
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",

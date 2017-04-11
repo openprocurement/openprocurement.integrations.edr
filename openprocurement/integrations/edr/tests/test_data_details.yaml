@@ -26,12 +26,7 @@ data:
     postalCode: '49094'
     streetAddress: Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район
   founders:
-  - address:
-      countryName: null
-      postalCode: null
-      streetAddress: null
-    capital: null
-    name: АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ
+  - name: АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ
     role: 4
     role_text: засновник
   identification:
