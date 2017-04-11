@@ -223,6 +223,7 @@ def get_address(data):
 
 
 def remove_null_fields(data):
+    """Remove all keys with 'None' values"""
     for k, v in data.items():
         if isinstance(v, dict):
             remove_null_fields(v)
