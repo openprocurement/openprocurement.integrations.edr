@@ -140,7 +140,7 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Paiment required.', u'code': 5}])
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Payment required.', u'code': 5}])
 
     def test_forbidden(self):
         """Check 403 status EDR response"""

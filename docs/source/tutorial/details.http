@@ -49,9 +49,7 @@ Content-Type: application/json; charset=UTF-8
       {
         "role_text": "засновник", 
         "role": 4, 
-        "name": "АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ", 
-        "address": null, 
-        "capital": null
+        "name": "АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"
       }
     ], 
     "activityKind": {
