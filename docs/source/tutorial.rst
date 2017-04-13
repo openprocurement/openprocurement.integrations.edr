@@ -30,15 +30,34 @@ If you need to obtain information about individual entrepreneurs then send a req
 
 Errors
 ------
-
 Response to the unsuccessful request contains list of errors  with description and code in response body and status `403 Forbidden`.
-If EDR service returns error, then code error presents in list of errors. In case list of errors contains only text message it means that an error occurred on our proxy server.
 
-When given EDRPOU (IPN or series and number of passport) were not found in EDR response will contains message `EDRPOU not found`:
+API returns the following response when limit of requests to the resource is reached:
+
+.. include:: tutorial/too_many_requests.http
+   :code:
+Response contains message with time when current limitation will be expired.
+
+When given EDRPOU (IPN) were not found in EDR response will contains message `EDRPOU not found`:
 
 .. include:: tutorial/empty_response.http
    :code:
 
+When GET parameter  `code` or `passport` is not passed proxy-server will return response with error:
+
+.. include:: tutorial/without_param.http
+   :code:
+
+Rest of errors appears on the proxy-server side and can contain one of next messages:
+
+.. include:: tutorial/invalid_token.http
+   :code:
+or
+
+.. include:: tutorial/payment_requests.http
+   :code:
+
+These errors are not related to the created request.
 
 File-reference
 ------
