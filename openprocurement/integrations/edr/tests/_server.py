@@ -58,7 +58,7 @@ def check_headers():
 def payment_required():
     response.status = 402
     response.content_type = 'application/json'
-    return dumps({"errors": [{"code": 5, "message": "Paiment required."}]})
+    return dumps({"errors": [{"code": 5, "message": "Payment required."}]})
 
 
 def forbidden():
