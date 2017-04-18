@@ -6,4 +6,5 @@ class TestHealth(BaseWebTest):
     def test_get(self):
         response = self.app.get('/health')
         self.assertEqual(response.status, "200 OK")
+        self.assertEqual(response.content_type, "application/json")
 
