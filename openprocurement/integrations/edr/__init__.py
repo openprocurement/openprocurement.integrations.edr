@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
+from openprocurement.integrations.edr.utils import ROUTE_PREFIX
+
 if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
@@ -34,7 +36,8 @@ def main(global_config, **settings):
         settings=settings,
         authentication_policy=BasicAuthAuthenticationPolicy(auth_check, __name__),
         authorization_policy=ACLAuthorizationPolicy(),
-        root_factory=Root
+        root_factory=Root,
+        route_prefix=ROUTE_PREFIX,
     )
     config.include('pyramid_exclog')
     config.add_forbidden_view(forbidden)
