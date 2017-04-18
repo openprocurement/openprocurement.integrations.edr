@@ -55,8 +55,9 @@ def main(global_config, **settings):
                                            int(settings.get('edr_api_port')))
 
     # Include views
-    config.add_route('verify', '/verify')
-    config.add_route('details', '/details/{id}')
+    config.add_route('verify', '/api/1.0/verify')
+    config.add_route('details', '/api/1.0/details/{id}')
+    config.add_route('health', '/api/1.0/health')
     config.scan("openprocurement.integrations.edr.views")
 
     return config.make_wsgi_app()
