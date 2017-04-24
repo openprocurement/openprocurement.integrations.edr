@@ -378,3 +378,21 @@ def null_fields():
         "email": ""
       }
     })
+
+
+def sandbox_mode_data():
+    response.status = 200
+    response.content_type = 'application/json'
+    return dumps([{
+        "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/999186",
+        "id": 999186,
+        "state": 1,
+        "state_text": "зареєстровано",
+        "code": "00037256",
+        "name": "ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"}])
+
+
+def sandbox_mode_data_details():
+    response.status = 200
+    response.content_type = 'application/json'
+    return dumps({"data": {"identification": {"scheme": "UA-EDR"}}})

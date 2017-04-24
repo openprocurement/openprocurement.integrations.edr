@@ -6,7 +6,8 @@ from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
-    wrong_ip_address_detailed_request, null_fields)
+    wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
+from openprocurement.integrations.edr.utils import SANDBOX_MODE
 
 
 class TestVerify(BaseWebTest):
@@ -236,6 +237,38 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
 
+    def test_sandbox_mode_data(self):
+        """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_verify.json.
+        Otherwise test that _server return data"""
+        if SANDBOX_MODE:
+            setup_routing(self.edr_api_app, func=response_code)
+            response = self.app.get('/verify?id=00037256')
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(
+                response.json['data'],
+                [{u'state': {u'registrationStatusDetails': u'зареєстровано',
+                             u'registrationStatus': u'registered'},
+                  u'identification': {u'url': u"https://zqedr-api.nais.gov.ua/1.0/subjects/999186",
+                                      u'schema': u'UA-EDR',
+                                      u'id': u'00037256',
+                                      u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
+                  u'x_edrInternalId': 999186}])
+        else:
+            setup_routing(self.edr_api_app, func=sandbox_mode_data)
+            response = self.app.get('/verify?id=00037256')
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(
+                response.json['data'],
+                [{u'state': {u'registrationStatusDetails': u'зареєстровано',
+                             u'registrationStatus': u'registered'},
+                  u'identification': {u'url': u"https://zqedr-api.nais.gov.ua/1.0/subjects/999186",
+                                      u'schema': u'UA-EDR',
+                                      u'id': u'00037256',
+                                      u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
+                  u'x_edrInternalId': 999186}])
+
 
 class TestDetails(BaseWebTest):
     """ Test details view """
@@ -334,6 +367,22 @@ class TestDetails(BaseWebTest):
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",
                               u"description": u"Інші види грошового посередництва"}})
+
+    def test_sandbox_mode_data_details(self):
+        """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_verify.json.
+        Otherwise test that _server return data"""
+        if SANDBOX_MODE:
+            setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=response_details)
+            response = self.app.get('/details/999186')
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
+        else:
+            setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
+            response = self.app.get('/details/999186')
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
 
 
 class TestVerifyPlatform(TestVerify):
