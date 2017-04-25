@@ -31,7 +31,8 @@ def verify_user(request):
         details = EDRDetails('passport', passport)
     if SANDBOX_MODE and TEST_DATA_VERIFY.get(details.code):
         LOGGER.info('Return test data for {}'.format(details.code))
-        return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[details.code]], 'meta': datetime.now(tz=TZ).isoformat()}
+        return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[details.code]],
+                'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
     try:
         response = request.registry.edr_client.get_subject(**details._asdict())
     except (requests.exceptions.ReadTimeout,
@@ -60,7 +61,8 @@ def user_details(request):
     id = request.matchdict.get('id')
     if SANDBOX_MODE and TEST_DATA_DETAILS.get(id):
         LOGGER.info('Return test data for {}'.format(id))
-        return {'data': prepare_data_details(TEST_DATA_DETAILS[id]),  'meta': datetime.now(tz=TZ).isoformat()}
+        return {'data': prepare_data_details(TEST_DATA_DETAILS[id]),
+                'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
     try:
         response = request.registry.edr_client.get_subject_details(id)
     except (requests.exceptions.ReadTimeout,

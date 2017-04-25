@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import webtest
 import os
+import datetime
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
@@ -385,7 +386,7 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
-            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+            self.assertAlmostEqual(datetime.datetime.now().isoformat(), response.json['meta']['sourceDate'])
         else:
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
             response = self.app.get('/details/999186')
