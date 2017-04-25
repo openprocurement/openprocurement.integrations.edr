@@ -3,6 +3,9 @@ from bottle import request, response
 from simplejson import dumps
 
 
+SOURCEDATE = 'Tue, 25 Apr 2017 11:56:36 GMT'
+
+
 def setup_routing(app, func, path='/1.0/subjects', method='GET'):
     """ Setup routs """
     app.routes = []
@@ -13,9 +16,11 @@ def response_code():
     code = request.query.code
     if not code.isdigit() or not (len(code) == 10 or len(code) == 8):
         response.content_type = 'application/json'
+        response.headers['Date'] = SOURCEDATE
         return dumps([])
     response.status = 200
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps([{"code": code,
                    "name": "АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\"",
                    "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842335",
@@ -29,13 +34,16 @@ def response_passport():
     if passport.isdigit() and len(passport) == 11:
         response.status = 400
         response.content_type = 'application/json'
+        response.headers['Date'] = SOURCEDATE
         return dumps({"errors": [{"code": 11, "message": "`passport` parameter has wrong value."}]})
     if passport.isalpha():
         response.status = 400
         response.content_type = 'application/json'
+        response.headers['Date'] = SOURCEDATE
         return dumps({"errors": [{"code": 11, "message": "`passport` parameter has wrong value."}]})
     response.status = 200
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps([{"code": passport,
                    "name": passport,
                    "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/2842336",
@@ -48,34 +56,40 @@ def check_headers():
     if request.headers.get('Authorization') == 'Token':
         response.status = 401
         response.content_type = 'application/json'
+        response.headers['Date'] = SOURCEDATE
         return dumps({"errors": [{"code": 1, "message": "Authentication credentials were not provided."}]})
     elif request.headers.get('Authorization') == 'Token 123':
         response.status = 401
         response.content_type = 'application/json'
+        response.headers['Date'] = SOURCEDATE
         return dumps({"errors": [{"code": 2, "message": "Invalid or expired token."}]})
 
 
 def payment_required():
     response.status = 402
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 5, "message": "Payment required."}]})
 
 
 def forbidden():
     response.status = 403
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 3, "message": "Your account is not permitted to access this resource."}]})
 
 
 def not_found():
     response.status = 404
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 4, "message": "Sorry, that page does not exist."}]})
 
 
 def not_acceptable():
     response.status = 406
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"message": "Message."}]})
 
 
@@ -83,30 +97,35 @@ def too_many_requests():
     response.status = 429
     response.set_header('Retry-After', 26)
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 9, "message": "Request was throttled. Expected available in 26 seconds."}]})
 
 
 def server_error():
     response.status = 500
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 20, "message": "Internal error."}]})
 
 
 def bad_gateway():
     response.status = 502
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"message": "Message."}]})
 
 
 def two_error_messages():
     response.status = 404
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 0, "message": "Message1."}, {"code": 0, "message": "Message2."}]})
 
 
 def response_details():
     response.status = 200
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({
       "id": 2842335,
       "state": 1,
@@ -250,30 +269,35 @@ def too_many_requests_details():
     response.status = 429
     response.set_header('Retry-After', 26)
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"code": 9, "message": "Request was throttled. Expected available in 26 seconds."}]})
 
 
 def bad_gateway_details():
     response.status = 502
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"message": "Message."}]})
 
 
 def wrong_ip_address():
     response.status = 403
     response.content_type = 'text/html'
+    response.headers['Date'] = SOURCEDATE
     return '<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body bgcolor="white">\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>nginx/1.10.1</center>\r\n</body>\r\n</html>\r\n'
 
 
 def wrong_ip_address_detailed_request():
     response.status = 403
     response.content_type = 'text/html'
+    response.headers['Date'] = SOURCEDATE
     return '<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body bgcolor="white">\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>nginx/1.10.1</center>\r\n</body>\r\n</html>\r\n'
 
 
 def null_fields():
     response.status = 200
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({
       "id": 2842335,
       "state": 1,
@@ -383,6 +407,7 @@ def null_fields():
 def sandbox_mode_data():
     response.status = 200
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps([{
         "url": "https://zqedr-api.nais.gov.ua/1.0/subjects/999186",
         "id": 999186,
@@ -395,4 +420,5 @@ def sandbox_mode_data():
 def sandbox_mode_data_details():
     response.status = 200
     response.content_type = 'application/json'
+    response.headers['Date'] = SOURCEDATE
     return dumps({"data": {"identification": {"scheme": "UA-EDR"}}})

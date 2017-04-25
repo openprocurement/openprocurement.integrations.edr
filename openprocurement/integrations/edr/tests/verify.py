@@ -60,6 +60,7 @@ class TestVerify(BaseWebTest):
                                  u'id': u'14360570',
                                  u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
              u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_passport(self):
         """ Get info by passport number """
@@ -76,6 +77,7 @@ class TestVerify(BaseWebTest):
                                  u'id': u'СН012345',
                                  u'legalName': u'СН012345'},
              u'x_edrInternalId': 2842336}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_new_passport(self):
         """ Get info by new passport number with 13-digits"""
@@ -92,6 +94,7 @@ class TestVerify(BaseWebTest):
                                  u'id': u'123456789',
                                  u'legalName': u'123456789'},
              u'x_edrInternalId': 2842336}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_ipn(self):
         """ Get info by IPN (physical entity-entrepreneur)"""
@@ -106,6 +109,7 @@ class TestVerify(BaseWebTest):
                                               u'schema': u'UA-EDR', u'id': u'1234567891',
                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
                           u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_invalid_passport(self):
         """Check invalid passport number АБВ"""
@@ -254,6 +258,7 @@ class TestVerify(BaseWebTest):
                                       u'id': u'00037256',
                                       u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
                   u'x_edrInternalId': 999186}])
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
             response = self.app.get('/verify?id=00037256')
@@ -268,6 +273,7 @@ class TestVerify(BaseWebTest):
                                       u'id': u'00037256',
                                       u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
                   u'x_edrInternalId': 999186}])
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
 
 class TestDetails(BaseWebTest):
@@ -313,6 +319,7 @@ class TestDetails(BaseWebTest):
                              u"id": u"64.19",
                              u"description": u"Інші види грошового посередництва"}
         })
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
@@ -367,6 +374,7 @@ class TestDetails(BaseWebTest):
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",
                               u"description": u"Інші види грошового посередництва"}})
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_sandbox_mode_data_details(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_verify.json.
@@ -377,12 +385,14 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
         else:
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
             response = self.app.get('/details/999186')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
 
 class TestVerifyPlatform(TestVerify):
