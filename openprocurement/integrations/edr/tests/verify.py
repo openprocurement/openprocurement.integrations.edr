@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import webtest
 import os
+import datetime
+import iso8601
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
     wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
-from openprocurement.integrations.edr.utils import SANDBOX_MODE
+from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
 
 
 class TestVerify(BaseWebTest):
@@ -258,7 +260,8 @@ class TestVerify(BaseWebTest):
                                       u'id': u'00037256',
                                       u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
                   u'x_edrInternalId': 999186}])
-            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+            self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
+                             datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
             response = self.app.get('/verify?id=00037256')
@@ -385,7 +388,8 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
-            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+            self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
+                             datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
             response = self.app.get('/details/999186')
