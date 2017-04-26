@@ -44,7 +44,9 @@ def verify_user(request):
         data = response.json()
         if not data:
             LOGGER.warning('Accept empty response from EDR service for {}'.format(details.code))
-            return handle_error(request, [{u'message': u'EDRPOU not found'}], 404)
+            return handle_error(request, [{u"error": {u"errorDetails": u"Couldn't find this code in EDR.",
+                                                      u"code": u"notFound"},
+                                          u'meta': meta_data(response.headers['Date'])}], 404)
         LOGGER.info('Return data from EDR service for {}'.format(details.code))
         return {'data': [prepare_data(d) for d in data], 'meta': meta_data(response.headers['Date'])}
     elif response.status_code == 429:
