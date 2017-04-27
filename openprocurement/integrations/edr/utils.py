@@ -176,8 +176,8 @@ registration_status_by_code = lambda x: registration_statuses.get(x, 'other')
 
 def prepare_data(data):
     return {'x_edrInternalId': data.get('id'),
-            'state': {'registrationStatus': registration_status_by_code(data.get('state')),
-                      'registrationStatusDetails': data.get('state_text')},
+            'registrationStatus': registration_status_by_code(data.get('state')),
+            'registrationStatusDetails': data.get('state_text'),
             'identification': {'schema': identification_schema,
                                'id': data.get('code'),
                                'legalName': data.get('name'),
@@ -190,7 +190,7 @@ def forbidden(request):
 
 
 def prepare_data_details(data):
-    founders = data.get('founders')
+    founders = data.get('founders', [])
     for founder in founders:
         founder['address'] = get_address(founder)
     additional_activity_kinds = []
