@@ -10,8 +10,7 @@ Content-Type: application/json; charset=UTF-8
     {
       "description": [
         {
-          "message": "Invalid or expired token.", 
-          "code": 2
+          "message": "Forbidden"
         }
       ], 
       "name": "data", 

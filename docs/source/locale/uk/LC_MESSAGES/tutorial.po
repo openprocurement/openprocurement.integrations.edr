@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 17:57+0300\n"
+"POT-Creation-Date: 2017-04-27 16:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,12 +37,12 @@ msgstr ""
 #: ../../source/tutorial.rst:13
 msgid ""
 "Response consists of the following fields: `x_edrInternalId`, "
-"`state.registrationStatusDetails`, `state.registrationStatus`, "
+"`registrationStatusDetails`, `registrationStatus`, "
 "`identification.schema`, `identification.id`, `identification.legalName`,"
 " `identification.url`."
 msgstr ""
 "Відповідь складається з наступних полів: `x_edrInternalId`, "
-"`state.registrationStatusDetails`, `state.registrationStatus`, "
+"`registrationStatusDetails`, `registrationStatus`, "
 "`identification.schema`, `identification.id`, `identification.legalName`,"
 " `identification.url`."
 
@@ -51,14 +51,14 @@ msgid "`x_edrInternalId` - unique identification of the subject,"
 msgstr "`x_edrInternalId` - унікальний ідентифікатор суб'єкта ,"
 
 #: ../../source/tutorial.rst:16
-msgid "`state.registrationStatusDetails` - text state of the entity (uk),"
+msgid "`registrationStatusDetails` - text state of the entity (uk),"
 msgstr ""
-"`state.registrationStatusDetails` - текстове відображення стану "
+"`registrationStatusDetails` - текстове відображення стану "
 "суб'єкта(укр),"
 
 #: ../../source/tutorial.rst:17
-msgid "`state.registrationStatus` - text state of the entity,"
-msgstr "`state.registrationStatus` - текстове відображення стану суб'єкта,"
+msgid "`registrationStatus` - text state of the entity,"
+msgstr "`registrationStatus` - текстове відображення стану суб'єкта,"
 
 #: ../../source/tutorial.rst:18
 msgid "`identification.schema` - “UA-EDR”"
@@ -139,8 +139,8 @@ msgid ""
 "Rest of errors appears on the proxy-server side and can contain one of "
 "next messages:"
 msgstr ""
-"Інші помилки виникають на стороні ЕДР-проксі та можуть мати вигляд одної з наступних "
-"помилок:"
+"Інші помилки виникають на стороні ЕДР-проксі та можуть мати вигляд одної "
+"з наступних помилок:"
 
 #: ../../source/tutorial.rst:55
 msgid "or"

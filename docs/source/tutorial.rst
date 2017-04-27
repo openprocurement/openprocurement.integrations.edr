@@ -10,11 +10,11 @@ In order to get information from EDR by code EDRPOU you need to make a request t
 
 .. include:: tutorial/basic_request.http
    :code:
-Response consists of the following fields: `x_edrInternalId`, `state.registrationStatusDetails`, `state.registrationStatus`, `identification.schema`, `identification.id`, `identification.legalName`, `identification.url`.
+Response consists of the following fields: `x_edrInternalId`, `registrationStatusDetails`, `registrationStatus`, `identification.schema`, `identification.id`, `identification.legalName`, `identification.url`.
 
 * `x_edrInternalId` - unique identification of the subject,
-* `state.registrationStatusDetails` - text state of the entity (uk),
-* `state.registrationStatus` - text state of the entity,
+* `registrationStatusDetails` - text state of the entity (uk),
+* `registrationStatus` - text state of the entity,
 * `identification.schema` - “UA-EDR”
 * `identification.id` - EDRPOU; if the subject - an individual entrepreneur - instead of IPN system returns ten zeros, because the data is confidential,
 * `identification.legalName` -  name of the entity,
