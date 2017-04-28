@@ -173,10 +173,11 @@ class TestVerify(BaseWebTest):
     def test_too_many_requests(self):
         """Check 429 status EDR response(too many requests)"""
         setup_routing(self.edr_api_app, func=too_many_requests)
-        response = self.app.get('/verify?id=123', status=403)
+        response = self.app.get('/verify?id=123', status=429)
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.status, '429 Too Many Requests')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
+        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_server_error(self):
         """Check 500 status EDR response"""
@@ -284,10 +285,11 @@ class TestDetails(BaseWebTest):
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=too_many_requests_details)
-        response = self.app.get('/details/2842335', status=403)
+        response = self.app.get('/details/2842335', status=429)
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.status, '429 Too Many Requests')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
+        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_bad_gateway_details(self):
         """Check 502 status EDR response"""
