@@ -54,13 +54,14 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
-            [{u'registrationStatusDetails': u'зареєстровано',
-              u'registrationStatus': u'registered',
-              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                  u'schema': u'UA-EDR',
-                                  u'id': u'14360570',
-                                  u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-              u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['data'],
+                         [{u'registrationStatusDetails': u'зареєстровано',
+                           u'registrationStatus': u'registered',
+                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                               u'schema': u'UA-EDR',
+                                               u'id': u'14360570',
+                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                           u'x_edrInternalId': 2842335}])
 
     def test_passport(self):
         """ Get info by passport number """
