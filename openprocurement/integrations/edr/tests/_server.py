@@ -421,4 +421,55 @@ def sandbox_mode_data_details():
     response.status = 200
     response.content_type = 'application/json'
     response.headers['Date'] = SOURCEDATE
-    return dumps({"data": {"identification": {"scheme": "UA-EDR"}}})
+    return dumps({
+        "id": 999186,
+        "state": 1,
+        "state_text": "зареєстровано",
+        "code": "00037256",
+        "names": {
+          "name": "ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
+          "short": "ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
+          "name_en": "",
+          "include_olf": 0,
+          "short_en": "",
+          "display": "ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"
+        },
+        "olf_code": "425",
+        "olf_name": "ДЕРЖАВНА ОРГАНІЗАЦІЯ (УСТАНОВА, ЗАКЛАД)",
+        "founding_document": None,
+        "executive_power": None,
+        "object_name": "Відділ державної реєстрації юридичних осіб та фізичних осіб - підприємців Печерського району реєстраційної служби Головного управління юстиції у місті Києві",
+        "founders": [
+          {
+            "address": None,
+            "name": "УКАЗ ПРИЗИДЕНТА УКРАЇНИ №278/2000 ВІД 23 ЛЮТОГО 2000 РОКУ",
+            "capital": 0,
+            "role": 4,
+            "role_text": "засновник"
+          }
+        ],
+        "management": "КЕРІВНИК",
+        "activity_kinds": [
+          {
+            "code": "84.11",
+            "name": "Державне управління загального характеру",
+            "is_primary": True
+          }
+        ],
+        "address": {
+          "address": "м.Київ, Печерський район ВУЛИЦЯ БАНКОВА буд. 11",
+          "parts": {
+            "num_type": None,
+            "num": "",
+            "house": "11",
+            "street": "ВУЛИЦЯ БАНКОВА",
+            "atu": "м.Київ, Печерський район",
+            "building_type": None,
+            "house_type": "буд.",
+            "building": ""
+          },
+          "zip": "01220",
+          "country": "УКРАЇНА"
+        },
+        "bankruptcy": None})
+

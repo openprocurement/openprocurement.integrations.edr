@@ -252,8 +252,8 @@ class TestVerify(BaseWebTest):
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(
                 response.json['data'],
-                [{u'state': {u'registrationStatusDetails': u'зареєстровано',
-                             u'registrationStatus': u'registered'},
+                [{u'registrationStatusDetails': u'зареєстровано',
+                  u'registrationStatus': u'registered',
                   u'identification': {u'url': u"https://zqedr-api.nais.gov.ua/1.0/subjects/999186",
                                       u'schema': u'UA-EDR',
                                       u'id': u'00037256',
@@ -268,8 +268,8 @@ class TestVerify(BaseWebTest):
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(
                 response.json['data'],
-                [{u'state': {u'registrationStatusDetails': u'зареєстровано',
-                             u'registrationStatus': u'registered'},
+                [{u'registrationStatusDetails': u'зареєстровано',
+                  u'registrationStatus': u'registered',
                   u'identification': {u'url': u"https://zqedr-api.nais.gov.ua/1.0/subjects/999186",
                                       u'schema': u'UA-EDR',
                                       u'id': u'00037256',
@@ -379,14 +379,38 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_sandbox_mode_data_details(self):
-        """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_verify.json.
+        """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_details.json.
         Otherwise test that _server return data"""
         if SANDBOX_MODE:
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=response_details)
             response = self.app.get('/details/999186')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
+            self.assertEqual(response.json['data'], {
+                    u"management": u"КЕРІВНИК",
+                    u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
+                    u"identification": {
+                      u"scheme": u"UA-EDR",
+                      u"id": u"00037256",
+                      u"legalName": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"
+                    },
+                    u"address": {
+                      u"postalCode": u"01220",
+                      u"countryName": u"УКРАЇНА",
+                      u"streetAddress": u"м.Київ, Печерський район ВУЛИЦЯ БАНКОВА буд. 11"
+                    },
+                    u"founders": [
+                      {
+                        u"role_text": u"засновник",
+                        u"role": 4,
+                        u"name": u"УКАЗ ПРИЗИДЕНТА УКРАЇНИ №278/2000 ВІД 23 ЛЮТОГО 2000 РОКУ"
+                      }
+                    ],
+                    u"activityKind": {
+                      u"scheme": u"КВЕД",
+                      u"id": u"84.11",
+                      u"description": u"Державне управління загального характеру"
+                    }})
             self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
@@ -394,7 +418,31 @@ class TestDetails(BaseWebTest):
             response = self.app.get('/details/999186')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['data'], {"identification": {"scheme": "UA-EDR"}})
+            self.assertEqual(response.json['data'], {
+                    u"management": u"КЕРІВНИК",
+                    u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
+                    u"identification": {
+                      u"scheme": u"UA-EDR",
+                      u"id": u"00037256",
+                      u"legalName": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"
+                    },
+                    u"address": {
+                      u"postalCode": u"01220",
+                      u"countryName": u"УКРАЇНА",
+                      u"streetAddress": u"м.Київ, Печерський район ВУЛИЦЯ БАНКОВА буд. 11"
+                    },
+                    u"founders": [
+                      {
+                        u"role_text": u"засновник",
+                        u"role": 4,
+                        u"name": u"УКАЗ ПРИЗИДЕНТА УКРАЇНИ №278/2000 ВІД 23 ЛЮТОГО 2000 РОКУ"
+                      }
+                    ],
+                    u"activityKind": {
+                      u"scheme": u"КВЕД",
+                      u"id": u"84.11",
+                      u"description": u"Державне управління загального характеру"
+                    }})
             self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
 
