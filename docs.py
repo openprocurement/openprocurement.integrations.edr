@@ -7,7 +7,8 @@ import openprocurement.integrations.edr.tests.base as base_test
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_details,
-                                                            payment_required, too_many_requests, response_passport)
+                                                            payment_required, too_many_requests, response_passport,
+                                                            check_headers)
 from webtest import TestApp
 
 now = datetime.now()
@@ -139,6 +140,7 @@ class TenderResourceTest(BaseWebTest):
     def test_auth_errors(self):
         request_path = '/verify?{}={}'
 
+        setup_routing(self.edr_api_app, func=check_headers)
         # Invalid token
         self.app = DumpsTestAppwebtest("config:test_conf/tests_copy_2.ini",
                                        relative_to=os.path.dirname(base_test.__file__))

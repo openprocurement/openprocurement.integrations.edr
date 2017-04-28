@@ -53,16 +53,14 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(
-            response.json['data'],
-            [{u'state': {u'registrationStatusDetails': u'зареєстровано',
-                         u'registrationStatus': u'registered'},
-             u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                 u'schema': u'UA-EDR',
-                                 u'id': u'14360570',
-                                 u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-             u'x_edrInternalId': 2842335}])
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+            [{u'registrationStatusDetails': u'зареєстровано',
+              u'registrationStatus': u'registered',
+              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                  u'schema': u'UA-EDR',
+                                  u'id': u'14360570',
+                                  u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+              u'x_edrInternalId': 2842335}])
 
     def test_passport(self):
         """ Get info by passport number """
@@ -72,14 +70,13 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            [{u'state': {u'registrationStatusDetails': u'зареєстровано',
-                         u'registrationStatus': u'registered'},
-             u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                                 u'schema': u'UA-EDR',
-                                 u'id': u'СН012345',
-                                 u'legalName': u'СН012345'},
-             u'x_edrInternalId': 2842336}])
-        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+            [{u'registrationStatusDetails': u'зареєстровано',
+              u'registrationStatus': u'registered',
+              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
+                                  u'schema': u'UA-EDR',
+                                  u'id': u'СН012345',
+                                  u'legalName': u'СН012345'},
+              u'x_edrInternalId': 2842336}])
 
     def test_new_passport(self):
         """ Get info by new passport number with 13-digits"""
@@ -89,12 +86,12 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(
             response.json['data'],
-            [{u'state': {u'registrationStatusDetails': u'зареєстровано',
-                         u'registrationStatus': u'registered'},
-             u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                                 u'schema': u'UA-EDR',
-                                 u'id': u'123456789',
-                                 u'legalName': u'123456789'},
+            [{u'registrationStatusDetails': u'зареєстровано',
+              u'registrationStatus': u'registered',
+              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
+                                  u'schema': u'UA-EDR',
+                                  u'id': u'123456789',
+                                  u'legalName': u'123456789'},
              u'x_edrInternalId': 2842336}])
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
@@ -105,12 +102,12 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'],
-                         [{u'state': {u'registrationStatusDetails': u'зареєстровано',
-                                      u'registrationStatus': u'registered'},
-                          u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                              u'schema': u'UA-EDR', u'id': u'1234567891',
-                                              u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-                          u'x_edrInternalId': 2842335}])
+                         [{u'registrationStatusDetails': u'зареєстровано',
+                           u'registrationStatus': u'registered',
+                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                               u'schema': u'UA-EDR', u'id': u'1234567891',
+                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                           u'x_edrInternalId': 2842335}])
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_invalid_passport(self):
@@ -128,7 +125,6 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=123', status=404)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '404 Not Found')
-        print response.json
         self.assertEqual(response.json['errors'][0]['description'],
                          [{u'error': {u'code': u'notFound', u'errorDetails': u"Couldn't find this code in EDR."},
                            u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}])
