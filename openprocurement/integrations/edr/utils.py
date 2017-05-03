@@ -19,6 +19,7 @@ TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 USERS = {}
 identification_schema = u'UA-EDR'
 activityKind_scheme = u'КВЕД'
+SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
 
 
 class Root(object):
@@ -233,3 +234,16 @@ def remove_null_fields(data):
         if not data[k]:
             del data[k]
     return data
+
+
+def read_json(name):
+    import os.path
+    from json import loads
+    curr_dir = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(curr_dir, name)
+    with open(file_path) as lang_file:
+        data = lang_file.read()
+    return loads(data)
+
+TEST_DATA_VERIFY = read_json('test_data_verify.json')
+TEST_DATA_DETAILS = read_json('test_data_details.json')

@@ -3,8 +3,8 @@ import requests
 from collections import namedtuple
 from pyramid.view import view_config
 from logging import getLogger
-from openprocurement.integrations.edr.utils import prepare_data_details, prepare_data, error_handler
-
+from openprocurement.integrations.edr.utils import prepare_data_details, prepare_data, error_handler, SANDBOX_MODE, \
+    TEST_DATA_VERIFY, TEST_DATA_DETAILS
 LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 
@@ -26,6 +26,9 @@ def verify_user(request):
         if not passport:
             return handle_error(request, [{u'message': u'Need pass id or passport'}])
         details = EDRDetails('passport', passport)
+    if SANDBOX_MODE and TEST_DATA_VERIFY.get(details.code):
+        LOGGER.info('Return test data for {}'.format(details.code))
+        return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[details.code]]}
     try:
         response = request.registry.edr_client.get_subject(**details._asdict())
     except (requests.exceptions.ReadTimeout,
@@ -53,6 +56,9 @@ def verify_user(request):
              request_method='GET', permission='get_details')
 def user_details(request):
     id = request.matchdict.get('id')
+    if SANDBOX_MODE and TEST_DATA_DETAILS.get(id):
+        LOGGER.info('Return test data for {}'.format(id))
+        return {'data': prepare_data_details(TEST_DATA_DETAILS[id])}
     try:
         response = request.registry.edr_client.get_subject_details(id)
     except (requests.exceptions.ReadTimeout,
