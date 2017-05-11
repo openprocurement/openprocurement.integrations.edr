@@ -5,7 +5,7 @@ from json import dumps
 from pkg_resources import get_distribution
 from webob.multidict import NestedMultiDict
 from datetime import datetime
-from pytz import timezone
+from pytz import timezone, UTC
 from hashlib import sha512
 from ConfigParser import ConfigParser
 from pyramid.security import Allow
@@ -247,3 +247,8 @@ def read_json(name):
 
 TEST_DATA_VERIFY = read_json('test_data_verify.json')
 TEST_DATA_DETAILS = read_json('test_data_details.json')
+
+
+def meta_data(date):
+    """return sourceDate in ISO 8601format """
+    return {'sourceDate': datetime.strptime(date, '%a, %d %b %Y %H:%M:%S %Z').replace(tzinfo=UTC).isoformat()}

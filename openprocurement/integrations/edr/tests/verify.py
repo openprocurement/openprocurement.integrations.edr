@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import webtest
 import os
+import datetime
+import iso8601
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
     wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
-from openprocurement.integrations.edr.utils import SANDBOX_MODE
+from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
 
 
 class TestVerify(BaseWebTest):
@@ -51,15 +53,15 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(
-            response.json['data'],
-            [{u'registrationStatusDetails': u'зареєстровано',
-              u'registrationStatus': u'registered',
-              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                  u'schema': u'UA-EDR',
-                                  u'id': u'14360570',
-                                  u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-              u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+        self.assertEqual(response.json['data'],
+                         [{u'registrationStatusDetails': u'зареєстровано',
+                           u'registrationStatus': u'registered',
+                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                               u'schema': u'UA-EDR',
+                                               u'id': u'14360570',
+                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                           u'x_edrInternalId': 2842335}])
 
     def test_passport(self):
         """ Get info by passport number """
@@ -92,6 +94,7 @@ class TestVerify(BaseWebTest):
                                   u'id': u'123456789',
                                   u'legalName': u'123456789'},
              u'x_edrInternalId': 2842336}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_ipn(self):
         """ Get info by IPN (physical entity-entrepreneur)"""
@@ -106,6 +109,7 @@ class TestVerify(BaseWebTest):
                                                u'schema': u'UA-EDR', u'id': u'1234567891',
                                                u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
                            u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_invalid_passport(self):
         """Check invalid passport number АБВ"""
@@ -122,7 +126,9 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=123', status=404)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'EDRPOU not found'}])
+        self.assertEqual(response.json['errors'][0]['description'],
+                         [{u'error': {u'code': u'notFound', u'errorDetails': u"Couldn't find this code in EDR."},
+                           u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}])
 
     def test_unauthorized(self):
         """Send request without token using tests_copy.ini conf file"""
@@ -174,11 +180,10 @@ class TestVerify(BaseWebTest):
     def test_too_many_requests(self):
         """Check 429 status EDR response(too many requests)"""
         setup_routing(self.edr_api_app, func=too_many_requests)
-        response = self.app.get('/verify?id=123', status=429)
+        response = self.app.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status, '429 Too Many Requests')
+        self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
-        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_server_error(self):
         """Check 500 status EDR response"""
@@ -255,6 +260,8 @@ class TestVerify(BaseWebTest):
                                       u'id': u'00037256',
                                       u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
                   u'x_edrInternalId': 999186}])
+            self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
+                             datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
             response = self.app.get('/verify?id=00037256')
@@ -269,6 +276,7 @@ class TestVerify(BaseWebTest):
                                       u'id': u'00037256',
                                       u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
                   u'x_edrInternalId': 999186}])
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
 
 class TestDetails(BaseWebTest):
@@ -314,15 +322,15 @@ class TestDetails(BaseWebTest):
                              u"id": u"64.19",
                              u"description": u"Інші види грошового посередництва"}
         })
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=too_many_requests_details)
-        response = self.app.get('/details/2842335', status=429)
+        response = self.app.get('/details/2842335', status=403)
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status, '429 Too Many Requests')
+        self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
-        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_bad_gateway_details(self):
         """Check 502 status EDR response"""
@@ -369,6 +377,7 @@ class TestDetails(BaseWebTest):
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",
                               u"description": u"Інші види грошового посередництва"}})
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_sandbox_mode_data_details(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_details.json.
@@ -403,6 +412,8 @@ class TestDetails(BaseWebTest):
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
                     }})
+            self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
+                             datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
             response = self.app.get('/details/999186')
@@ -433,6 +444,7 @@ class TestDetails(BaseWebTest):
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
                     }})
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
 
 class TestVerifyPlatform(TestVerify):
