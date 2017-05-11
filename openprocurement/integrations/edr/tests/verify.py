@@ -127,7 +127,7 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.json['errors'][0]['description'],
-                         [{u'error': {u'code': u'notFound', u'errorDetails': u"Couldn't find this code in EDR."},
+                         [{u'message': u'EDRPOU not found',
                            u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}])
 
     def test_unauthorized(self):
