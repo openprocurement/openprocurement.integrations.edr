@@ -184,6 +184,7 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '429 Too Many Requests')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
+        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_server_error(self):
         """Check 500 status EDR response"""
@@ -331,6 +332,7 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '429 Too Many Requests')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
+        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_bad_gateway_details(self):
         """Check 502 status EDR response"""

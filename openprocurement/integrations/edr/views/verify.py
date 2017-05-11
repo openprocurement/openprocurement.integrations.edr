@@ -49,6 +49,7 @@ def verify_user(request):
         LOGGER.info('Return data from EDR service for {}'.format(details.code))
         return {'data': [prepare_data(d) for d in data], 'meta': meta_data(response.headers['Date'])}
     elif response.status_code == 429:
+        request.response.headers['Retry-After'] = response.headers.get('Retry-After')
         return handle_error(request, [{u'message': u'Retry request after {} seconds.'.format(response.headers.get('Retry-After'))}], status=429)
     elif response.status_code == 502:
         return handle_error(request, [{u'message': u'Service is disabled or upgrade.'}])
@@ -76,6 +77,7 @@ def user_details(request):
         LOGGER.info('Return detailed data from EDR service for {}'.format(id))
         return {'data': prepare_data_details(data), 'meta': meta_data(response.headers['Date'])}
     elif response.status_code == 429:
+        request.response.headers['Retry-After'] = response.headers.get('Retry-After')
         return handle_error(request, [{u'message': u'Retry request after {} seconds.'.format(response.headers.get('Retry-After'))}], status=429)
     elif response.status_code == 502:
         return handle_error(request, [{u'message': u'Service is disabled or upgrade.'}])
