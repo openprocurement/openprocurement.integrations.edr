@@ -114,8 +114,8 @@ class TenderResourceTest(BaseWebTest):
 
         with open('docs/source/tutorial/too_many_requests.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', edrpou), status=403)
-            self.assertEqual(response.status, '403 Forbidden')
+            response = self.app.get(request_path.format('id', edrpou), status=429)
+            self.assertEqual(response.status, '429 Too Many Requests')
             self.app.file_obj.write("\n")
 
         setup_routing(self.edr_api_app, func=response_passport)

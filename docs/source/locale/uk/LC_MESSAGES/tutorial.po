@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-27 16:29+0300\n"
+"POT-Creation-Date: 2017-05-13 16:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,9 +52,7 @@ msgstr "`x_edrInternalId` - унікальний ідентифікатор су
 
 #: ../../source/tutorial.rst:16
 msgid "`registrationStatusDetails` - text state of the entity (uk),"
-msgstr ""
-"`registrationStatusDetails` - текстове відображення стану "
-"суб'єкта(укр),"
+msgstr "`registrationStatusDetails` - текстове відображення стану суб'єкта(укр),"
 
 #: ../../source/tutorial.rst:17
 msgid "`registrationStatus` - text state of the entity,"
@@ -82,11 +80,18 @@ msgstr "`identification.legalName` -  назва,"
 msgid "`identification.url` - link to the entity with detailed information."
 msgstr "`identification.url` - посилання на екземпляр з деталізованою інформацію."
 
-#: ../../source/tutorial.rst:24
+#: ../../source/tutorial.rst:23
+msgid ""
+"Also response contains `meta.sourceDate` field - date when information "
+"from EDR API was received."
+msgstr ""
+"Також відповідь містить поле `meta.sourceDate` - дата отримання інформації від ЄДР API."
+
+#: ../../source/tutorial.rst:26
 msgid "Request with Individual Tax Number"
 msgstr "Запит з індивідуальним податковим номером"
 
-#: ../../source/tutorial.rst:26
+#: ../../source/tutorial.rst:28
 msgid ""
 "If you need to obtain information about individual entrepreneurs then "
 "send a request with code IPN:"
@@ -94,31 +99,29 @@ msgstr ""
 "Якщо Вам необхідно отримати інформацію для фізичних осіб-підприємців тоді"
 " необхідно відправити запит з ІПН:"
 
-#: ../../source/tutorial.rst:32
+#: ../../source/tutorial.rst:34
 msgid "Errors"
 msgstr "Помилки"
 
-#: ../../source/tutorial.rst:33
+#: ../../source/tutorial.rst:35
 msgid ""
 "Response to the unsuccessful request contains list of errors  with "
-"description and code in response body and status `403 Forbidden`."
+"description, code in response body and status."
 msgstr ""
 "Відповідь на невдалий запит містить список з текстовим відображенням "
-"помилок та кодом в тілі відповіді та статусом `403 Forbidden`."
+"помилками, коду помилки в тілі відповіді та статусу."
 
-#: ../../source/tutorial.rst:35
+#: ../../source/tutorial.rst:37
 msgid ""
 "API returns the following response when limit of requests to the resource"
 " is reached:"
 msgstr "API повертає таку відповідь, коли вичерпано обмеження запитів до ресурсу:"
 
-#: ../../source/tutorial.rst:39
-msgid ""
-"Response contains message with time when current limitation will be "
-"expired."
+#: ../../source/tutorial.rst:41
+msgid "Response contains message with time when current limitation will expire."
 msgstr "Відповідь матиме відповідний текст та час, через який сплине це обмеження."
 
-#: ../../source/tutorial.rst:41
+#: ../../source/tutorial.rst:43
 msgid ""
 "When given EDRPOU (IPN) were not found in EDR response will contains "
 "message `EDRPOU not found`:"
@@ -126,7 +129,7 @@ msgstr ""
 "Коли даний ЄДРПОУ (ІПН або серія на номер паспорту) не знайдений, "
 "відповідь містить повідомлення `EDRPOU not found`."
 
-#: ../../source/tutorial.rst:46
+#: ../../source/tutorial.rst:48
 msgid ""
 "When GET parameter  `code` or `passport` is not passed proxy-server will "
 "return response with error:"
@@ -134,7 +137,7 @@ msgstr ""
 "Якщо GET-параметр   `code`  або  `passport`  відсутній в запиті, то "
 "ЕДР-проксі поверне наступну помилку:"
 
-#: ../../source/tutorial.rst:51
+#: ../../source/tutorial.rst:53
 msgid ""
 "Rest of errors appears on the proxy-server side and can contain one of "
 "next messages:"
@@ -142,19 +145,19 @@ msgstr ""
 "Інші помилки виникають на стороні ЕДР-проксі та можуть мати вигляд одної "
 "з наступних помилок:"
 
-#: ../../source/tutorial.rst:55
+#: ../../source/tutorial.rst:57
 msgid "or"
 msgstr "або"
 
-#: ../../source/tutorial.rst:60
+#: ../../source/tutorial.rst:62
 msgid "These errors are not related to the created request."
 msgstr "Ці помилки не зв'язані з данними із запиту."
 
-#: ../../source/tutorial.rst:63
+#: ../../source/tutorial.rst:65
 msgid "File-reference"
 msgstr "Файл-довідка"
 
-#: ../../source/tutorial.rst:64
+#: ../../source/tutorial.rst:66
 msgid ""
 "There are another endpoint `/details/x_edrInternalId` to process request "
 "to EDR to get detailed information using parameter `x_edrInternalId`, "

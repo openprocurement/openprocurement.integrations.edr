@@ -20,6 +20,8 @@ Response consists of the following fields: `x_edrInternalId`, `registrationStatu
 * `identification.legalName` -  name of the entity,
 * `identification.url` - link to the entity with detailed information.
 
+Also response contains `meta.sourceDate` field - date when information from EDR API was received.
+
 Request with Individual Tax Number
 ----------------------------------
 
@@ -30,13 +32,13 @@ If you need to obtain information about individual entrepreneurs then send a req
 
 Errors
 ------
-Response to the unsuccessful request contains list of errors  with description and code in response body and status `403 Forbidden`.
+Response to the unsuccessful request contains list of errors  with description, code in response body and status.
 
 API returns the following response when limit of requests to the resource is reached:
 
 .. include:: tutorial/too_many_requests.http
    :code:
-Response contains message with time when current limitation will be expired.
+Response contains message with time when current limitation will expire.
 
 When given EDRPOU (IPN) were not found in EDR response will contains message `EDRPOU not found`:
 
