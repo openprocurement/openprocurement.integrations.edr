@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-13 16:37+0300\n"
+"POT-Creation-Date: 2017-05-24 11:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,8 @@ msgid ""
 "Also response contains `meta.sourceDate` field - date when information "
 "from EDR API was received."
 msgstr ""
-"Також відповідь містить поле `meta.sourceDate` - дата отримання інформації від ЄДР API."
+"Також відповідь містить поле `meta.sourceDate` - дата отримання "
+"інформації від ЄДР API."
 
 #: ../../source/tutorial.rst:26
 msgid "Request with Individual Tax Number"
@@ -152,21 +153,4 @@ msgstr "або"
 #: ../../source/tutorial.rst:62
 msgid "These errors are not related to the created request."
 msgstr "Ці помилки не зв'язані з данними із запиту."
-
-#: ../../source/tutorial.rst:65
-msgid "File-reference"
-msgstr "Файл-довідка"
-
-#: ../../source/tutorial.rst:66
-msgid ""
-"There are another endpoint `/details/x_edrInternalId` to process request "
-"to EDR to get detailed information using parameter `x_edrInternalId`, "
-"received in first response. Only user from group `robot` have permissions"
-" to process given request. Request looks like:"
-msgstr ""
-"Існує також інша вхідна точка `/details/x_edrInternalId` для здійснення "
-"запитів до ЕДР для отримання деталізованної інформації, використовуючи "
-"параметр `x_edrInternalId`, який надходить у відповідь на перший запит. "
-"Тільки користувач з группи `robot` має права на здійснення данного "
-"запиту. Запит має наступний вигляд: "
 
