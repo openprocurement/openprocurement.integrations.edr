@@ -7,6 +7,7 @@ if 'test' not in __import__('sys').argv[0]:
 
 from logging import getLogger
 from openprocurement.integrations.edr.client import EdrClient
+from openprocurement.integrations.edr.utils import ROUTE_PREFIX
 
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -34,7 +35,8 @@ def main(global_config, **settings):
         settings=settings,
         authentication_policy=BasicAuthAuthenticationPolicy(auth_check, __name__),
         authorization_policy=ACLAuthorizationPolicy(),
-        root_factory=Root
+        root_factory=Root,
+        route_prefix=ROUTE_PREFIX,
     )
     config.include('pyramid_exclog')
     config.add_forbidden_view(forbidden)

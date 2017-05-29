@@ -4,7 +4,7 @@ import os
 import datetime
 import iso8601
 
-from openprocurement.integrations.edr.tests.base import BaseWebTest
+from openprocurement.integrations.edr.tests.base import BaseWebTest, PrefixedRequestClass
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
@@ -135,6 +135,7 @@ class TestVerify(BaseWebTest):
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('robot', 'robot'))
+        self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
@@ -163,6 +164,7 @@ class TestVerify(BaseWebTest):
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy_2.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('robot', 'robot'))
+        self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
