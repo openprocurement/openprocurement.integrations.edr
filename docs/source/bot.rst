@@ -32,3 +32,8 @@ Value `meta.version` now have value 1.1.1. First number - major version (delete 
 minor version (add field), third number - bugfix version (changes that do not change fields, but fix bugs).
 For example, changing of file-reference name from `edr_request.yaml` to `edr_identification.yaml` increased
 first number(major version), adding `meta.author` field increased second number (minor version).
+
+Change value of `meta.version` filed to 1.2.1 after adding fields to file-reference:
+
+* `registrationStatusDetails` - text state of the entity (uk),
+* `registrationStatus` - text state of the entity.
