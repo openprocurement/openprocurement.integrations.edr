@@ -207,6 +207,8 @@ def prepare_data_details(data):
                                               'scheme': activityKind_scheme,
                                               'description': activity_kind.get('name')})
     result = {'name': data.get('names').get('short') if data.get('names') else None,
+              'registrationStatus': registration_status_by_code(data.get('state')),
+              'registrationStatusDetails': data.get('state_text'),
               'identification': {'scheme': identification_schema,
                                  'id': data.get('code'),
                                  'legalName': data.get('names').get('display') if data.get('names') else None},

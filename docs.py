@@ -9,6 +9,7 @@ from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_details,
                                                             payment_required, too_many_requests, response_passport,
                                                             check_headers)
+from openprocurement.integrations.edr.utils import ROUTE_PREFIX
 from webtest import TestApp
 
 now = datetime.now()
@@ -25,7 +26,6 @@ class DumpsTestAppwebtest(TestApp):
     def do_request(self, req, status=None, expect_errors=None):
         req.headers.environ["HTTP_HOST"] = "api-sandbox.openprocurement.org"
         origin_path = req.headers.environ["PATH_INFO"]  # save original path
-        req.headers.environ["PATH_INFO"] = '/api/1.0{original_path}'.format(original_path=origin_path)  # add version
 
         if hasattr(self, 'file_obj') and not self.file_obj.closed:
             self.file_obj.write(req.as_bytes(True))
@@ -67,15 +67,15 @@ class TenderResourceTest(BaseWebTest):
         self.app.authorization = ('Basic', ('platform', 'platform'))
 
     def test_docs_tutorial(self):
-        request_path = '/verify?{}={}'
-        details_path = '/details/{}'
+        request_path = '{}/verify?{}={}'
+        details_path = '{}/details/{}'
         setup_routing(self.edr_api_app, func=response_code)
 
         # Basic request
 
         with open('docs/source/tutorial/basic_request.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', edrpou))
+            response = self.app.get(request_path.format(ROUTE_PREFIX, 'id', edrpou))
             self.assertEqual(response.status, '200 OK')
             self.app.file_obj.write("\n")
 
@@ -85,7 +85,7 @@ class TenderResourceTest(BaseWebTest):
 
         with open('docs/source/tutorial/ipn.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', ipn))
+            response = self.app.get(request_path.format(ROUTE_PREFIX, 'id', ipn))
             self.assertEqual(response.status, '200 OK')
             self.app.file_obj.write("\n")
 
@@ -95,7 +95,7 @@ class TenderResourceTest(BaseWebTest):
 
         with open('docs/source/tutorial/payment_requests.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', edrpou), status=403)
+            response = self.app.get(request_path.format(ROUTE_PREFIX, 'id', edrpou), status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.app.file_obj.write("\n")
 
@@ -104,7 +104,7 @@ class TenderResourceTest(BaseWebTest):
         # empty response
         with open('docs/source/tutorial/empty_response.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', invalid_edrpou), status=404)
+            response = self.app.get(request_path.format(ROUTE_PREFIX, 'id', invalid_edrpou), status=404)
             self.assertEqual(response.status, '404 Not Found')
             self.app.file_obj.write("\n")
 
@@ -114,7 +114,7 @@ class TenderResourceTest(BaseWebTest):
 
         with open('docs/source/tutorial/too_many_requests.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', edrpou), status=429)
+            response = self.app.get(request_path.format(ROUTE_PREFIX, 'id', edrpou), status=429)
             self.assertEqual(response.status, '429 Too Many Requests')
             self.app.file_obj.write("\n")
 
@@ -124,7 +124,7 @@ class TenderResourceTest(BaseWebTest):
 
         with open('docs/source/tutorial/without_param.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get('/verify', status=403)
+            response = self.app.get('{}/verify'.format(ROUTE_PREFIX), status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.app.file_obj.write("\n")
 
@@ -133,12 +133,12 @@ class TenderResourceTest(BaseWebTest):
         # details
         with open('docs/source/tutorial/details.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('robot', 'robot'))
-            response = self.app.get(details_path.format(x_edrInternalId))
+            response = self.app.get(details_path.format(ROUTE_PREFIX, x_edrInternalId))
             self.assertEqual(response.status, '200 OK')
             self.app.file_obj.write("\n")
 
     def test_auth_errors(self):
-        request_path = '/verify?{}={}'
+        request_path = '{}/verify?{}={}'
 
         setup_routing(self.edr_api_app, func=check_headers)
         # Invalid token
@@ -146,7 +146,7 @@ class TenderResourceTest(BaseWebTest):
                                        relative_to=os.path.dirname(base_test.__file__))
         with open('docs/source/tutorial/invalid_token.http', 'w') as self.app.file_obj:
             self.app.authorization = ('Basic', ('platform', 'platform'))
-            response = self.app.get(request_path.format('id', edrpou), status=403)
+            response = self.app.get(request_path.format(ROUTE_PREFIX, 'id', edrpou), status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.app.file_obj.write("\n")
 

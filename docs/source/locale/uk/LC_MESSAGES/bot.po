@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the
 # openprocurement.integrations.edr package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-24 12:24+0300\n"
+"POT-Creation-Date: 2017-05-29 16:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,3 +110,19 @@ msgstr ""
 "зміна назви файлу з `edr_request.yaml`  на `edr_identification.yaml`  це "
 "збільшення major версії, а додавання поля `meta.author`  це збільшення "
 "minor версії."
+
+#: ../../source/bot.rst:36
+msgid ""
+"Change value of `meta.version` filed to 1.2.1 after adding fields to "
+"file-reference:"
+msgstr ""
+"Змінено значення  поля `meta.version` на 1.2.1 у зв'язку з додаванням в файл-довідку наступних полів"
+
+#: ../../source/bot.rst:38
+msgid "`registrationStatusDetails` - text state of the entity (uk),"
+msgstr "`registrationStatusDetails` - текстове відображення стану суб'єкта(укр),"
+
+#: ../../source/bot.rst:39
+msgid "`registrationStatus` - text state of the entity."
+msgstr "`registrationStatus` - текстове відображення стану суб'єкта."
+

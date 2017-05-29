@@ -38,6 +38,8 @@ Content-Type: application/json; charset=UTF-8
     ], 
     "management": "ЗАГАЛЬНІ ЗБОРИ", 
     "name": "ПАТ КБ \"ПРИВАТБАНК\"", 
+    "registrationStatusDetails": "зареєстровано", 
+    "registrationStatus": "registered", 
     "identification": {
       "scheme": "UA-EDR", 
       "id": "14360570", 

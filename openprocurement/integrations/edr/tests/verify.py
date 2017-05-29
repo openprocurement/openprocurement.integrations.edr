@@ -310,6 +310,8 @@ class TestDetails(BaseWebTest):
                  u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
             u"management": u"ЗАГАЛЬНІ ЗБОРИ",
             u"name": u"ПАТ КБ \"ПРИВАТБАНК\"",
+            u"registrationStatus": u"registered",
+            u"registrationStatusDetails": u"зареєстровано",
             u"identification": {u"scheme": u"UA-EDR",
                                u"id": u"14360570",
                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
@@ -368,6 +370,8 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], {
             u"management": u"ЗАГАЛЬНІ ЗБОРИ",
+            u"registrationStatus": u"registered",
+            u"registrationStatusDetails": u"зареєстровано",
             u"identification": {u"scheme": u"UA-EDR",
                                 u"id": u"14360570"},
             u"address": {u"postalCode": u"49094",
@@ -394,6 +398,8 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.json['data'], {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
+                    u"registrationStatus": u"registered",
+                    u"registrationStatusDetails": u"зареєстровано",
                     u"identification": {
                       u"scheme": u"UA-EDR",
                       u"id": u"00037256",
@@ -426,6 +432,8 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.json['data'], {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
+                    u"registrationStatus": u"registered",
+                    u"registrationStatusDetails": u"зареєстровано",
                     u"identification": {
                       u"scheme": u"UA-EDR",
                       u"id": u"00037256",
