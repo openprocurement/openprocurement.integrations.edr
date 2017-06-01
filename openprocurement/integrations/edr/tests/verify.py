@@ -134,7 +134,7 @@ class TestVerify(BaseWebTest):
         """Send request without token using tests_copy.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('robot', 'robot'))
+        self.app_copy.authorization = ('Basic', ('platform', 'platform'))
         self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
@@ -228,7 +228,7 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'],
-                         [{u'message': u'Need pass id or passport'}])
+                         [{u'message': u'Wrong name for the GET parameter'}])
 
     def test_accept_yaml(self):
         setup_routing(self.edr_api_app, func=response_code)
@@ -244,7 +244,7 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/json'}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Content-Type of EDR API response is not application/json'}])
 
     def test_sandbox_mode_data(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_verify.json.
@@ -285,13 +285,17 @@ class TestVerify(BaseWebTest):
 class TestDetails(BaseWebTest):
     """ Test details view """
 
+    def setUp(self):
+        self.app.authorization = ('Basic', ('robot', 'robot'))
+
     def test_details(self):
         """Check data for get_subject_details request"""
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=response_details)
-        response = self.app.get('/details/2842335')
+        response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data'], {
+        self.assertEqual(response.json[0]['data'], {
             u"additionalActivityKinds": [
                 {u"scheme": u"КВЕД",
                  u"id": u"64.92",
@@ -327,12 +331,13 @@ class TestDetails(BaseWebTest):
                              u"id": u"64.19",
                              u"description": u"Інші види грошового посередництва"}
         })
-        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+        self.assertEqual(response.json[0]['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=too_many_requests_details)
-        response = self.app.get('/details/2842335', status=429)
+        response = self.app.get('/verify?id=14360570', status=429)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '429 Too Many Requests')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
@@ -340,15 +345,17 @@ class TestDetails(BaseWebTest):
 
     def test_bad_gateway_details(self):
         """Check 502 status EDR response"""
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=bad_gateway_details)
-        response = self.app.get('/details/2842335', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Service is disabled or upgrade.'}])
 
     def test_accept_yaml_details(self):
-        setup_routing(self.edr_api_app, path='/1.0/subjects/2842335',func=response_details)
-        response = self.app.get('/details/2842335', headers={'Accept': 'application/yaml'})
+        setup_routing(self.edr_api_app, func=response_code)
+        setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=response_details)
+        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
         with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
@@ -356,19 +363,21 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip_details(self):
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=wrong_ip_address_detailed_request)
-        response = self.app.get('/details/2842335', headers={'Accept': 'application/json'}, status=403)
+        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/json'}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Content-Type of EDR API response is not application/json'}])
 
     def test_null_fields(self):
         """Check that fields with null values removed"""
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=null_fields)
-        response = self.app.get('/details/2842335')
+        response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data'], {
+        self.assertEqual(response.json[0]['data'], {
             u"management": u"ЗАГАЛЬНІ ЗБОРИ",
             u"registrationStatus": u"registered",
             u"registrationStatusDetails": u"зареєстровано",
@@ -385,17 +394,18 @@ class TestDetails(BaseWebTest):
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",
                               u"description": u"Інші види грошового посередництва"}})
-        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+        self.assertEqual(response.json[0]['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
     def test_sandbox_mode_data_details(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_details.json.
         Otherwise test that _server return data"""
         if SANDBOX_MODE:
+            setup_routing(self.edr_api_app, func=response_code)
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=response_details)
-            response = self.app.get('/details/999186')
+            response = self.app.get('/verify?id=14360570')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['data'], {
+            self.assertEqual(response.json[0]['data'], {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
                     u"registrationStatus": u"registered",
@@ -422,14 +432,15 @@ class TestDetails(BaseWebTest):
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
                     }})
-            self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
+            self.assertEqual(iso8601.parse_date(response.json[0]['meta']['sourceDate']).replace(second=0, microsecond=0),
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
+            setup_routing(self.edr_api_app, func=sandbox_mode_data)
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
-            response = self.app.get('/details/999186')
+            response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['data'], {
+            self.assertEqual(response.json[0]['data'], {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
                     u"registrationStatus": u"registered",
@@ -456,11 +467,6 @@ class TestDetails(BaseWebTest):
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
                     }})
-            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+            self.assertEqual(response.json[0]['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
 
-
-class TestVerifyPlatform(TestVerify):
-
-    def setUp(self):
-        self.app.authorization = ('Basic', ('platform', 'platform'))
 
