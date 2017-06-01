@@ -36,7 +36,6 @@ def handle_error(request, response):
 @view_config(route_name='verify', renderer='json',
              request_method='GET', permission='verify')
 def verify_user(request):
-    # import pdb; pdb.set_trace()
     code = request.params.get('id', '').encode('utf-8')
     details = EDRDetails('code', code)
     role = request.authenticated_role
@@ -49,8 +48,8 @@ def verify_user(request):
     if SANDBOX_MODE:
         if role == 'robots' and TEST_DATA_DETAILS.get(code):
             LOGGER.info('Return test data for {} for bot'.format(code))
-            return {'data': prepare_data_details(TEST_DATA_DETAILS[code]),
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
+            return [{'data': prepare_data_details(TEST_DATA_DETAILS[code]),
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}]
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],

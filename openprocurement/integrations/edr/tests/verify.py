@@ -402,7 +402,7 @@ class TestDetails(BaseWebTest):
         if SANDBOX_MODE:
             setup_routing(self.edr_api_app, func=response_code)
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=response_details)
-            response = self.app.get('/verify?id=14360570')
+            response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json[0]['data'], {
