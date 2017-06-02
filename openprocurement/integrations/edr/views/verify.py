@@ -11,7 +11,7 @@ from openprocurement.integrations.edr.utils import prepare_data_details, prepare
 LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 default_error_status = 403
-error_message = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
+error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
 
 
 def handle_error(request, response):
@@ -33,6 +33,18 @@ def handle_error(request, response):
                                                          "description": response.json()['errors']})
 
 
+def get_test_data(role, code):
+    if SANDBOX_MODE:
+        if role == 'robots' and TEST_DATA_DETAILS.get(code):
+            LOGGER.info('Return test data for {} for bot'.format(code))
+            return [{'data': prepare_data_details(TEST_DATA_DETAILS[code]),
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}]
+        elif TEST_DATA_VERIFY.get(code):
+            LOGGER.info('Return test data for {} for platform'.format(code))
+            return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
+
+
 @view_config(route_name='verify', renderer='json',
              request_method='GET', permission='verify')
 def verify_user(request):
@@ -43,17 +55,13 @@ def verify_user(request):
         passport = request.params.get('passport', '').encode('utf-8')
         if not passport:
             return error_handler(request, default_error_status, {"location": "url", "name": "id",
-                                                                 "description": [{u'message': u'Wrong name for the GET parameter'}]})
+                                                                 "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
-    if SANDBOX_MODE:
-        if role == 'robots' and TEST_DATA_DETAILS.get(code):
-            LOGGER.info('Return test data for {} for bot'.format(code))
-            return [{'data': prepare_data_details(TEST_DATA_DETAILS[code]),
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}]
-        elif TEST_DATA_VERIFY.get(code):
-            LOGGER.info('Return test data for {} for platform'.format(code))
-            return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
+
+    data = get_test_data(role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
+    if data:
+        return data
+
     try:
         response = request.registry.edr_client.get_subject(**details._asdict())
     except (requests.exceptions.ReadTimeout,
@@ -65,26 +73,31 @@ def verify_user(request):
         if not data:
             LOGGER.warning('Accept empty response from EDR service for {}'.format(details.code))
             return error_handler(request, 404, {"location": "body", "name": "data",
-                                                "description": [{u"error": error_message,
+                                                "description": [{u"error": error_message_404,
                                                                  u'meta': meta_data(response.headers['Date'])}]})
-        if role == 'robots':  # send second request for edr-bot
-            data_details = []
-            for obj in data:
-                try:
-                    details_response = request.registry.edr_client.get_subject_details(obj['id'])
-                except (requests.exceptions.ReadTimeout,
-                        requests.exceptions.ConnectTimeout):
-                    return error_handler(request, default_error_status, {"location": "url", "name": "id",
-                                                                         "description": [{u'message': u'Gateway Timeout Error'}]})
-                if details_response.status_code != 200:
-
-                    return handle_error(request, details_response)
-                else:
-                    LOGGER.info('Return detailed data from EDR service for {}'.format(obj['id']))
-                    data_details.append({'data': prepare_data_details(details_response.json()), 'meta': meta_data(details_response.headers['Date'])})
+        if role == 'robots':  # get details for edr-bot
+            data_details = user_details(request, [obj['id'] for obj in data])
             return data_details
-        LOGGER.info('Return data from EDR service for {}'.format(details.code))
         return {'data': [prepare_data(d) for d in data], 'meta': meta_data(response.headers['Date'])}
     else:
         return handle_error(request, response)
+
+
+def user_details(request, internal_ids):
+    data = []
+    for internal_id in internal_ids:
+        try:
+            response = request.registry.edr_client.get_subject_details(internal_id)
+        except (requests.exceptions.ReadTimeout,
+                requests.exceptions.ConnectTimeout):
+            return error_handler(request, default_error_status, {"location": "url", "name": "id",
+                                                                 "description": [{u'message': u'Gateway Timeout Error'}]})
+        if response.status_code != 200:
+            return handle_error(request, response)
+        else:
+            LOGGER.info('Return detailed data from EDR service for {}'.format(internal_id))
+            data.append({'data': prepare_data_details(response.json()),
+                         'meta': meta_data(response.headers['Date'])})
+    return data
+
 

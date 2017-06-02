@@ -228,7 +228,7 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'],
-                         [{u'message': u'Wrong name for the GET parameter'}])
+                         [{u'message': u'Wrong name of the GET parameter'}])
 
     def test_accept_yaml(self):
         setup_routing(self.edr_api_app, func=response_code)
