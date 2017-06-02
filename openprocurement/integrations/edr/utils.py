@@ -255,3 +255,15 @@ TEST_DATA_DETAILS = read_json('test_data_details.json')
 def meta_data(date):
     """return sourceDate in ISO 8601format """
     return {'sourceDate': datetime.strptime(date, '%a, %d %b %Y %H:%M:%S %Z').replace(tzinfo=UTC).isoformat()}
+
+
+def get_sandbox_data(role, code):
+    if SANDBOX_MODE:
+        if role == 'robots' and TEST_DATA_DETAILS.get(code):
+            LOGGER.info('Return test data for {} for bot'.format(code))
+            return [{'data': prepare_data_details(TEST_DATA_DETAILS[code]),
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}]
+        elif TEST_DATA_VERIFY.get(code):
+            LOGGER.info('Return test data for {} for platform'.format(code))
+            return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}

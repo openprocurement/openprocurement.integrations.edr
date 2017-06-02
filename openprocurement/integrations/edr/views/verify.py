@@ -3,9 +3,8 @@ import requests
 from collections import namedtuple
 from pyramid.view import view_config
 from logging import getLogger
-from datetime import datetime
-from openprocurement.integrations.edr.utils import prepare_data_details, prepare_data, error_handler, SANDBOX_MODE, \
-    TEST_DATA_VERIFY, TEST_DATA_DETAILS, meta_data, TZ
+from openprocurement.integrations.edr.utils import (prepare_data_details, prepare_data, error_handler, meta_data,
+    get_sandbox_data)
 
 
 LOGGER = getLogger(__name__)
@@ -33,18 +32,6 @@ def handle_error(request, response):
                                                          "description": response.json()['errors']})
 
 
-def get_test_data(role, code):
-    if SANDBOX_MODE:
-        if role == 'robots' and TEST_DATA_DETAILS.get(code):
-            LOGGER.info('Return test data for {} for bot'.format(code))
-            return [{'data': prepare_data_details(TEST_DATA_DETAILS[code]),
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}]
-        elif TEST_DATA_VERIFY.get(code):
-            LOGGER.info('Return test data for {} for platform'.format(code))
-            return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
-
-
 @view_config(route_name='verify', renderer='json',
              request_method='GET', permission='verify')
 def verify_user(request):
@@ -58,7 +45,7 @@ def verify_user(request):
                                                                  "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
 
-    data = get_test_data(role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
+    data = get_sandbox_data(role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
     if data:
         return data
 
