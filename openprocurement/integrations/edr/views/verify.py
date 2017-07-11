@@ -4,7 +4,7 @@ from collections import namedtuple
 from pyramid.view import view_config
 from logging import getLogger
 from openprocurement.integrations.edr.utils import (prepare_data_details, prepare_data, error_handler, meta_data,
-    get_sandbox_data)
+                                                    get_sandbox_data)
 
 
 LOGGER = getLogger(__name__)
@@ -16,8 +16,7 @@ error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code
 def handle_error(request, response):
     if response.headers['Content-Type'] != 'application/json':
         return error_handler(request, default_error_status,
-                             {"location": "request", "name": "ip",
-                              "description": [{u'message': u'Content-Type of EDR API response is not application/json'}]})
+                             {"location": "request", "name": "ip", "description": [{u'message': u'Forbidden'}]})
     if response.status_code == 429:
         seconds_to_wait = response.headers.get('Retry-After')
         request.response.headers['Retry-After'] = seconds_to_wait
@@ -32,8 +31,7 @@ def handle_error(request, response):
                                                          "description": response.json()['errors']})
 
 
-@view_config(route_name='verify', renderer='json',
-             request_method='GET', permission='verify')
+@view_config(route_name='verify', renderer='json', request_method='GET', permission='verify')
 def verify_user(request):
     code = request.params.get('id', '').encode('utf-8')
     details = EDRDetails('code', code)
@@ -45,7 +43,7 @@ def verify_user(request):
                                                                  "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
 
-    data = get_sandbox_data(role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
+    data = get_sandbox_data(request, code)  # return test data if SANDBOX_MODE=True and data exists for given code
     if data:
         return data
 

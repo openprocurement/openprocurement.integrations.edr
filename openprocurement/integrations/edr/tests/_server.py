@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from bottle import request, response
 from simplejson import dumps
+from pytz import UTC
+import datetime
 
-
-SOURCEDATE = 'Tue, 25 Apr 2017 11:56:36 GMT'
+SOURCEDATE = unicode(datetime.datetime.now().replace(tzinfo=UTC).strftime('%a, %d %b %Y %H:%M:%S %Z'))
 
 
 def setup_routing(app, func, path='/1.0/subjects', method='GET'):

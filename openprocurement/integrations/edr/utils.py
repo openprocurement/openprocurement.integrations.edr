@@ -11,16 +11,16 @@ from ConfigParser import ConfigParser
 from pyramid.security import Allow
 from pyramid.httpexceptions import exception_response
 
-
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
+VERSION = '{}.{}'.format(int(PKG.parsed_version[0]),
+                         int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 USERS = {}
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 identification_schema = u'UA-EDR'
 activityKind_scheme = u'КВЕД'
-SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
+SANDBOX_MODE = True if os.environ.get('SANDBOX_MODE', 'False') == 'True' else False
 
 
 class Root(object):
@@ -96,7 +96,7 @@ def add_logging_context(event):
         'API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
-        #'ROLE': str(request.authenticated_role),
+        # 'ROLE': str(request.authenticated_role),
         'CURRENT_URL': request.url,
         'CURRENT_PATH': request.path_info,
         'REMOTE_ADDR': request.remote_addr or '',
@@ -168,6 +168,7 @@ def auth_check(username, password, request):
     if username in USERS and USERS[username]['password'] == sha512(password).hexdigest():
         return ['g:{}'.format(USERS[username]['group'])]
 
+
 registration_statuses = {-1: 'cancelled', 1: 'registered',
                          2: 'beingTerminated', 3: 'terminated',
                          4: 'banckruptcyFiled', 5: 'banckruptcyReorganization',
@@ -187,7 +188,8 @@ def prepare_data(data):
 
 
 def forbidden(request):
-    request.response.json_body = error_handler(request, 403, {"location": "url", "name": "permission","description": "Forbidden"})
+    request.response.json_body = error_handler(request, 403,
+                                               {"location": "url", "name": "permission", "description": "Forbidden"})
     return request.response
 
 
@@ -248,6 +250,7 @@ def read_json(name):
         data = lang_file.read()
     return loads(data)
 
+
 TEST_DATA_VERIFY = read_json('test_data_verify.json')
 TEST_DATA_DETAILS = read_json('test_data_details.json')
 
@@ -257,13 +260,21 @@ def meta_data(date):
     return {'sourceDate': datetime.strptime(date, '%a, %d %b %Y %H:%M:%S %Z').replace(tzinfo=UTC).isoformat()}
 
 
-def get_sandbox_data(role, code):
+def get_sandbox_data(request, code):
+    """ If the proxy is running in sandbox_mode, return sandbox data or 404 if not found"""
+    error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
+    LOGGER.info("SANDBOX_MODE = {}, {}".format(SANDBOX_MODE, type(SANDBOX_MODE)))
     if SANDBOX_MODE:
-        if role == 'robots' and TEST_DATA_DETAILS.get(code):
+        if request.authenticated_role == 'robots' and TEST_DATA_DETAILS.get(code):
             LOGGER.info('Return test data for {} for bot'.format(code))
-            return [{'data': prepare_data_details(TEST_DATA_DETAILS[code]),
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}]
+            return {'data': [prepare_data_details(i) for i in TEST_DATA_DETAILS[code]],
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
                     'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
+        else:
+            return error_handler(request, 404, {"location": "body", "name": "data",
+                                                "description": [{u"error": error_message_404,
+                                                                 u'meta': {'sourceDate': datetime.now().replace(
+                                                                     tzinfo=UTC, microsecond=0).isoformat()}}]})
