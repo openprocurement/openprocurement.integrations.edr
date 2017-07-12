@@ -1,68 +1,69 @@
-GET /api/1.0/details/2842335 HTTP/1.0
+GET /api/1.0/verify?id=14360570 HTTP/1.0
 Authorization: Basic cm9ib3Q6cm9ib3Q=
 Host: api-sandbox.openprocurement.org
 
 Response: 200 OK
 Content-Type: application/json; charset=UTF-8
-{
-  "meta": {
-    "sourceDate": "2017-04-25T11:56:36+00:00"
-  }, 
-  "data": {
-    "additionalActivityKinds": [
-      {
-        "scheme": "КВЕД", 
-        "id": "64.92", 
-        "description": "Інші види кредитування"
-      }, 
-      {
-        "scheme": "КВЕД", 
-        "id": "64.99", 
-        "description": "Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."
-      }, 
-      {
-        "scheme": "КВЕД", 
-        "id": "66.11", 
-        "description": "Управління фінансовими ринками"
-      }, 
-      {
-        "scheme": "КВЕД", 
-        "id": "66.12", 
-        "description": "Посередництво за договорами по цінних паперах або товарах"
-      }, 
-      {
-        "scheme": "КВЕД", 
-        "id": "66.19", 
-        "description": "Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"
+[
+    {
+      "meta": {
+        "sourceDate": "2017-04-25T11:56:36+00:00"
+      },
+      "data": {
+        "additionalActivityKinds": [
+          {
+            "scheme": "КВЕД",
+            "id": "64.92",
+            "description": "Інші види кредитування"
+          },
+          {
+            "scheme": "КВЕД",
+            "id": "64.99",
+            "description": "Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."
+          },
+          {
+            "scheme": "КВЕД",
+            "id": "66.11",
+            "description": "Управління фінансовими ринками"
+          },
+          {
+            "scheme": "КВЕД",
+            "id": "66.12",
+            "description": "Посередництво за договорами по цінних паперах або товарах"
+          },
+          {
+            "scheme": "КВЕД",
+            "id": "66.19",
+            "description": "Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"
+          }
+        ],
+        "management": "ЗАГАЛЬНІ ЗБОРИ",
+        "name": "ПАТ КБ \"ПРИВАТБАНК\"",
+        "registrationStatusDetails": "зареєстровано",
+        "registrationStatus": "registered",
+        "identification": {
+          "scheme": "UA-EDR",
+          "id": "14360570",
+          "legalName": "АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""
+        },
+        "address": {
+          "postalCode": "49094",
+          "countryName": "УКРАЇНА",
+          "streetAddress": "Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"
+        },
+        "founders": [
+          {
+            "role_text": "засновник",
+            "role": 4,
+            "name": "АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"
+          }
+        ],
+        "activityKind": {
+          "scheme": "КВЕД",
+          "id": "64.19",
+          "description": "Інші види грошового посередництва"
+        }
       }
-    ], 
-    "management": "ЗАГАЛЬНІ ЗБОРИ", 
-    "name": "ПАТ КБ \"ПРИВАТБАНК\"", 
-    "registrationStatusDetails": "зареєстровано", 
-    "registrationStatus": "registered", 
-    "identification": {
-      "scheme": "UA-EDR", 
-      "id": "14360570", 
-      "legalName": "АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""
-    }, 
-    "address": {
-      "postalCode": "49094", 
-      "countryName": "УКРАЇНА", 
-      "streetAddress": "Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"
-    }, 
-    "founders": [
-      {
-        "role_text": "засновник", 
-        "role": 4, 
-        "name": "АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"
-      }
-    ], 
-    "activityKind": {
-      "scheme": "КВЕД", 
-      "id": "64.19", 
-      "description": "Інші види грошового посередництва"
     }
-  }
-}
-
+]
 

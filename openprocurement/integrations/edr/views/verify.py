@@ -17,7 +17,7 @@ def handle_error(request, response):
     if response.headers['Content-Type'] != 'application/json':
         return error_handler(request, default_error_status,
                              {"location": "request", "name": "ip",
-                              "description": [{u'message': u'Content-Type of EDR API response is not application/json'}]})
+                              "description": [{u'message': u'Forbidden'}]})
     if response.status_code == 429:
         seconds_to_wait = response.headers.get('Retry-After')
         request.response.headers['Retry-After'] = seconds_to_wait
