@@ -115,13 +115,18 @@ def bad_gateway():
     response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"message": "Message."}]})
 
-def create_long_read(delay_sec):
+def create_long_read(delay_sec, response_type):
     def long_read():
-        response.status = 200
-        response.content_type = 'application/json'
-        response.headers['Date'] = SOURCEDATE
         time.sleep(delay_sec)
-        return dumps({"result": "OK but too long!"})
+        if response_type == 'details':
+            return response_details()
+        elif response_type == 'verify':
+            return response_code()
+        else:
+            response.status = 200
+            response.content_type = 'application/json'
+            response.headers['Date'] = SOURCEDATE
+            return dumps({"result": "OK but too long!"})
 
     return long_read
 

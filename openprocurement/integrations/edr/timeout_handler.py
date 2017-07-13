@@ -9,7 +9,7 @@ class TimeoutHandler:
         self.updater_func = self._update_mult if self.mode == 'mult' else self._update_add
 
     def update(self, is_success):
-        self.updater_func(is_success)
+        return self.updater_func(is_success)
 
     def _update_add(self, is_success):
         if is_success and self.value > self.min:
@@ -21,6 +21,10 @@ class TimeoutHandler:
             self.value += self.step
             if self.value > self.max:
                 self.value = self.max
+        elif not is_success:  # already was max
+            return False
+
+        return True
 
     def _update_mult(self, is_success):
         if is_success and self.value > self.min:
@@ -32,3 +36,8 @@ class TimeoutHandler:
             self.value *= self.step
             if self.value > self.max:
                 self.value = self.max
+                return False
+        elif not is_success:  # already was max
+            return False
+
+        return True

@@ -3,6 +3,8 @@ import requests
 
 from openprocurement.integrations.edr.timeout_handler import TimeoutHandler
 
+from logging import getLogger
+logger = getLogger(__name__)
 
 class EdrClient(object):
     """Base class for making requests to EDR"""
@@ -22,7 +24,8 @@ class EdrClient(object):
             self.timeout.update(True)
             return response
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
-            self.timeout.update(False)
+            if not self.timeout.update(False):
+                logger.fatal('Timeout maxed out! Value: {0}'.format(self.timeout.value))
             raise
 
     def get_subject(self, param, code):
@@ -35,6 +38,6 @@ class EdrClient(object):
 
     def get_subject_details(self, edr_unique_id):
         """
-        Send request to ERD using unique identifier to get subject's details.
+        Send request to EDR using unique identifier to get subject's details.
         """
         return self._do_request('{url}/{id}'.format(url=self.url, id=edr_unique_id))
