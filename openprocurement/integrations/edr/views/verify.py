@@ -37,8 +37,8 @@ def verify_user(request):
     if not code:
         passport = request.params.get('passport', '').encode('utf-8')
         if not passport:
-            return error_handler(request, default_error_status, {"location": "url", "name": "id", "description":
-                                                                 [{u'message': u'Need pass id or passport'}]})
+            return error_handler(request, default_error_status, {"location": "url", "name": "id",
+                                                                 "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
 
     data = get_sandbox_data(role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
@@ -57,17 +57,19 @@ def verify_user(request):
             LOGGER.warning('Accept empty response from EDR service for {}'.format(details.code))
             return error_handler(request, 404, {"location": "body", "name": "data",
                                                 "description": [{u"error": error_message_404,
-                                                                 u'meta': meta_data(response.headers['Date'])}]})
+                                                                 u'meta': {"sourceDate": meta_data(
+                                                                     response.headers['Date'])}}]})
         if role == 'robots':  # get details for edr-bot
             data_details = user_details(request, [obj['id'] for obj in data])
             return data_details
-        return {'data': [prepare_data(d) for d in data], 'meta': meta_data(response.headers['Date'])}
+        return {'data': [prepare_data(d) for d in data], 'meta': {'sourceDate': meta_data(response.headers['Date'])}}
     else:
         return handle_error(request, response)
 
 
 def user_details(request, internal_ids):
     data = []
+    details_source_date = []
     for internal_id in internal_ids:
         try:
             response = request.registry.edr_client.get_subject_details(internal_id)
@@ -79,6 +81,6 @@ def user_details(request, internal_ids):
             return handle_error(request, response)
         else:
             LOGGER.info('Return detailed data from EDR service for {}'.format(internal_id))
-            data.append({'data': prepare_data_details(response.json()),
-                         'meta': meta_data(response.headers['Date'])})
-    return data
+            data.append(prepare_data_details(response.json()))
+            details_source_date.append(meta_data(response.headers['Date']))
+    return {"data": data, "meta": {"sourceDate": details_source_date[-1], "detailsSourceDate": details_source_date}}
