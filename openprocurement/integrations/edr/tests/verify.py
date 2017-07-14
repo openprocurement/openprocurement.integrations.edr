@@ -3,12 +3,14 @@ import webtest
 import os
 import datetime
 import iso8601
+import yaml
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest, PrefixedRequestClass
-from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
-    check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
-    server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
-    wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
+from openprocurement.integrations.edr.tests._server import \
+    (setup_routing, response_code, response_passport,
+     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
+     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
+     wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
 from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
 
 
@@ -43,8 +45,7 @@ class TestVerify(BaseWebTest):
                              "location": "url",
                              "name": "permission",
                              "description": "Forbidden"
-                         }]
-        )
+                         }])
         self.app.authorization = old
 
     def test_edrpou(self):
@@ -235,7 +236,7 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
-        with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml')) as f:
             test_yaml_data = f.read()
         self.assertEqual(response.body, test_yaml_data)
 
@@ -295,7 +296,7 @@ class TestDetails(BaseWebTest):
         response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json[0]['data'], {
+        self.assertEqual(response.json['data'][0], {
             u"additionalActivityKinds": [
                 {u"scheme": u"КВЕД",
                  u"id": u"64.92",
@@ -317,21 +318,21 @@ class TestDetails(BaseWebTest):
             u"registrationStatus": u"registered",
             u"registrationStatusDetails": u"зареєстровано",
             u"identification": {u"scheme": u"UA-EDR",
-                               u"id": u"14360570",
-                               u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                                u"id": u"14360570",
+                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
             u"address": {u"postalCode": u"49094",
-                        u"countryName": u"УКРАЇНА",
-                        u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+                         u"countryName": u"УКРАЇНА",
+                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
                           u"role_text": u"засновник",
                           u"role": 4,
-                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                         }],
+                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
             u"activityKind": {u"scheme": u"КВЕД",
-                             u"id": u"64.19",
-                             u"description": u"Інші види грошового посередництва"}
+                              u"id": u"64.19",
+                              u"description": u"Інші види грошового посередництва"}
         })
-        self.assertEqual(response.json[0]['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
+                                                 'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
@@ -358,7 +359,7 @@ class TestDetails(BaseWebTest):
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
-        with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml')) as f:
             test_yaml_data = f.read()
         self.assertEqual(response.body, test_yaml_data)
 
@@ -377,7 +378,7 @@ class TestDetails(BaseWebTest):
         response = self.app.get('/verify?id=14360570')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json[0]['data'], {
+        self.assertEqual(response.json['data'][0], {
             u"management": u"ЗАГАЛЬНІ ЗБОРИ",
             u"registrationStatus": u"registered",
             u"registrationStatusDetails": u"зареєстровано",
@@ -389,12 +390,12 @@ class TestDetails(BaseWebTest):
             u"founders": [{
                           u"role_text": u"засновник",
                           u"role": 4,
-                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                         }],
+                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",
                               u"description": u"Інші види грошового посередництва"}})
-        self.assertEqual(response.json[0]['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
+                                                 'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
 
     def test_sandbox_mode_data_details(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_details.json.
@@ -405,7 +406,7 @@ class TestDetails(BaseWebTest):
             response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json[0]['data'], {
+            self.assertEqual(response.json['data'][0], {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
                     u"registrationStatus": u"registered",
@@ -432,7 +433,7 @@ class TestDetails(BaseWebTest):
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
                     }})
-            self.assertEqual(iso8601.parse_date(response.json[0]['meta']['sourceDate']).replace(second=0, microsecond=0),
+            self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
@@ -440,7 +441,7 @@ class TestDetails(BaseWebTest):
             response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json[0]['data'], {
+            self.assertEqual(response.json['data'][0], {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
                     u"registrationStatus": u"registered",
@@ -467,6 +468,5 @@ class TestDetails(BaseWebTest):
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
                     }})
-            self.assertEqual(response.json[0]['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
-
-
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
+                                                     'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
