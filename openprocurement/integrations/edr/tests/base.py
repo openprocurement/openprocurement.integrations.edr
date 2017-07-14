@@ -24,7 +24,6 @@ class BaseWebTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.edr_api_app = Bottle()
-        # setup_routing(cls.edr_api_app)
         cls.server = WSGIServer(('localhost', 20603), cls.edr_api_app, log=None)
         cls.server.start()
         for _ in range(10):
@@ -43,7 +42,7 @@ class BaseWebTest(unittest.TestCase):
         cls.server.close()
 
     def setUp(self):
-        self.app.authorization = ('Basic', ('robot', 'robot'))
+        self.app.authorization = ('Basic', ('platform', 'platform'))
 
     def tearDown(self):
         pass
