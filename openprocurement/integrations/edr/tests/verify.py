@@ -6,10 +6,11 @@ import iso8601
 import yaml
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest, PrefixedRequestClass
-from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
-    check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
-    server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
-    wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
+from openprocurement.integrations.edr.tests._server import \
+    (setup_routing, response_code, response_passport,
+     check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
+     server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
+     wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
 from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
 
 
@@ -44,8 +45,7 @@ class TestVerify(BaseWebTest):
                              "location": "url",
                              "name": "permission",
                              "description": "Forbidden"
-                         }]
-        )
+                         }])
         self.app.authorization = old
 
     def test_edrpou(self):
@@ -236,7 +236,7 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
-        with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml')) as f:
             test_yaml_data = f.read()
         self.assertEqual(response.body, test_yaml_data)
 
@@ -318,19 +318,18 @@ class TestDetails(BaseWebTest):
             u"registrationStatus": u"registered",
             u"registrationStatusDetails": u"зареєстровано",
             u"identification": {u"scheme": u"UA-EDR",
-                               u"id": u"14360570",
-                               u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                                u"id": u"14360570",
+                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
             u"address": {u"postalCode": u"49094",
-                        u"countryName": u"УКРАЇНА",
-                        u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+                         u"countryName": u"УКРАЇНА",
+                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
             u"founders": [{
                           u"role_text": u"засновник",
                           u"role": 4,
-                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                         }],
+                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
             u"activityKind": {u"scheme": u"КВЕД",
-                             u"id": u"64.19",
-                             u"description": u"Інші види грошового посередництва"}
+                              u"id": u"64.19",
+                              u"description": u"Інші види грошового посередництва"}
         })
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
                                                  'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
@@ -360,12 +359,9 @@ class TestDetails(BaseWebTest):
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
-        with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml')) as f:
             test_yaml_data = f.read()
-            t1 = yaml.load(test_yaml_data)
-        t = yaml.load(response.body)
-        t['meta'].pop('detailsSourceDate')
-        self.assertEqual(t['data'][0], t1['data'])
+        self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip_details(self):
         setup_routing(self.edr_api_app, func=response_code)
@@ -394,8 +390,7 @@ class TestDetails(BaseWebTest):
             u"founders": [{
                           u"role_text": u"засновник",
                           u"role": 4,
-                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ",
-                         }],
+                          u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
             u"activityKind": {u"scheme": u"КВЕД",
                               u"id": u"64.19",
                               u"description": u"Інші види грошового посередництва"}})
@@ -475,5 +470,3 @@ class TestDetails(BaseWebTest):
                     }})
             self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
                                                      'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
-
-

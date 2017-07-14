@@ -1,5 +1,5 @@
 data:
-  activityKind:
+- activityKind:
     description: Інші види грошового посередництва
     id: '64.19'
     scheme: КВЕД
@@ -7,8 +7,8 @@ data:
   - description: Інші види кредитування
     id: '64.92'
     scheme: КВЕД
-  - description: Надання інших фінансових послуг (крім страхування та пенсійного
-      забезпечення), н. в. і. у.
+  - description: Надання інших фінансових послуг (крім страхування та пенсійного забезпечення),
+      н. в. і. у.
     id: '64.99'
     scheme: КВЕД
   - description: Управління фінансовими ринками
@@ -38,4 +38,6 @@ data:
   registrationStatus: registered
   registrationStatusDetails: зареєстровано
 meta:
+  detailsSourceDate:
+  - '2017-04-25T11:56:36+00:00'
   sourceDate: '2017-04-25T11:56:36+00:00'
