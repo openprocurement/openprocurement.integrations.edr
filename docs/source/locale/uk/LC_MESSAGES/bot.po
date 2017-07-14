@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.integrations.edr 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-29 16:33+0300\n"
+"POT-Creation-Date: 2017-07-12 12:16+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../source/bot.rst:4
 msgid "Identification Bot"
@@ -26,18 +26,12 @@ msgstr "Файл-довідка"
 
 #: ../../source/bot.rst:8
 msgid ""
-"There are another endpoint `/details/x_edrInternalId` to process request "
-"to EDR to get detailed information using parameter `x_edrInternalId`, "
-"received in first response. Only user from group `robot` have permissions"
-" to process given request. Request looks like:"
-msgstr ""
-"Існує також інша вхідна точка `/details/x_edrInternalId` для здійснення "
-"запитів до ЕДР для отримання деталізованної  інформації, використовуючи "
-"параметр `x_edrInternalId`, який надходить у відповідь на перший запит. "
-"Тільки користувач з группи `robot` має права на  здійснення данного "
-"запиту. Запит має  наступний вигляд: "
+"For users from group `robot` endpoint `api/1.0/verify` will return "
+"details information. Request looks like:"
+msgstr "Для користувачів групи `robot` вихідна точка `api/1.0/verify` "
+"буде повертати розширену інформацію. Запит має  наступний вигляд:"
 
-#: ../../source/bot.rst:15
+#: ../../source/bot.rst:13
 msgid ""
 "File-reference name  is `edr_identification.yaml` and is uploaded to "
 "tenders with status ` active.pre-qualification` and "
@@ -65,34 +59,33 @@ msgstr ""
 "Єдиному Державному реєстрі, то файл  містить наступну помилку  `{error: "
 "{code:  notFound, errorDetails: Couldn't find this  code in EDR.}}`."
 
-#: ../../source/bot.rst:23
+#: ../../source/bot.rst:21
 msgid "File-reference also includes service information in `meta`."
 msgstr "Також файл містить службову інформацію в блоці `meta`."
 
-#: ../../source/bot.rst:25
+#: ../../source/bot.rst:23
 msgid "`author` - author of file-reference, have value `IdentificationBot`,"
 msgstr "`author` - автор файлу-довідки, має значення `IdentificationBot`,"
 
-#: ../../source/bot.rst:26
+#: ../../source/bot.rst:24
 msgid "`id` - unique identifier of file-reference,"
 msgstr "`id` - унікальний ідентифікатор довідки,"
 
-#: ../../source/bot.rst:27
+#: ../../source/bot.rst:25
 msgid "`sourceDate` - creation date,"
 msgstr "`sourceDate` - дата відповіді від Єдиного Державного реєстру,"
 
-#: ../../source/bot.rst:28
+#: ../../source/bot.rst:26
 msgid "`sourceRequests` - list of request numbers to `API`, `EDR-proxy`,"
 msgstr ""
 "`sourceRequests` -список з номерами запитів до `API`, `EDR-proxy`, за "
 "допомогою яких було сформовано довідку,"
 
-#: ../../source/bot.rst:29
+#: ../../source/bot.rst:27
 msgid "`version` - file-reference format version."
-msgstr ""
-"`version` - версію формату довідки."
+msgstr "`version` - версію формату довідки."
 
-#: ../../source/bot.rst:31
+#: ../../source/bot.rst:29
 msgid ""
 "Value `meta.version` now have value 1.1.1. First number - major version "
 "(delete field, rename, remove), second number - minor version (add "
@@ -111,18 +104,38 @@ msgstr ""
 "збільшення major версії, а додавання поля `meta.author`  це збільшення "
 "minor версії."
 
-#: ../../source/bot.rst:36
+#: ../../source/bot.rst:34
 msgid ""
 "Change value of `meta.version` filed to 1.2.1 after adding fields to "
 "file-reference:"
 msgstr ""
-"Змінено значення  поля `meta.version` на 1.2.1 у зв'язку з додаванням в файл-довідку наступних полів"
+"Змінено значення  поля `meta.version` на 1.2.1 у зв'язку з додаванням в "
+"файл-довідку наступних полів"
 
-#: ../../source/bot.rst:38
+#: ../../source/bot.rst:36
 msgid "`registrationStatusDetails` - text state of the entity (uk),"
 msgstr "`registrationStatusDetails` - текстове відображення стану суб'єкта(укр),"
 
-#: ../../source/bot.rst:39
+#: ../../source/bot.rst:37
 msgid "`registrationStatus` - text state of the entity."
 msgstr "`registrationStatus` - текстове відображення стану суб'єкта."
+
+#~ msgid ""
+#~ "There are another endpoint "
+#~ "`/details/x_edrInternalId` to process request "
+#~ "to EDR to get detailed information "
+#~ "using parameter `x_edrInternalId`, received in"
+#~ " first response. Only user from group"
+#~ " `robot` have permissions to process "
+#~ "given request. Request looks like:"
+#~ msgstr ""
+#~ "Існує також інша вхідна точка "
+#~ "`/details/x_edrInternalId` для здійснення запитів"
+#~ " до ЕДР для отримання деталізованної  "
+#~ "інформації, використовуючи параметр "
+#~ "`x_edrInternalId`, який надходить у відповідь"
+#~ " на перший запит. Тільки користувач з"
+#~ " группи `robot` має права на  "
+#~ "здійснення данного запиту. Запит має  "
+#~ "наступний вигляд: "
 
