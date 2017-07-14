@@ -3,7 +3,6 @@ import webtest
 import os
 import datetime
 import iso8601
-import yaml
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest, PrefixedRequestClass
 from openprocurement.integrations.edr.tests._server import \
