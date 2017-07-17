@@ -16,16 +16,18 @@ class EdrClient(object):
         self.headers = {"Accept": "application/json",
                         "Authorization": "Token {token}".format(token=self.token)}
 
-        self.timeout = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
+        self.timeout_verify = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
+        self.timeout_details = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
 
-    def _do_request(self, url):
+    def _do_request(self, url, timeout):
         try:
-            response = self.session.get(url=url, headers=self.headers, timeout=self.timeout.value)
-            self.timeout.update(True)
+            response = self.session.get(url=url, headers=self.headers, timeout=timeout.value)
+            timeout.update(True)
             return response
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
-            if not self.timeout.update(False):
-                logger.fatal('Timeout maxed out! Value: {0}'.format(self.timeout.value))
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
+            if not timeout.update(False):
+                logger.fatal('Timeout maxed out! Value: {0}'.format(timeout.value))
+
             raise
 
     def get_subject(self, param, code):
@@ -34,10 +36,10 @@ class EdrClient(object):
         In response we except list of subjects with unique id in each subject.
         List mostly contains 1 subject, but occasionally includes 2 or none.
         """
-        return self._do_request('{url}?{param}={code}'.format(url=self.url, param=param, code=code))
+        return self._do_request('{url}?{param}={code}'.format(url=self.url, param=param, code=code), self.timeout_verify)
 
     def get_subject_details(self, edr_unique_id):
         """
         Send request to EDR using unique identifier to get subject's details.
         """
-        return self._do_request('{url}/{id}'.format(url=self.url, id=edr_unique_id))
+        return self._do_request('{url}/{id}'.format(url=self.url, id=edr_unique_id), self.timeout_details)

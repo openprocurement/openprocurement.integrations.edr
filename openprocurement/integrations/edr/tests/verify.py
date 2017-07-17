@@ -369,38 +369,44 @@ class TestDetails(BaseWebTest):
         """Check when EDR times out during details - mult delay growing mode"""
 
         # quick response - should be ok
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(0.2, 'details'))
-        response = self.app.get('/details/2842335', status=200)
+        response = self.app.get('/verify?id=14360570', status=200)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '200 OK')
 
         # 3 sec delayed response - should fail (timeout setting is 2) an increase timeout x2
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(3, 'details'))
-        response = self.app.get('/details/2842335', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 5 sec delayed response - new timeout is 4 - should fail and set timeout to max 7
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(5, 'details'))
-        response = self.app.get('/details/2842335', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 8 sec delayed response - new timeout is 7 - should fail and leave timeout 7
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(8, 'details'))
-        response = self.app.get('/details/2842335', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 6.5 sec delayed response - new timeout is 7 - should succeed and set timeout to 3.5
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(6.5, 'details'))
-        response = self.app.get('/details/2842335', status=200)
+        response = self.app.get('/verify?id=14360570', status=200)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '200 OK')
 
         # 4 sec delayed response - new timeout is 3.5 - should fail
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(4, 'details'))
-        response = self.app.get('/details/2842335', status=403)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
@@ -412,44 +418,51 @@ class TestDetails(BaseWebTest):
         self.app_copy.RequestClass = PrefixedRequestClass
 
         # quick response - should be ok
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(0.2, 'details'))
-        response = self.app_copy.get('/details/2842335', status=200)
+        response = self.app_copy.get('/verify?id=14360570', status=200)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '200 OK')
 
         # 2 sec delayed response - should fail (timeout setting is 1) an increase timeout +2
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(2, 'details'))
-        response = self.app_copy.get('/details/2842335', status=403)
+        response = self.app_copy.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 4 sec delayed response - should fail again (timeout 3) an increase timeout +2
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(4, 'details'))
-        response = self.app_copy.get('/details/2842335', status=403)
+        response = self.app_copy.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 6 sec delayed response - should fail again (timeout 5) an increase timeout to max - 6
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(6, 'details'))
-        response = self.app_copy.get('/details/2842335', status=403)
+        response = self.app_copy.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 7 sec delayed response - should fail (timeout 6 max)
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(7, 'details'))
-        response = self.app_copy.get('/details/2842335', status=403)
+        response = self.app_copy.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
         # 5 sec delayed response - should succeed (timeout 6) and decrease timeout to 4
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(5, 'details'))
-        response = self.app_copy.get('/details/2842335', status=200)
+        response = self.app_copy.get('/verify?id=14360570', status=200)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '200 OK')
 
         # 5 sec delayed response - should fail (timeout 4)
+        setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=create_long_read(5, 'details'))
-        response = self.app_copy.get('/details/2842335', status=403)
+        response = self.app_copy.get('/verify?id=14360570', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Gateway Timeout Error'}])
 
