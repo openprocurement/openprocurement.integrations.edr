@@ -24,7 +24,7 @@ class EdrClient(object):
             response = self.session.get(url=url, headers=self.headers, timeout=timeout.value)
             timeout.update(True)
             return response
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
             if not timeout.update(False):
                 logger.fatal('Timeout maxed out! Value: {0}'.format(timeout.value))
 
