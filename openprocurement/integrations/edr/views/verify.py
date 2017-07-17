@@ -6,7 +6,6 @@ from logging import getLogger
 from openprocurement.integrations.edr.utils import (prepare_data_details, prepare_data, error_handler, meta_data,
                                                     get_sandbox_data)
 
-
 LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 default_error_status = 403
@@ -23,11 +22,9 @@ def handle_error(request, response):
         return error_handler(request, 429, {"location": "body", "name": "data",
                                             "description": [{u'message': u'Retry request after {} seconds.'.format(seconds_to_wait)}]})
     elif response.status_code == 502:
-        return error_handler(request, default_error_status, {"location": "body",
-                                                             "name": "data",
+        return error_handler(request, default_error_status, {"location": "body", "name": "data",
                                                              "description": [{u'message': u'Service is disabled or upgrade.'}]})
-    return error_handler(request, default_error_status, {"location": "body",
-                                                         "name": "data",
+    return error_handler(request, default_error_status, {"location": "body", "name": "data",
                                                          "description": response.json()['errors']})
 
 
@@ -59,17 +56,19 @@ def verify_user(request):
             LOGGER.warning('Accept empty response from EDR service for {}'.format(details.code))
             return error_handler(request, 404, {"location": "body", "name": "data",
                                                 "description": [{u"error": error_message_404,
-                                                                 u'meta': meta_data(response.headers['Date'])}]})
+                                                                 u'meta': {"sourceDate": meta_data(
+                                                                     response.headers['Date'])}}]})
         if role == 'robots':  # get details for edr-bot
             data_details = user_details(request, [obj['id'] for obj in data])
             return data_details
-        return {'data': [prepare_data(d) for d in data], 'meta': meta_data(response.headers['Date'])}
+        return {'data': [prepare_data(d) for d in data], 'meta': {'sourceDate': meta_data(response.headers['Date'])}}
     else:
         return handle_error(request, response)
 
 
 def user_details(request, internal_ids):
     data = []
+    details_source_date = []
     for internal_id in internal_ids:
         try:
             response = request.registry.edr_client.get_subject_details(internal_id)
@@ -81,8 +80,6 @@ def user_details(request, internal_ids):
             return handle_error(request, response)
         else:
             LOGGER.info('Return detailed data from EDR service for {}'.format(internal_id))
-            data.append({'data': prepare_data_details(response.json()),
-                         'meta': meta_data(response.headers['Date'])})
-    return data
-
-
+            data.append(prepare_data_details(response.json()))
+            details_source_date.append(meta_data(response.headers['Date']))
+    return {"data": data, "meta": {"sourceDate": details_source_date[-1], "detailsSourceDate": details_source_date}}

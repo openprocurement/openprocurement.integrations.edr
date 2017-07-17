@@ -5,13 +5,11 @@ import datetime
 import iso8601
 
 from openprocurement.integrations.edr.tests.base import BaseWebTest, PrefixedRequestClass
-from openprocurement.integrations.edr.tests._server import (setup_routing, response_code, response_passport,
-                                                            check_headers, payment_required, forbidden, not_acceptable,
-                                                            too_many_requests, two_error_messages, bad_gateway,
-                                                            server_error, response_details, too_many_requests_details,
-                                                            bad_gateway_details, wrong_ip_address,
-                                                            wrong_ip_address_detailed_request, null_fields,
-                                                            sandbox_mode_data, sandbox_mode_data_details)
+from openprocurement.integrations.edr.tests._server import \
+    (setup_routing, response_code, response_passport, check_headers, payment_required, forbidden, not_acceptable,
+     too_many_requests, two_error_messages, bad_gateway,server_error, response_details, too_many_requests_details,
+     bad_gateway_details, wrong_ip_address, wrong_ip_address_detailed_request, null_fields, sandbox_mode_data,
+     sandbox_mode_data_details)
 from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ, meta_data
 from pytz import UTC
 import yaml
@@ -64,8 +62,7 @@ class TestVerify(BaseWebTest):
                              "location": "url",
                              "name": "permission",
                              "description": "Forbidden"
-                         }]
-                         )
+                         }])
         self.app.authorization = old
 
     def test_edrpou(self):
@@ -330,18 +327,16 @@ class TestVerify(BaseWebTest):
     def test_accept_yaml(self):
         setup_routing(self.edr_api_app, func=response_code)
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'}, expect_errors=True)
+        self.assertEqual(response.content_type, 'application/yaml')
         if SANDBOX_MODE:
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(yaml.load(response.body)['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
         else:
             self.assertEqual(response.status, '200 OK')
-            with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml'), 'r') as f:
+            with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml')) as f:
                 test_yaml_data = f.read()
-                data = yaml.load(test_yaml_data)
-                data['meta'].update(yaml.load(response.body)['meta'])
-            self.assertEqual(response.body, yaml.safe_dump(data, allow_unicode=True, default_flow_style=False))
-            self.assertEqual(response.content_type, 'application/yaml')
+            self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip(self):
         setup_routing(self.edr_api_app, func=wrong_ip_address)
@@ -411,7 +406,7 @@ class TestDetails(BaseWebTest):
         else:
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json[0]['data'], {
+            self.assertEqual(response.json['data'][0], {
                 u"additionalActivityKinds": [
                     {u"scheme": u"КВЕД",
                      u"id": u"64.92",
@@ -447,7 +442,8 @@ class TestDetails(BaseWebTest):
                                   u"id": u"64.19",
                                   u"description": u"Інші види грошового посередництва"}
             })
-            self.assertEqual(response.json[0]['meta'], time_mismatch(response.json[0]['meta']))
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
+                                                     'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
@@ -484,30 +480,28 @@ class TestDetails(BaseWebTest):
         setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=response_details)
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'}, expect_errors=True)
+        self.assertEqual(response.content_type, 'application/yaml')
         if SANDBOX_MODE:
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(yaml.load(response.body)['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
         else:
             self.assertEqual(response.status, '200 OK')
-            with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml'), 'r') as f:
+            with open(os.path.join(os.path.dirname(__file__), 'test_data_details.yaml')) as f:
                 test_yaml_data = f.read()
-                data = yaml.load(test_yaml_data)
-                data[0]['meta'].update(yaml.load(response.body)[0]['meta'])
-            self.assertEqual(response.body, yaml.safe_dump(data, allow_unicode=True, default_flow_style=False))
-            self.assertEqual(response.content_type, 'application/yaml')
+            self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip_details(self):
         setup_routing(self.edr_api_app, func=response_code)
         setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=wrong_ip_address_detailed_request)
         response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/json'}, expect_errors=True)
+        self.assertEqual(response.content_type, 'application/json')
         if SANDBOX_MODE:
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
         else:
             self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
 
     def test_null_fields(self):
@@ -522,7 +516,7 @@ class TestDetails(BaseWebTest):
         else:
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json[0]['data'], {
+            self.assertEqual(response.json['data'][0], {
                 u"management": u"ЗАГАЛЬНІ ЗБОРИ",
                 u"registrationStatus": u"registered",
                 u"registrationStatusDetails": u"зареєстровано",
@@ -539,7 +533,8 @@ class TestDetails(BaseWebTest):
                 u"activityKind": {u"scheme": u"КВЕД",
                                   u"id": u"64.19",
                                   u"description": u"Інші види грошового посередництва"}})
-            self.assertEqual(response.json[0]['meta'], time_mismatch(response.json[0]['meta']))
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
+                                                     'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
 
     def test_sandbox_mode_data_details(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_details.json.
@@ -587,5 +582,6 @@ class TestDetails(BaseWebTest):
             response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json[0]['data'], example_data[0])
-            self.assertEqual(response.json[0]['meta'], time_mismatch(response.json[0]['meta']))
+            self.assertEqual(response.json['data'][0], example_data[0])
+            self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
+                                         'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})

@@ -10,7 +10,7 @@ Content-Type: application/json; charset=UTF-8
     {
       "description": [
         {
-          "message": "Need pass id or passport"
+          "message": "Wrong name of the GET parameter"
         }
       ], 
       "name": "data", 
