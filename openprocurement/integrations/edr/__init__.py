@@ -54,10 +54,10 @@ def main(global_config, **settings):
     config.registry.edr_client = EdrClient(settings.get('edr_api_server'),
                                            settings.get('edr_api_token'),
                                            int(settings.get('edr_api_port')),
-                                           float(settings.get('edr_timeout_min')),
-                                           float(settings.get('edr_timeout_max')),
-                                           float(settings.get('edr_timeout_step')),
-                                           settings.get('edr_timeout_mode')
+                                           float(settings.get('edr_timeout_min', 1)),
+                                           float(settings.get('edr_timeout_max', 60)),
+                                           float(settings.get('edr_timeout_step', 2)),
+                                           settings.get('edr_timeout_mode', 'mult')
                                            )
 
     # Include views
