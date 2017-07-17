@@ -9,18 +9,9 @@ from openprocurement.integrations.edr.tests._server import \
     (setup_routing, response_code, response_passport, check_headers, payment_required, forbidden, not_acceptable,
      too_many_requests, two_error_messages, bad_gateway,server_error, response_details, too_many_requests_details,
      bad_gateway_details, wrong_ip_address, wrong_ip_address_detailed_request, null_fields, sandbox_mode_data,
-     sandbox_mode_data_details)
-from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ, meta_data
-from pytz import UTC
+     sandbox_mode_data_details, DATE)
+from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
 import yaml
-
-
-def time_mismatch(r_date):
-    sample_time = meta_data(datetime.datetime.now().replace(tzinfo=UTC).strftime('%a, %d %b %Y %H:%M:%S %Z'))
-    if sample_time == r_date:
-        return sample_time
-    else:
-        return r_date
 
 
 class TestVerify(BaseWebTest):
@@ -28,35 +19,27 @@ class TestVerify(BaseWebTest):
 
     def test_opt_json(self):
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?id=14360570&opt_jsonp=callback', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertIn("Couldn't find this code in EDR.", response.body)
-        else:
-            self.assertEqual(response.content_type, 'application/javascript')
-            self.assertEqual(response.status, '200 OK')
-            self.assertNotIn('{\n    "', response.body)
-            self.assertIn('callback({', response.body)
+        response = self.app.get('/verify?id=14360570&opt_jsonp=callback')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertNotIn('{\n    "', response.body)
+        self.assertIn('callback({', response.body)
 
     def test_pretty_json(self):
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?id=14360570&opt_jsonp=callback&opt_pretty=1', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertIn("Couldn't find this code in EDR.", response.body)
-        else:
-            self.assertEqual(response.content_type, 'application/javascript')
-            self.assertEqual(response.status, '200 OK')
-            self.assertIn('{\n    "', response.body)
-            self.assertIn('callback({', response.body)
+        response = self.app.get('/verify?id=14360570&opt_jsonp=callback&opt_pretty=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertIn('{\n    "', response.body)
+        self.assertIn('callback({', response.body)
 
     def test_permission_deny(self):
         old = self.app.authorization
         self.app.authorization = ('Basic', ('', ''))
         setup_routing(self.edr_api_app, func=response_code)
         response = self.app.get('/verify?id=14360570', status=403)
-        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'],
                          [{
                              "location": "url",
@@ -68,100 +51,75 @@ class TestVerify(BaseWebTest):
     def test_edrpou(self):
         """ Get info by custom edrpou """
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?id=14360570', expect_errors=True)
+        response = self.app.get('/verify?id=14360570')
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertIn(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                          "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '200 OK')
-            self.assertEqual(response.json['meta'], time_mismatch(response.json['meta']))
-            self.assertEqual(response.json['data'],
-                             [{u'registrationStatusDetails': u'зареєстровано',
-                               u'registrationStatus': u'registered',
-                               u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                                   u'schema': u'UA-EDR',
-                                                   u'id': u'14360570',
-                                                   u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-                               u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
+        self.assertEqual(response.json['data'],
+                         [{u'registrationStatusDetails': u'зареєстровано',
+                           u'registrationStatus': u'registered',
+                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                               u'schema': u'UA-EDR',
+                                               u'id': u'14360570',
+                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                           u'x_edrInternalId': 2842335}])
 
     def test_passport(self):
         """ Get info by passport number """
         setup_routing(self.edr_api_app, func=response_passport)
-        response = self.app.get('/verify?passport=СН012345', expect_errors=True)
+        response = self.app.get('/verify?passport=СН012345')
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '200 OK')
-            self.assertEqual(
-                response.json['data'],
-                [{u'registrationStatusDetails': u'зареєстровано',
-                  u'registrationStatus': u'registered',
-                  u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                                      u'schema': u'UA-EDR',
-                                      u'id': u'СН012345',
-                                      u'legalName': u'СН012345'},
-                  u'x_edrInternalId': 2842336}])
+        self.assertEqual(
+            response.json['data'],
+            [{u'registrationStatusDetails': u'зареєстровано',
+              u'registrationStatus': u'registered',
+              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
+                                  u'schema': u'UA-EDR',
+                                  u'id': u'СН012345',
+                                  u'legalName': u'СН012345'},
+              u'x_edrInternalId': 2842336}])
 
     def test_new_passport(self):
         """ Get info by new passport number with 13-digits"""
         setup_routing(self.edr_api_app, func=response_passport)
-        response = self.app.get('/verify?passport=123456789', expect_errors=True)
+        response = self.app.get('/verify?passport=123456789')
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '200 OK')
-            self.assertEqual(
-                response.json['data'],
-                [{u'registrationStatusDetails': u'зареєстровано',
-                  u'registrationStatus': u'registered',
-                  u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
-                                      u'schema': u'UA-EDR',
-                                      u'id': u'123456789',
-                                      u'legalName': u'123456789'},
-                  u'x_edrInternalId': 2842336}])
-            self.assertEqual(response.json['meta'], time_mismatch(response.json['meta']))
+        self.assertEqual(
+            response.json['data'],
+            [{u'registrationStatusDetails': u'зареєстровано',
+              u'registrationStatus': u'registered',
+              u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842336',
+                                  u'schema': u'UA-EDR',
+                                  u'id': u'123456789',
+                                  u'legalName': u'123456789'},
+              u'x_edrInternalId': 2842336}])
+        self.assertEqual(response.json['meta'], DATE)
 
     def test_ipn(self):
         """ Get info by IPN (physical entity-entrepreneur)"""
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?id=1234567891', expect_errors=True)
+        response = self.app.get('/verify?id=1234567891')
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '200 OK')
-            self.assertEqual(response.json['data'],
-                             [{u'registrationStatusDetails': u'зареєстровано',
-                               u'registrationStatus': u'registered',
-                               u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                                   u'schema': u'UA-EDR', u'id': u'1234567891',
-                                                   u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-                               u'x_edrInternalId': 2842335}])
-            self.assertEqual(response.json['meta'], time_mismatch(response.json['meta']))
+        self.assertEqual(response.json['data'],
+                         [{u'registrationStatusDetails': u'зареєстровано',
+                           u'registrationStatus': u'registered',
+                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                               u'schema': u'UA-EDR', u'id': u'1234567891',
+                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                           u'x_edrInternalId': 2842335}])
+        self.assertEqual(response.json['meta'], DATE)
 
     def test_invalid_passport(self):
         """Check invalid passport number АБВ"""
         setup_routing(self.edr_api_app, func=response_passport)
-        response = self.app.get('/verify?passport=АБВ', expect_errors=True)
+        response = self.app.get('/verify?passport=АБВ', status=403)
+        self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'code': 11, u'message': u'`passport` parameter has wrong value.'}])
+        self.assertEqual(response.json['errors'][0]['description'],
+                         [{u'code': 11, u'message': u'`passport` parameter has wrong value.'}])
 
     def test_invalid_code(self):
         """Check invalid EDRPOU(IPN) number 123"""
@@ -170,7 +128,8 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.json['errors'][0]['description'],
-                         time_mismatch(response.json['errors'][0]['description']))
+                         [{u'error': {u'errorDetails': u"Couldn't find this code in EDR.", u'code': u'notFound'},
+                           u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}])
 
     def test_unauthorized(self):
         """Send request without token using tests_copy.ini conf file"""
@@ -178,44 +137,28 @@ class TestVerify(BaseWebTest):
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('platform', 'platform'))
         self.app_copy.RequestClass = PrefixedRequestClass
-        response = self.app_copy.get('/verify?id=123', expect_errors=True)
+        response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'message': u'Authentication credentials were not provided.', u'code': 1}])
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'],
+                         [{u'message': u'Authentication credentials were not provided.', u'code': 1}])
 
     def test_payment_required(self):
         """Check 402 status EDR response"""
         setup_routing(self.edr_api_app, func=payment_required)
-        response = self.app.get('/verify?id=14360570', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'message': u'Payment required.', u'code': 5}])
+        response = self.app.get('/verify?id=14360570', status=403)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Payment required.', u'code': 5}])
 
     def test_forbidden(self):
         """Check 403 status EDR response"""
         setup_routing(self.edr_api_app, func=forbidden)
-        response = self.app.get('/verify?id=14360570', expect_errors=True)
+        response = self.app.get('/verify?id=14360570', status=403)
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'message': u'Your account is not permitted to access this resource.', u'code': 3}])
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'],
+                         [{u'message': u'Your account is not permitted to access this resource.', u'code': 3}])
 
     def test_invalid_token(self):
         """Send request with invalid token 123 using new tests_copy_2.ini conf file"""
@@ -237,118 +180,76 @@ class TestVerify(BaseWebTest):
     def test_not_acceptable(self):
         """Check 406 status EDR response"""
         setup_routing(self.edr_api_app, func=not_acceptable)
-        response = self.app.get('/verify?id=123', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Message.'}])
+        response = self.app.get('/verify?id=123', status=403)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Message.'}])
 
     def test_too_many_requests(self):
         """Check 429 status EDR response(too many requests)"""
         setup_routing(self.edr_api_app, func=too_many_requests)
-        response = self.app.get('/verify?id=123', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.status, '429 Too Many Requests')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'message': u'Retry request after 26 seconds.'}])
-            self.assertEqual(response.headers['Retry-After'], '26')
+        response = self.app.get('/verify?id=123', status=429)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '429 Too Many Requests')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Retry request after 26 seconds.'}])
+        self.assertEqual(response.headers['Retry-After'], '26')
 
     def test_server_error(self):
         """Check 500 status EDR response"""
         setup_routing(self.edr_api_app, func=server_error)
-        response = self.app.get('/verify?id=123', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Internal error.', u'code': 20}])
+        response = self.app.get('/verify?id=123', status=403)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Internal error.', u'code': 20}])
 
     def test_bad_gateway(self):
         """Check 502 status EDR response"""
         setup_routing(self.edr_api_app, func=bad_gateway)
-        response = self.app.get('/verify?id=123', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'message': u'Service is disabled or upgrade.'}])
+        response = self.app.get('/verify?id=123', status=403)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Service is disabled or upgrade.'}])
 
     def test_two_error_messages(self):
         """Check when EDR passes two errors in response"""
         setup_routing(self.edr_api_app, func=two_error_messages)
-        response = self.app.get('/verify?id=123', expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'], [{u'code': 0, u'message': u'Message1.'},
-                                                                         {u'code': 0, u'message': u'Message2.'}])
+        response = self.app.get('/verify?id=123', status=403)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'code': 0, u'message': u'Message1.'},
+                                                                     {u'code': 0, u'message': u'Message2.'}])
 
     def test_long_edrpou(self):
         setup_routing(self.edr_api_app, func=response_passport)
-        response = self.app.get('/verify?passport=12345678912', expect_errors=True)
+        response = self.app.get('/verify?passport=12345678912', status=403)
+        self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'],
-                             [{u'message': u'`passport` parameter has wrong value.', u'code': 11}])
+        self.assertEqual(response.json['errors'][0]['description'],
+                         [{u'message': u'`passport` parameter has wrong value.', u'code': 11}])
 
     def test_empty_request(self):
         """ Send request without params  """
         setup_routing(self.edr_api_app, func=response_passport)
-        response = self.app.get('/verify', expect_errors=True)
-        self.assertEqual(response.content_type, 'application/json')
+        response = self.app.get('/verify', status=403)
         self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Wrong name of the GET parameter'}])
 
     def test_accept_yaml(self):
         setup_routing(self.edr_api_app, func=response_code)
-        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'}, expect_errors=True)
+        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/yaml'})
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/yaml')
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(yaml.load(response.body)['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '200 OK')
-            with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml')) as f:
-                test_yaml_data = f.read()
-            self.assertEqual(response.body, test_yaml_data)
+        with open(os.path.join(os.path.dirname(__file__), 'test_data.yaml')) as f:
+            test_yaml_data = f.read()
+        self.assertEqual(response.body, test_yaml_data)
 
     def test_wrong_ip(self):
         setup_routing(self.edr_api_app, func=wrong_ip_address)
-        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/json'}, expect_errors=True)
-        if SANDBOX_MODE:
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
-                             "Couldn't find this code in EDR.")
-        else:
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
+        response = self.app.get('/verify?id=14360570', headers={'Accept': 'application/json'}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]['description'], [{u'message': u'Forbidden'}])
 
     def test_sandbox_mode_data(self):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_verify.json.
@@ -371,7 +272,7 @@ class TestVerify(BaseWebTest):
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
-            response = self.app.get('/verify?id=00037256', expect_errors=True)
+            response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(
@@ -383,7 +284,7 @@ class TestVerify(BaseWebTest):
                                       u'id': u'00037256',
                                       u'legalName': u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ"},
                   u'x_edrInternalId': 999186}])
-            self.assertEqual(response.json['meta'], time_mismatch(response.json['meta']))
+            self.assertEqual(response.json['meta'], DATE)
 
 
 class TestDetails(BaseWebTest):
@@ -401,8 +302,6 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
-            self.assertEqual(response.json['errors'][0]['description'][0]['meta'],
-                             time_mismatch(response.json['errors'][0]['description'][0]['meta']))
         else:
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')

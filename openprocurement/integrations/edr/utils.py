@@ -20,7 +20,7 @@ USERS = {}
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 identification_schema = u'UA-EDR'
 activityKind_scheme = u'КВЕД'
-SANDBOX_MODE = True if os.environ.get('SANDBOX_MODE', 'False') == 'True' else False
+SANDBOX_MODE = True if os.environ.get('SANDBOX_MODE', 'False').lower() == 'true' else False
 
 
 class Root(object):
@@ -96,7 +96,7 @@ def add_logging_context(event):
         'API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
-        # 'ROLE': str(request.authenticated_role),
+        'ROLE': str(request.authenticated_role or ''),
         'CURRENT_URL': request.url,
         'CURRENT_PATH': request.path_info,
         'REMOTE_ADDR': request.remote_addr or '',
@@ -260,26 +260,34 @@ def meta_data(date):
     return datetime.strptime(date, '%a, %d %b %Y %H:%M:%S %Z').replace(tzinfo=UTC).isoformat()
 
 
-def get_sandbox_data(request, code):
-    """ If the proxy is running in sandbox_mode, return sandbox data or 404 if not found"""
+def get_sandbox_details(request, code):
+    """Compose a detailed sandbox data response if it exists, 404 otherwise"""
     error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
-    LOGGER.info("SANDBOX_MODE = {}, {}".format(SANDBOX_MODE, type(SANDBOX_MODE)))
+    if TEST_DATA_DETAILS.get(code):
+        LOGGER.info('Return test data for {} for robot'.format(code))
+        data = []
+        details_source_date = []
+        for i in xrange(len(TEST_DATA_DETAILS[code])):
+            data.append(prepare_data_details(TEST_DATA_DETAILS[code][i]))
+            details_source_date.append(datetime.now(tz=TZ).isoformat())
+        return {'meta': {'sourceDate': details_source_date[0], 'detailsSourceDate': details_source_date},
+                'data': data}
+    else:
+        LOGGER.info(
+            "Code {} not found in test data for {}, returning 404".format(code, request.authenticated_role))
+        return error_handler(request, 404, {"location": "body", "name": "data",
+                                            "description": [{u"error": error_message_404,
+                                                             u'meta': {'sourceDate': datetime.now().replace(
+                                                                 tzinfo=UTC, microsecond=0).isoformat()}}]})
+
+
+def get_sandbox_data(request, code):
+    """ If the proxy is in sandbox_mode, return sandbox data if it's there else 404 for robot, EDR request for others"""
     if SANDBOX_MODE:
-        if request.authenticated_role == 'robots' and TEST_DATA_DETAILS.get(code):
-            LOGGER.info('Return test data for {} for bot'.format(code))
-            data = []
-            details_source_date = []
-            for i in xrange(len(TEST_DATA_DETAILS[code])):
-                data.append(prepare_data_details(TEST_DATA_DETAILS[code][i]))
-                details_source_date.append(datetime.now(tz=TZ).isoformat())
-            return {'meta': {'sourceDate': details_source_date[0], 'detailsSourceDate': details_source_date},
-                    'data': data}
+        if request.authenticated_role == 'robots':
+            return get_sandbox_details(request, code)
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             return {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
                     'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
-        else:
-            return error_handler(request, 404, {"location": "body", "name": "data",
-                                                "description": [{u"error": error_message_404,
-                                                                 u'meta': {'sourceDate': datetime.now().replace(
-                                                                     tzinfo=UTC, microsecond=0).isoformat()}}]})
+
