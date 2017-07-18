@@ -4,7 +4,7 @@ import webtest
 from gevent import monkey; monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 from bottle import Bottle
-from openprocurement.integrations.edr.utils import ROUTE_PREFIX
+from openprocurement.integrations.edr.utils import ROUTE_PREFIX, SANDBOX_MODE
 
 
 class PrefixedRequestClass(webtest.app.TestRequest):
