@@ -76,7 +76,7 @@ class Db(object):
 
 def db_key(code, role):
     """Generate key for db; :param code - EDR code; :param role: Role of requester, determines type of info"""
-    return "{}_{}_{}".format(code, role, "sandbox" if SANDBOX_MODE else "")
+    return "{}_{}{}".format(code, role, "_sandbox" if SANDBOX_MODE else "")
 
 
 def read_users(filename):
