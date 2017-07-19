@@ -318,10 +318,14 @@ class TestDetails(BaseWebTest):
         self.assertEqual(response.json['data'][0], expected_data)
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
                                                  'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
-        self.assertTrue(self.redis.exists("2842335_robots"))
-        response = self.app.get('/verify?id=00037256')
-        self.assertEqual(response.json['data'][0], expected_data)
-        self.assertEqual(response.json['data'][0], loads(self.redis.get("2842335_robots"))['data'])
+        response = self.app.get('/verify?id=14360570')
+        if SANDBOX_MODE:
+            self.assertTrue(self.redis.exists("2842335_robots_sandbox"))
+            self.assertEqual(response.json['data'][0], loads(self.redis.get("2842335_robots_sandbox"))['data'])
+        else:
+            self.assertTrue(self.redis.exists("2842335_robots"))
+            self.assertEqual(response.json['data'][0], expected_data)
+            self.assertEqual(response.json['data'][0], loads(self.redis.get("2842335_robots"))['data'])
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
