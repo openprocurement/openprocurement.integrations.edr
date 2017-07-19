@@ -6,13 +6,19 @@ from collections import namedtuple
 from pyramid.view import view_config
 from logging import getLogger
 from openprocurement.integrations.edr.utils import (prepare_data_details, prepare_data, error_handler, meta_data,
-                                                    get_sandbox_data, db_key)
+                                                    get_sandbox_data, db_key, error_message_404)
 
 LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 default_error_status = 403
-error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
-lifetime_const = 300
+
+# TODO: 1) Redo cache details inner -> details; - DONE
+# TODO: 2) remove em404 and lifetime consts - DONE
+# TODO: 3) Every first one should be cached
+# TODO: 4) roles -> ref type when in cache - DONE
+# TODO: 5) redo tests accordingly - DONE
+# TODO: 6) TTL for negative and positive should differ
+
 
 def handle_error(request, response):
     if response.headers['Content-Type'] != 'application/json':
@@ -43,13 +49,27 @@ def verify_user(request):
                                  {"location": "url", "name": "id",
                                   "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
-    if request.registry.cache_db.has(db_key(details.code, role)):
-        LOGGER.info("Code {} was found in cache at {}".format(details.code, db_key(details.code, role)))
-        redis_data = json.loads(request.registry.cache_db.get(db_key(details.code, role)))
+    edr_data_type = "details" if role == "robots" else "verify"
+    if role == "robots":
+        if request.registry.cache_db.has(db_key(details.code, "details")):
+            LOGGER.info("Code {} was found in cache at {}".format(details.code, db_key(details.code, "details")))
+            redis_data = json.loads(request.registry.cache_db.get(db_key(details.code, "details")))
+            return redis_data
+        elif request.registry.cache_db.has(db_key(details.code, "verify")):
+            redis_data = json.loads(request.registry.cache_db.get(db_key(details.code, "verify")))
+            if redis_data.get("errors"):
+                return error_handler(request, 404, redis_data["errors"][0])
+            data_details = user_details(request, [obj['x_edrInternalId'] for obj in redis_data['data']])
+            request.registry.cache_db.put(db_key(details.code, "details"), json.dumps(data_details),
+                                          request.registry.time_to_live)
+            return data_details
+    elif request.registry.cache_db.has(db_key(details.code, "verify")):
+        LOGGER.info("Code {} was found in cache at {}".format(details.code, db_key(details.code, "verify")))
+        redis_data = json.loads(request.registry.cache_db.get(db_key(details.code, "verify")))
         if redis_data.get("errors"):
-            return error_handler(request, 404, redis_data["errors"])
+            return error_handler(request, 404, redis_data["errors"][0])
         return redis_data
-    LOGGER.debug("Code {} was not found in cache at {}".format(details.code, db_key(details.code, role)))
+    LOGGER.debug("Code {} was not found in cache at {}".format(details.code, db_key(details.code, edr_data_type)))
     data = get_sandbox_data(request, role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
     if data:
         return data
@@ -68,12 +88,17 @@ def verify_user(request):
                                                "description": [{u"error": error_message_404,
                                                                 u'meta': {"sourceDate": meta_data(
                                                                      response.headers['Date'])}}]})
-            request.registry.cache_db.put(db_key(details.code, role), json.dumps(res), ex=request.registry.time_to_live)
+            request.registry.cache_db.put(db_key(details.code, "verify"), json.dumps(res),
+                                          request.registry.time_to_live)
             return res
+        res = {'data': [prepare_data(d) for d in data], 'meta': {'sourceDate': meta_data(response.headers['Date'])}}
+        request.registry.cache_db.put(db_key(details.code, "verify"), json.dumps(res), request.registry.time_to_live)
         if role == 'robots':  # get details for edr-bot
             data_details = user_details(request, [obj['id'] for obj in data])
+            request.registry.cache_db.put(db_key(details.code, "details"), json.dumps(data_details),
+                                          request.registry.time_to_live)
             return data_details
-        return {'data': [prepare_data(d) for d in data], 'meta': {'sourceDate': meta_data(response.headers['Date'])}}
+        return res
     else:
         return handle_error(request, response)
 
@@ -83,10 +108,6 @@ def user_details(request, internal_ids):
     data = []
     details_source_date = []
     for internal_id in internal_ids:
-        if request.registry.cache_db.has(db_key(internal_id, request.authenticated_role)):
-            redis_data = json.loads(request.registry.cache_db.get(db_key(internal_id, request.authenticated_role)))
-            data.append(redis_data['data'])
-            details_source_date.append(redis_data['meta'])
         try:
             response = request.registry.edr_client.get_subject_details(internal_id)
         except (requests.exceptions.ReadTimeout,
@@ -97,9 +118,6 @@ def user_details(request, internal_ids):
             return handle_error(request, response)
         else:
             LOGGER.info('Return detailed data from EDR service for {}'.format(internal_id))
-            caching_data = {"data": prepare_data_details(response.json()), "meta": meta_data(response.headers['Date'])}
             data.append(prepare_data_details(response.json()))
             details_source_date.append(meta_data(response.headers['Date']))
-            request.registry.cache_db.put(db_key(internal_id, request.authenticated_role),
-                                          json.dumps(caching_data), ex=request.registry.time_to_live)
     return {"data": data, "meta": {"sourceDate": details_source_date[-1], "detailsSourceDate": details_source_date}}

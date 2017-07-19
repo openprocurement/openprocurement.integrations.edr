@@ -10,7 +10,7 @@ from openprocurement.integrations.edr.tests._server import \
      check_headers, payment_required, forbidden, not_acceptable, too_many_requests, two_error_messages, bad_gateway,
      server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
      wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
-from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
+from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ, db_key
 from simplejson import loads
 
 
@@ -55,14 +55,23 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00'})
-        self.assertEqual(response.json['data'],
-                         [{u'registrationStatusDetails': u'зареєстровано',
-                           u'registrationStatus': u'registered',
-                           u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
-                                               u'schema': u'UA-EDR',
-                                               u'id': u'14360570',
-                                               u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-                           u'x_edrInternalId': 2842335}])
+        expected_data = [{u'registrationStatusDetails': u'зареєстровано',
+                          u'registrationStatus': u'registered',
+                          u'identification': {u'url': u'https://zqedr-api.nais.gov.ua/1.0/subjects/2842335',
+                                              u'schema': u'UA-EDR',
+                                              u'id': u'14360570',
+                                              u'legalName': u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                          u'x_edrInternalId': 2842335}]
+        self.assertEqual(response.json['data'], expected_data)
+        response = self.app.get('/verify?id=14360570')
+        if SANDBOX_MODE:
+            self.assertTrue(self.redis.exists("14360570_verify_sandbox"))
+            self.assertEqual(response.json, loads(self.redis.get("14360570_verify_sandbox")))
+            self.assertEqual(loads(self.redis.get("14360570_verify_sandbox"))['data'], expected_data)
+        else:
+            self.assertTrue(self.redis.exists("14360570_verify"))
+            self.assertEqual(response.json, loads(self.redis.get("14360570_verify")))
+            self.assertEqual(loads(self.redis.get("14360570_verify"))['data'], expected_data)
 
     def test_passport(self):
         """ Get info by passport number """
@@ -127,9 +136,15 @@ class TestVerify(BaseWebTest):
         response = self.app.get('/verify?id=123', status=404)
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.json['errors'][0]['description'],
-                         [{u'error': {u'errorDetails': u"Couldn't find this code in EDR.", u'code': u'notFound'},
-                           u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}])
+        expected_result = [{u'error': {u'errorDetails': u"Couldn't find this code in EDR.", u'code': u'notFound'},
+                           u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}]
+        self.assertEqual(response.json['errors'][0]['description'], expected_result)
+        self.assertTrue(self.redis.exists(db_key("123", "verify")))
+        response = self.app.get('/verify?id=123', status=404)
+        self.assertEqual(response.json['errors'][0]['description'], expected_result)
+        self.assertEqual(response.json, loads(self.redis.get(db_key("123", "verify"))))
+
+
 
     def test_unauthorized(self):
         """Send request without token using tests_copy.ini conf file"""
@@ -171,6 +186,40 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]['description'],
                          [{u'code': 2, u'message': u'Invalid or expired token.'}])
+
+    def test_bot_verify(self):
+        """Send request with invalid token 123 using new tests_copy_2.ini conf file"""
+        setup_routing(self.edr_api_app, func=response_code)
+        setup_routing(self.edr_api_app, path='/1.0/subjects/2842335', func=response_details)
+        response = self.app.get('/verify?id=14360570')
+        self.assertEqual(response.status, '200 OK')
+        self.assertTrue(self.redis.exists(db_key("14360570", "verify")))
+        self.app.authorization = ('Basic', ('robot', 'robot'))
+        response = self.app.get('/verify?id=14360570')
+        expected_details_data = {u"additionalActivityKinds": [
+            {u"scheme": u"КВЕД", u"id": u"64.92", u"description": u"Інші види кредитування"},
+            {u"scheme": u"КВЕД", u"id": u"64.99",
+             u"description": u"Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."},
+            {u"scheme": u"КВЕД", u"id": u"66.11", u"description": u"Управління фінансовими ринками"},
+            {u"scheme": u"КВЕД", u"id": u"66.12",
+             u"description": u"Посередництво за договорами по цінних паперах або товарах"},
+            {u"scheme": u"КВЕД", u"id": u"66.19",
+             u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
+            u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
+            u"registrationStatusDetails": u"зареєстровано",
+            u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
+                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+            u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
+                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+            u"founders": [
+                {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
+            u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
+                              u"description": u"Інші види грошового посередництва"}}
+        self.assertEqual(response.json['data'][0], expected_details_data)
+        response = self.app.get('/verify?id=14360570')
+        self.assertTrue(self.redis.exists(db_key("14360570", "details")))
+        self.assertEqual(response.json, loads(self.redis.get(db_key("14360570", "details"))))
+        self.assertEqual(loads(self.redis.get(db_key("14360570", "details")))['data'][0], expected_details_data)
 
     def test_not_acceptable(self):
         """Check 406 status EDR response"""
@@ -305,27 +354,23 @@ class TestDetails(BaseWebTest):
              u"description": u"Посередництво за договорами по цінних паперах або товарах"},
             {u"scheme": u"КВЕД", u"id": u"66.19",
              u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
-              u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
-              u"registrationStatusDetails": u"зареєстровано",
-              u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
-                                  u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-              u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
-                           u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
-              u"founders": [
-                  {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
-              u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
-                                u"description": u"Інші види грошового посередництва"}}
+            u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
+            u"registrationStatusDetails": u"зареєстровано",
+            u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
+                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+            u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
+                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+            u"founders": [
+                {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
+            u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
+                              u"description": u"Інші види грошового посередництва"}}
         self.assertEqual(response.json['data'][0], expected_data)
         self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
                                                  'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
         response = self.app.get('/verify?id=14360570')
-        if SANDBOX_MODE:
-            self.assertTrue(self.redis.exists("2842335_robots_sandbox"))
-            self.assertEqual(response.json['data'][0], loads(self.redis.get("2842335_robots_sandbox"))['data'])
-        else:
-            self.assertTrue(self.redis.exists("2842335_robots"))
-            self.assertEqual(response.json['data'][0], expected_data)
-            self.assertEqual(response.json['data'][0], loads(self.redis.get("2842335_robots"))['data'])
+        self.assertTrue(self.redis.exists(db_key("14360570", "details")))
+        self.assertEqual(response.json, loads(self.redis.get(db_key("14360570", "details"))))
+        self.assertEqual(response.json['data'][0], expected_data)
 
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
@@ -427,10 +472,10 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.json['data'][0], example_data)
             self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
-            self.assertTrue(self.redis.exists("00037256_robots_sandbox"))
+            self.assertTrue(self.redis.exists("00037256_details_sandbox"))
             response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.json['data'][0], example_data)
-            self.assertEqual(response.json, loads(self.redis.get("00037256_robots_sandbox")))
+            self.assertEqual(response.json, loads(self.redis.get("00037256_details_sandbox")))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)

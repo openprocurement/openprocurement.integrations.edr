@@ -74,9 +74,9 @@ class Db(object):
         return self.has_value(key)
 
 
-def db_key(code, role):
-    """Generate key for db; :param code - EDR code; :param role: Role of requester, determines type of info"""
-    return "{}_{}{}".format(code, role, "_sandbox" if SANDBOX_MODE else "")
+def db_key(code, edr_resp_type):
+    """Generate key for db; :param code - EDR code; :param edr_resp_type: Role of requester, determines type of info"""
+    return "{}_{}{}".format(code, edr_resp_type, "_sandbox" if SANDBOX_MODE else "")
 
 
 def read_users(filename):
@@ -317,10 +317,10 @@ def get_sandbox_data(request, role, code):
         res = None
         if role == 'robots' and TEST_DATA_DETAILS.get(code):
             res = form_sandbox_details(code)
+            request.registry.cache_db.put(db_key(code, "details"), json.dumps(res), ex=request.registry.time_to_live)
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             res = {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
-        if res:
-            request.registry.cache_db.put(db_key(code, role), json.dumps(res), ex=request.registry.time_to_live)
+            request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), ex=request.registry.time_to_live)
         return res
