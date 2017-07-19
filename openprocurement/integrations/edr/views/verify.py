@@ -39,13 +39,17 @@ def verify_user(request):
     if not code:
         passport = request.params.get('passport', '').encode('utf-8')
         if not passport:
-            return error_handler(request, default_error_status, {"location": "url", "name": "id",
-                                                                 "description": [{u'message': u'Wrong name of the GET parameter'}]})
+            return error_handler(request, default_error_status,
+                                 {"location": "url", "name": "id",
+                                  "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
     if request.registry.cache_db.has(db_key(details.code, role)):
-        LOGGER.info("Code {} was found in cache".format(details.code))
-        return json.loads(request.registry.cache_db.get(db_key(details.code, role)))
-    LOGGER.debug("Code {} was not found in cache".format(details.code,))
+        LOGGER.info("Code {} was found in cache at {}".format(details.code, db_key(details.code, role)))
+        redis_data = json.loads(request.registry.cache_db.get(db_key(details.code, role)))
+        if redis_data.get("errors"):
+            return error_handler(request, 404, redis_data["errors"])
+        return redis_data
+    LOGGER.debug("Code {} was not found in cache at {}".format(details.code, db_key(details.code, role)))
     data = get_sandbox_data(request, role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
     if data:
         return data
@@ -79,8 +83,8 @@ def user_details(request, internal_ids):
     data = []
     details_source_date = []
     for internal_id in internal_ids:
-        if request.registry.cache_db.has("i_"+str(internal_id)):
-            redis_data = json.loads(request.registry.cache_db.get(internal_id))
+        if request.registry.cache_db.has(db_key(internal_id, request.authenticated_role)):
+            redis_data = json.loads(request.registry.cache_db.get(db_key(internal_id, request.authenticated_role)))
             data.append(redis_data['data'])
             details_source_date.append(redis_data['meta'])
         try:

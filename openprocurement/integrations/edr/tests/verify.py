@@ -11,6 +11,7 @@ from openprocurement.integrations.edr.tests._server import \
      server_error, response_details, too_many_requests_details, bad_gateway_details, wrong_ip_address,
      wrong_ip_address_detailed_request, null_fields, sandbox_mode_data, sandbox_mode_data_details)
 from openprocurement.integrations.edr.utils import SANDBOX_MODE, TZ
+from simplejson import loads
 
 
 class TestVerify(BaseWebTest):
@@ -400,12 +401,10 @@ class TestDetails(BaseWebTest):
         """If SANDBOX_MODE=True define func=response_code and check that returns data from test_data_details.json.
         Otherwise test that _server return data"""
         if SANDBOX_MODE:
-            setup_routing(self.edr_api_app, func=response_code)
-            setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=response_details)
             response = self.app.get('/verify?id=00037256')
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['data'][0], {
+            example_data = {
                     u"management": u"КЕРІВНИК",
                     u"name": u"ДЕРЖАВНЕ УПРАВЛІННЯ СПРАВАМИ",
                     u"registrationStatus": u"registered",
@@ -431,9 +430,14 @@ class TestDetails(BaseWebTest):
                       u"scheme": u"КВЕД",
                       u"id": u"84.11",
                       u"description": u"Державне управління загального характеру"
-                    }})
+                    }}
+            self.assertEqual(response.json['data'][0], example_data)
             self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
+            self.assertTrue(self.redis.exists("00037256_robots_sandbox"))
+            response = self.app.get('/verify?id=00037256')
+            self.assertEqual(response.json['data'][0], example_data)
+            self.assertEqual(response.json, loads(self.redis.get("00037256_robots_sandbox")))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)

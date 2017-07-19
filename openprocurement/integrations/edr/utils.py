@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-
 import os
 from logging import getLogger
 from json import dumps
@@ -22,7 +21,7 @@ USERS = {}
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 identification_schema = u'UA-EDR'
 activityKind_scheme = u'КВЕД'
-SANDBOX_MODE = True if os.environ.get('SANDBOX_MODE', "False") == "True" else False
+SANDBOX_MODE = True if os.environ.get('SANDBOX_MODE', "False").lower() == "true" else False
 error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
 
 
@@ -49,7 +48,6 @@ class Db(object):
         self._db_name = None
         self._port = None
         self._host = None
-
         if 'cache_host' in self.config:
             import redis
             self._backend = "redis"
@@ -59,26 +57,21 @@ class Db(object):
             self.db = redis.StrictRedis(host=self._host, port=self._port, db=self._db_name)
             self.set_value = self.db.set
             self.has_value = self.db.exists
+        else:
+            self.set_value = lambda x, y, z: None
+            self.has_value = lambda x: None
 
     def get(self, key):
-        """Get item from db :param key: key in the database
-        :rtype: object
-        """
-        if 'cache_host' in self.config:
-            LOGGER.debug("Getting item {} from the cache".format(key))
-            return self.db.get(key)
+        LOGGER.debug("Getting item {} from the cache".format(key))
+        return self.db.get(key)
 
     def put(self, key, value, ex=604800):
-        """Put item in db :param key: key in the database :param value: value to be saved :param ex: expiration time"""
-        if 'cache_host' in self.config:
-            LOGGER.debug("Saving key {} to cache".format(key))
-            self.set_value(key, value, ex)
+        LOGGER.debug("Saving key {} to cache".format(key))
+        self.set_value(key, value, ex)
 
     def has(self, key):
-        """Check if item exists in db :param key: key in the database"""
-        if 'cache_host' in self.config:
-            LOGGER.debug("Checking if code {} is in the cache".format(key))
-            return self.has_value(key)
+        LOGGER.debug("Checking if code {} is in the cache".format(key))
+        return self.has_value(key)
 
 
 def db_key(code, role):
@@ -322,12 +315,6 @@ def get_sandbox_data(request, role, code):
     """Return sandbox data if applicable"""
     if SANDBOX_MODE:
         res = None
-        if request.registry.cache_db.has(db_key(code, role)):
-            LOGGER.info("Returning cached test data for {} {}".format(code, role))
-            redis_data = json.loads(request.registry.cache_db.get(db_key(code, role)))
-            if redis_data.get("errors"):
-                return error_handler(request, 404, redis_data["errors"])
-            return redis_data
         if role == 'robots' and TEST_DATA_DETAILS.get(code):
             res = form_sandbox_details(code)
         elif TEST_DATA_VERIFY.get(code):

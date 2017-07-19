@@ -1,6 +1,9 @@
 import unittest
 import os
 import webtest
+import subprocess
+import time
+from redis import StrictRedis
 from gevent import monkey; monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 from bottle import Bottle
@@ -20,6 +23,9 @@ class BaseWebTest(unittest.TestCase):
     """Base Web Test to test openprocurement.integrations.edr. """
 
     relative_to = os.path.dirname(__file__)  # crafty line
+    redis = None
+    redis_process = None
+    PORT = 16379
 
     @classmethod
     def setUpClass(cls):
@@ -36,13 +42,18 @@ class BaseWebTest(unittest.TestCase):
         else:
             cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
         cls.app.RequestClass = PrefixedRequestClass
+        cls.redis_process = subprocess.Popen(['redis-server', '--port', str(cls.PORT)])
+        time.sleep(0.1)
+        cls.redis = StrictRedis(port=cls.PORT)
 
     @classmethod
     def tearDownClass(cls):
         cls.server.close()
+        cls.redis_process.terminate()
+        cls.redis_process.wait()
+
+    def tearDown(self):
+        self.redis.flushall()
 
     def setUp(self):
         self.app.authorization = ('Basic', ('platform', 'platform'))
-
-    def tearDown(self):
-        pass
