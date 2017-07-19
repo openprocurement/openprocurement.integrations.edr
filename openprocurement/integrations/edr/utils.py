@@ -12,10 +12,10 @@ from ConfigParser import ConfigParser
 from pyramid.security import Allow
 from pyramid.httpexceptions import exception_response
 
-
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
+VERSION = '{}.{}'.format(int(PKG.parsed_version[0]),
+                         int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 USERS = {}
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
@@ -139,7 +139,7 @@ def add_logging_context(event):
         'API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
-        #'ROLE': str(request.authenticated_role),
+        'ROLE': str(request.authenticated_role or ''),
         'CURRENT_URL': request.url,
         'CURRENT_PATH': request.path_info,
         'REMOTE_ADDR': request.remote_addr or '',
@@ -211,6 +211,7 @@ def auth_check(username, password, request):
     if username in USERS and USERS[username]['password'] == sha512(password).hexdigest():
         return ['g:{}'.format(USERS[username]['group'])]
 
+
 registration_statuses = {-1: 'cancelled', 1: 'registered',
                          2: 'beingTerminated', 3: 'terminated',
                          4: 'banckruptcyFiled', 5: 'banckruptcyReorganization',
@@ -230,7 +231,8 @@ def prepare_data(data):
 
 
 def forbidden(request):
-    request.response.json_body = error_handler(request, 403, {"location": "url", "name": "permission","description": "Forbidden"})
+    request.response.json_body = error_handler(request, 403,
+                                               {"location": "url", "name": "permission", "description": "Forbidden"})
     return request.response
 
 
@@ -291,6 +293,7 @@ def read_json(name):
         data = lang_file.read()
     return loads(data)
 
+
 TEST_DATA_VERIFY = read_json('test_data_verify.json')
 TEST_DATA_DETAILS = read_json('test_data_details.json')
 
@@ -300,27 +303,40 @@ def meta_data(date):
     return datetime.strptime(date, '%a, %d %b %Y %H:%M:%S %Z').replace(tzinfo=UTC).isoformat()
 
 
-def form_sandbox_details(code):
-    """Creating properly formatted details response"""
-    LOGGER.info('Return test data for {} for bot'.format(code))
-    data = []
-    details_source_date = []
-    for i in xrange(len(TEST_DATA_DETAILS[code])):
-        data.append(prepare_data_details(TEST_DATA_DETAILS[code][i]))
-        details_source_date.append(datetime.now(tz=TZ).isoformat())
-    return {'meta': {'sourceDate': details_source_date[-1], 'detailsSourceDate': details_source_date}, 'data': data}
+def get_sandbox_details(request, code):
+    """Compose a detailed sandbox data response if it exists, 404 otherwise"""
+    if TEST_DATA_DETAILS.get(code):
+        LOGGER.info('Return test data for {} for robot'.format(code))
+        data = []
+        details_source_date = []
+        for i in xrange(len(TEST_DATA_DETAILS[code])):
+            data.append(prepare_data_details(TEST_DATA_DETAILS[code][i]))
+            details_source_date.append(datetime.now(tz=TZ).isoformat())
+        return {'meta': {'sourceDate': details_source_date[0], 'detailsSourceDate': details_source_date},
+                'data': data}
+    else:
+        LOGGER.info(
+            "Code {} not found in test data for {}, returning 404".format(code, request.authenticated_role))
+        return error_handler(request, 404, {"location": "body", "name": "data",
+                                            "description": [{u"error": error_message_404,
+                                                             u'meta': {'sourceDate': datetime.now().replace(
+                                                                 tzinfo=UTC, microsecond=0).isoformat()}}]})
 
 
-def get_sandbox_data(request, role, code):
-    """Return sandbox data if applicable"""
+def get_sandbox_data(request, code):
+    """ If the proxy is in sandbox_mode, return sandbox data if it's there else 404 for robot, EDR request for others"""
     if SANDBOX_MODE:
         res = None
-        if role == 'robots' and TEST_DATA_DETAILS.get(code):
-            res = form_sandbox_details(code)
-            request.registry.cache_db.put(db_key(code, "details"), json.dumps(res), ex=request.registry.time_to_live)
+        if request.authenticated_role == 'robots':
+            res = get_sandbox_details(request, code)
+            if res.get("errors"):
+                request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res),
+                                              request.registry.time_to_live_negative)
+                return error_handler(request, 404, res["errors"][0])
+            request.registry.cache_db.put(db_key(code, "details"), json.dumps(res), request.registry.time_to_live)
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             res = {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
-                   'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
-            request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), ex=request.registry.time_to_live)
+                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
+            request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), request.registry.time_to_live)
         return res

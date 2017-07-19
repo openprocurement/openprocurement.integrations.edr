@@ -12,18 +12,11 @@ LOGGER = getLogger(__name__)
 EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
 default_error_status = 403
 
-# TODO: 1) Redo cache details inner -> details; - DONE
-# TODO: 2) remove em404 and lifetime consts - DONE
-# TODO: 3) Every first one should be cached
-# TODO: 4) roles -> ref type when in cache - DONE
-# TODO: 5) redo tests accordingly - DONE
-# TODO: 6) TTL for negative and positive should differ
-
 
 def handle_error(request, response):
     if response.headers['Content-Type'] != 'application/json':
-        return error_handler(request, default_error_status, {"location": "request", "name": "ip",
-                                                             "description": [{u'message': u'Forbidden'}]})
+        return error_handler(request, default_error_status,
+                             {"location": "request", "name": "ip", "description": [{u'message': u'Forbidden'}]})
     if response.status_code == 429:
         seconds_to_wait = response.headers.get('Retry-After')
         request.response.headers['Retry-After'] = seconds_to_wait
@@ -36,8 +29,7 @@ def handle_error(request, response):
                                                          "description": response.json()['errors']})
 
 
-@view_config(route_name='verify', renderer='json',
-             request_method='GET', permission='verify')
+@view_config(route_name='verify', renderer='json', request_method='GET', permission='verify')
 def verify_user(request):
     code = request.params.get('id', '').encode('utf-8')
     details = EDRDetails('code', code)
@@ -70,7 +62,7 @@ def verify_user(request):
             return error_handler(request, 404, redis_data["errors"][0])
         return redis_data
     LOGGER.debug("Code {} was not found in cache at {}".format(details.code, db_key(details.code, edr_data_type)))
-    data = get_sandbox_data(request, role, code)  # return test data if SANDBOX_MODE=True and data exists for given code
+    data = get_sandbox_data(request, code)  # return test data if SANDBOX_MODE=True and data exists for given code
     if data:
         return data
 

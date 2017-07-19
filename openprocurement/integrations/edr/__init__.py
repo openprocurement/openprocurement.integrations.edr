@@ -52,10 +52,15 @@ def main(global_config, **settings):
     # Init edr connection
     config.registry.edr_client = EdrClient(settings.get('edr_api_server'),
                                            settings.get('edr_api_token'),
-                                           float(settings.get('edr_timeout')),
-                                           int(settings.get('edr_api_port')))
+                                           int(settings.get('edr_api_port')),
+                                           float(settings.get('edr_timeout_min', 1)),
+                                           float(settings.get('edr_timeout_max', 60)),
+                                           float(settings.get('edr_timeout_step', 2)),
+                                           settings.get('edr_timeout_mode', 'mult')
+                                           )
     config.registry.cache_db = Db(settings)
     config.registry.time_to_live = settings.get("time_to_live", 300)
+    config.registry.time_to_live_negative = settings.get("time_to_live_negative", 30)
     # Include views
     config.add_route('verify', '/verify')
     config.add_route('details', '/details/{id}')
