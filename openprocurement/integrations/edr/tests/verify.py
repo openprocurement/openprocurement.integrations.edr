@@ -145,8 +145,6 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.json['errors'][0]['description'], expected_result)
         self.assertEqual(response.json, loads(self.redis.get(db_key("123", "verify"))))
 
-
-
     def test_unauthorized(self):
         """Send request without token using tests_copy.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
@@ -429,7 +427,6 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
                                                      'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
 
-
     def test_too_many_requests_details(self):
         """Check 429 status EDR response(too many requests) for details request"""
         setup_routing(self.edr_api_app, func=response_code)
@@ -623,4 +620,4 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data'][0], example_data[0])
             self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
-                                         'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
+                                                     'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})

@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-import json
 import os
-from logging import getLogger
+import json
+import requests
 from json import dumps
+from hashlib import sha512
+from datetime import datetime
+from logging import getLogger
+from pytz import timezone, UTC
+from collections import namedtuple
+from pyramid.security import Allow
+from ConfigParser import ConfigParser
 from pkg_resources import get_distribution
 from webob.multidict import NestedMultiDict
-from datetime import datetime
-from pytz import timezone, UTC
-from hashlib import sha512
-from ConfigParser import ConfigParser
-from pyramid.security import Allow
 from pyramid.httpexceptions import exception_response
 
 PKG = get_distribution(__package__)
@@ -23,6 +25,8 @@ identification_schema = u'UA-EDR'
 activityKind_scheme = u'КВЕД'
 SANDBOX_MODE = True if os.environ.get('SANDBOX_MODE', "False").lower() == "true" else False
 error_message_404 = {u"errorDetails": u"Couldn't find this code in EDR.", u"code": u"notFound"}
+EDRDetails = namedtuple("EDRDetails", ['param', 'code'])
+default_error_status = 403
 
 
 class Root(object):
@@ -337,6 +341,96 @@ def get_sandbox_data(request, code):
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             res = {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
-                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
+                   'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
             request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), request.registry.time_to_live)
         return res
+
+
+def handle_error(request, response):
+    if response.headers['Content-Type'] != 'application/json':
+        return error_handler(request, default_error_status,
+                             {"location": "request", "name": "ip", "description": [{u'message': u'Forbidden'}]})
+    if response.status_code == 429:
+        seconds_to_wait = response.headers.get('Retry-After')
+        request.response.headers['Retry-After'] = seconds_to_wait
+        return error_handler(request, 429, {"location": "body", "name": "data",
+                                            "description": [{u'message': u'Retry request after {} seconds.'.format(seconds_to_wait)}]})
+    elif response.status_code == 502:
+        return error_handler(request, default_error_status, {"location": "body", "name": "data",
+                                                             "description": [{u'message': u'Service is disabled or upgrade.'}]})
+    return error_handler(request, default_error_status, {"location": "body", "name": "data",
+                                                         "description": response.json()['errors']})
+
+
+def user_details(request, internal_ids):
+    """Composes array of detailed reference files"""
+    data = []
+    details_source_date = []
+    for internal_id in internal_ids:
+        try:
+            response = request.registry.edr_client.get_subject_details(internal_id)
+        except (requests.exceptions.ReadTimeout,
+                requests.exceptions.ConnectTimeout):
+            return error_handler(request, default_error_status, {"location": "url", "name": "id",
+                                                                 "description": [{u'message': u'Gateway Timeout Error'}]})
+        if response.status_code != 200:
+            return handle_error(request, response)
+        else:
+            LOGGER.info('Return detailed data from EDR service for {}'.format(internal_id))
+            data.append(prepare_data_details(response.json()))
+            details_source_date.append(meta_data(response.headers['Date']))
+    return {"data": data, "meta": {"sourceDate": details_source_date[-1], "detailsSourceDate": details_source_date}}
+
+
+def cached_verify(request, code):
+    """Return cached data to non-robot"""
+    LOGGER.info("Code {} was found in cache at {}".format(code, db_key(code, "verify")))
+    redis_data = json.loads(request.registry.cache_db.get(db_key(code, "verify")))
+    if redis_data.get("errors"):
+        return error_handler(request, 404, redis_data["errors"][0])
+    return redis_data
+
+
+def cached_details(request, code):
+    """Return cached data to robot"""
+    if request.registry.cache_db.has(db_key(code, "details")):
+        LOGGER.info("Code {} was found in cache at {}".format(code, db_key(code, "details")))
+        redis_data = json.loads(request.registry.cache_db.get(db_key(code, "details")))
+        if redis_data.get("errors"):
+            return error_handler(request, default_error_status, redis_data["errors"][0])
+        return redis_data
+    elif request.registry.cache_db.has(db_key(code, "verify")):
+        redis_data = json.loads(request.registry.cache_db.get(db_key(code, "verify")))
+        if redis_data.get("errors"):
+            return error_handler(request, 404, redis_data["errors"][0])
+        data_details = user_details(request, [obj['x_edrInternalId'] for obj in redis_data['data']])
+        if not data_details.get("errors"):
+            request.registry.cache_db.put(db_key(code, "details"), json.dumps(data_details),
+                                          request.registry.time_to_live)
+        return data_details
+
+
+def form_edr_response(request, response, code):
+    """Form data for the bot/platform after making a request to EDR"""
+    if response.status_code == 200:
+        LOGGER.info("Response code 200 for code {}".format(code))
+        data = response.json()
+        if not data:
+            LOGGER.warning('Accept empty response from EDR service for {}'.format(code))
+            res = error_handler(request, 404, {"location": "body", "name": "data",
+                                               "description": [{u"error": error_message_404,
+                                                                u'meta': {"sourceDate": meta_data(
+                                                                     response.headers['Date'])}}]})
+            request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res),
+                                          request.registry.time_to_live_negative)
+            return res
+        res = {'data': [prepare_data(d) for d in data], 'meta': {'sourceDate': meta_data(response.headers['Date'])}}
+        request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), request.registry.time_to_live)
+        if request.authenticated_role == 'robots':  # get details for edr-bot
+            data_details = user_details(request, [obj['id'] for obj in data])
+            request.registry.cache_db.put(db_key(code, "details"), json.dumps(data_details),
+                                          request.registry.time_to_live)
+            return data_details
+        return res
+    else:
+        return handle_error(request, response)

@@ -7,7 +7,7 @@ from redis import StrictRedis
 from gevent import monkey; monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 from bottle import Bottle
-from openprocurement.integrations.edr.utils import ROUTE_PREFIX, SANDBOX_MODE
+from openprocurement.integrations.edr.utils import ROUTE_PREFIX
 
 
 class PrefixedRequestClass(webtest.app.TestRequest):
