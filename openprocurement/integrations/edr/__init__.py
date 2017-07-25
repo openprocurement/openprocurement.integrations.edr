@@ -7,8 +7,7 @@ if 'test' not in __import__('sys').argv[0]:
 
 from logging import getLogger
 from openprocurement.integrations.edr.client import EdrClient
-from openprocurement.integrations.edr.utils import ROUTE_PREFIX
-
+from openprocurement.integrations.edr.utils import ROUTE_PREFIX, Db, SANDBOX_MODE
 
 LOGGER = getLogger("{}.init".format(__name__))
 
@@ -59,7 +58,10 @@ def main(global_config, **settings):
                                            float(settings.get('edr_timeout_step', 2)),
                                            settings.get('edr_timeout_mode', 'mult')
                                            )
-
+    config.registry.cache_db = Db(settings)
+    config.registry.time_to_live = settings.get("time_to_live", 300)
+    config.registry.time_to_live_negative = settings.get("time_to_live_negative", 30)
+    LOGGER.info("SANDBOX_MODE = {}".format(SANDBOX_MODE))
     # Include views
     config.add_route('verify', '/verify')
     config.add_route('details', '/details/{id}')
