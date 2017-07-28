@@ -20,6 +20,9 @@ def verify_user(request):
                                  {"location": "url", "name": "id",
                                   "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
+    data = get_sandbox_data(request, code)  # return test data if SANDBOX_MODE=True and data exists for given code
+    if data:
+        return data
     if role == "robots":
         res = cached_details(request, details.code)
         if res:
@@ -28,9 +31,6 @@ def verify_user(request):
         return cached_verify(request, details.code)
     LOGGER.info("Code {} was not found in cache at {}".format(
         details.code, db_key(details.code, "details" if role == "robots" else "verify")))
-    data = get_sandbox_data(request, code)  # return test data if SANDBOX_MODE=True and data exists for given code
-    if data:
-        return data
     try:
         response = request.registry.edr_client.get_subject(**details._asdict())
     except (requests.exceptions.ReadTimeout,
