@@ -10,6 +10,8 @@ LOGGER = getLogger(__name__)
 
 @view_config(route_name='verify', renderer='json', request_method='GET', permission='verify')
 def verify_user(request):
+    LOGGER.info("EFFECTIVE PRINCIPALS {}".format(request.effective_principals))
+    LOGGER.info("USER {}".format(request.user))
     code = request.params.get('id', '').encode('utf-8')
     details = EDRDetails('code', code)
     role = request.authenticated_role
@@ -32,7 +34,7 @@ def verify_user(request):
     if data:
         return data
     try:
-        response = request.registry.edr_client.get_subject(**details._asdict())
+        response = request.registry.edr_client.get_subject(request.authenticated_role, request.user, **details._asdict())
     except (requests.exceptions.ReadTimeout,
             requests.exceptions.ConnectTimeout):
         return error_handler(request, default_error_status, {"location": "url", "name": "id",

@@ -149,7 +149,7 @@ class TestVerify(BaseWebTest):
         """Send request without token using tests_copy.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('platform', 'platform'))
+        self.app_copy.authorization = ('Basic', ('platform1', 'platform'))
         self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
@@ -178,7 +178,7 @@ class TestVerify(BaseWebTest):
         """Send request with invalid token 123 using new tests_copy_2.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy_2.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('robot', 'robot'))
+        self.app_copy.authorization = ('Basic', ('robot2', 'robot'))
         self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', expect_errors=True)
         self.assertEqual(response.content_type, 'application/json')

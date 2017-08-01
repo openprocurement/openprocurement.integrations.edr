@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
+import os
+
+import yaml
+
 if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
@@ -14,7 +18,7 @@ LOGGER = getLogger("{}.init".format(__name__))
 
 def main(global_config, **settings):
     from openprocurement.integrations.edr.auth import (
-        authenticated_role
+        authenticated_role, user
     )
     from openprocurement.integrations.edr.utils import (
         forbidden, add_logging_context, set_logging_context,
@@ -41,6 +45,7 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
+    config.add_request_method(user, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
@@ -48,10 +53,14 @@ def main(global_config, **settings):
     config.add_subscriber(add_logging_context, NewRequest)
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
-
+    LOGGER.info("TEST 0")
+    with open(settings['keys.file']) as f:
+        yaml_keys = yaml.load(f.read())
+    LOGGER.info("TEST 1")
     # Init edr connection
     config.registry.edr_client = EdrClient(settings.get('edr_api_server'),
                                            settings.get('edr_api_token'),
+                                           yaml_keys,
                                            int(settings.get('edr_api_port')),
                                            float(settings.get('edr_timeout_min', 1)),
                                            float(settings.get('edr_timeout_max', 60)),
@@ -59,6 +68,7 @@ def main(global_config, **settings):
                                            settings.get('edr_timeout_mode', 'mult')
                                            )
     config.registry.cache_db = Db(settings)
+    LOGGER.info("TEST 2")
     config.registry.time_to_live = settings.get("time_to_live", 300)
     config.registry.time_to_live_negative = settings.get("time_to_live_negative", 30)
     LOGGER.info("SANDBOX_MODE = {}".format(SANDBOX_MODE))

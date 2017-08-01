@@ -54,7 +54,7 @@ def response_passport():
 
 
 def check_headers():
-    if request.headers.get('Authorization') == 'Token':
+    if request.headers.get('Authorization') == 'Token 111':
         response.status = 401
         response.content_type = 'application/json'
         response.headers['Date'] = SOURCEDATE
