@@ -20,12 +20,12 @@ class EdrClient(object):
         self.timeout_verify = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
         self.timeout_details = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
 
-    def cycle_keys(self, url, timeout, role, user):
-        keys = self.yaml_keys[role][user]
+    def cycle_keys(self, url, timeout, role):
+        keys = self.yaml_keys[role]
         for key in keys:
             response = self._do_request(url, timeout, key)
-            logger.info("RESPONSE {}".format(response))
-            if response.status_code in [200, 404]:
+            logger.info("Response {} with key {}".format(response, key))
+            if response.status_code == 200:
                 return response
         return response
 
@@ -41,18 +41,18 @@ class EdrClient(object):
                 logger.fatal('Timeout maxed out! Value: {0}'.format(timeout.value))
             raise
 
-    def get_subject(self, role, user, param, code):
+    def get_subject(self, role, param, code):
         """
         Send request to EDR using EDRPOU (physical entity-entrepreneur) code or passport.
         In response we except list of subjects with unique id in each subject.
         List mostly contains 1 subject, but occasionally includes 2 or none.
         """
         return self.cycle_keys('{url}?{param}={code}'.format(url=self.url, param=param, code=code),
-                               self.timeout_verify, role, user)
+                               self.timeout_verify, role)
 
-    def get_subject_details(self, role, user, edr_unique_id):
+    def get_subject_details(self, role, edr_unique_id):
         """
         Send request to EDR using unique identifier to get subject's details.
         """
         return self.cycle_keys('{url}/{id}'.format(url=self.url, id=edr_unique_id),
-                               self.timeout_details, role, user)
+                               self.timeout_details, role)

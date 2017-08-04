@@ -368,7 +368,7 @@ def user_details(request, internal_ids):
     details_source_date = []
     for internal_id in internal_ids:
         try:
-            response = request.registry.edr_client.get_subject_details(request.authenticated_role, request.user, internal_id)
+            response = request.registry.edr_client.get_subject_details(request.authenticated_role, internal_id)
         except (requests.exceptions.ReadTimeout,
                 requests.exceptions.ConnectTimeout):
             return error_handler(request, default_error_status, {"location": "url", "name": "id",

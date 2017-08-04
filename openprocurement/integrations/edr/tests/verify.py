@@ -146,10 +146,10 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.json, loads(self.redis.get(db_key("123", "verify"))))
 
     def test_unauthorized(self):
-        """Send request without token using tests_copy.ini conf file"""
+        """Send request with wrong token using tests_copy.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('platform1', 'platform'))
+        self.app_copy.authorization = ('Basic', ('platform', 'platform'))
         self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', status=403)
         self.assertEqual(response.content_type, 'application/json')
@@ -178,7 +178,7 @@ class TestVerify(BaseWebTest):
         """Send request with invalid token 123 using new tests_copy_2.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy_2.ini", relative_to=os.path.dirname(__file__))
-        self.app_copy.authorization = ('Basic', ('robot2', 'robot'))
+        self.app_copy.authorization = ('Basic', ('robot', 'robot'))
         self.app_copy.RequestClass = PrefixedRequestClass
         response = self.app_copy.get('/verify?id=123', expect_errors=True)
         self.assertEqual(response.content_type, 'application/json')
@@ -199,31 +199,36 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertTrue(self.redis.exists(db_key("14360570", "verify")))
         self.app.authorization = ('Basic', ('robot', 'robot'))
-        response = self.app.get('/verify?id=14360570')
-        expected_details_data = {u"additionalActivityKinds": [
-            {u"scheme": u"КВЕД", u"id": u"64.92", u"description": u"Інші види кредитування"},
-            {u"scheme": u"КВЕД", u"id": u"64.99",
-             u"description": u"Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."},
-            {u"scheme": u"КВЕД", u"id": u"66.11", u"description": u"Управління фінансовими ринками"},
-            {u"scheme": u"КВЕД", u"id": u"66.12",
-             u"description": u"Посередництво за договорами по цінних паперах або товарах"},
-            {u"scheme": u"КВЕД", u"id": u"66.19",
-             u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
-            u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
-            u"registrationStatusDetails": u"зареєстровано",
-            u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
-                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-            u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
-                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
-            u"founders": [
-                {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
-            u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
-                              u"description": u"Інші види грошового посередництва"}}
-        self.assertEqual(response.json['data'][0], expected_details_data)
-        response = self.app.get('/verify?id=14360570')
-        self.assertTrue(self.redis.exists(db_key("14360570", "details")))
-        self.assertEqual(response.json, loads(self.redis.get(db_key("14360570", "details"))))
-        self.assertEqual(loads(self.redis.get(db_key("14360570", "details")))['data'][0], expected_details_data)
+        if SANDBOX_MODE:
+            self.assertEqual(response.status, '404 Not Found')
+            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
+                             "Couldn't find this code in EDR.")
+        else:
+            response = self.app.get('/verify?id=14360570')
+            expected_details_data = {u"additionalActivityKinds": [
+                {u"scheme": u"КВЕД", u"id": u"64.92", u"description": u"Інші види кредитування"},
+                {u"scheme": u"КВЕД", u"id": u"64.99",
+                 u"description": u"Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."},
+                {u"scheme": u"КВЕД", u"id": u"66.11", u"description": u"Управління фінансовими ринками"},
+                {u"scheme": u"КВЕД", u"id": u"66.12",
+                 u"description": u"Посередництво за договорами по цінних паперах або товарах"},
+                {u"scheme": u"КВЕД", u"id": u"66.19",
+                 u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
+                u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
+                u"registrationStatusDetails": u"зареєстровано",
+                u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
+                                    u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+                u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
+                             u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+                u"founders": [
+                    {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
+                u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
+                                  u"description": u"Інші види грошового посередництва"}}
+            self.assertEqual(response.json['data'][0], expected_details_data)
+            response = self.app.get('/verify?id=14360570')
+            self.assertTrue(self.redis.exists(db_key("14360570", "details")))
+            self.assertEqual(response.json, loads(self.redis.get(db_key("14360570", "details"))))
+            self.assertEqual(loads(self.redis.get(db_key("14360570", "details")))['data'][0], expected_details_data)
 
     def test_not_acceptable(self):
         """Check 406 status EDR response"""

@@ -53,10 +53,8 @@ def main(global_config, **settings):
     config.add_subscriber(add_logging_context, NewRequest)
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
-    LOGGER.info("TEST 0")
     with open(settings['keys.file']) as f:
         yaml_keys = yaml.load(f.read())
-    LOGGER.info("TEST 1")
     # Init edr connection
     config.registry.edr_client = EdrClient(settings.get('edr_api_server'),
                                            settings.get('edr_api_token'),
@@ -68,7 +66,6 @@ def main(global_config, **settings):
                                            settings.get('edr_timeout_mode', 'mult')
                                            )
     config.registry.cache_db = Db(settings)
-    LOGGER.info("TEST 2")
     config.registry.time_to_live = settings.get("time_to_live", 300)
     config.registry.time_to_live_negative = settings.get("time_to_live_negative", 30)
     LOGGER.info("SANDBOX_MODE = {}".format(SANDBOX_MODE))

@@ -10,8 +10,6 @@ LOGGER = getLogger(__name__)
 
 @view_config(route_name='verify', renderer='json', request_method='GET', permission='verify')
 def verify_user(request):
-    LOGGER.info("EFFECTIVE PRINCIPALS {}".format(request.effective_principals))
-    LOGGER.info("USER {}".format(request.user))
     code = request.params.get('id', '').encode('utf-8')
     details = EDRDetails('code', code)
     role = request.authenticated_role
@@ -22,6 +20,9 @@ def verify_user(request):
                                  {"location": "url", "name": "id",
                                   "description": [{u'message': u'Wrong name of the GET parameter'}]})
         details = EDRDetails('passport', passport)
+    data = get_sandbox_data(request, code)  # return test data if SANDBOX_MODE=True and data exists for given code
+    if data:
+        return data
     if role == "robots":
         res = cached_details(request, details.code)
         if res:
@@ -30,11 +31,8 @@ def verify_user(request):
         return cached_verify(request, details.code)
     LOGGER.info("Code {} was not found in cache at {}".format(
         details.code, db_key(details.code, "details" if role == "robots" else "verify")))
-    data = get_sandbox_data(request, code)  # return test data if SANDBOX_MODE=True and data exists for given code
-    if data:
-        return data
     try:
-        response = request.registry.edr_client.get_subject(request.authenticated_role, request.user, **details._asdict())
+        response = request.registry.edr_client.get_subject(request.authenticated_role, **details._asdict())
     except (requests.exceptions.ReadTimeout,
             requests.exceptions.ConnectTimeout):
         return error_handler(request, default_error_status, {"location": "url", "name": "id",
