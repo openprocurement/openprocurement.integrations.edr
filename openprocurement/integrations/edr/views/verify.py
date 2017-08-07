@@ -32,7 +32,7 @@ def verify_user(request):
     LOGGER.info("Code {} was not found in cache at {}".format(
         details.code, db_key(details.code, "details" if role == "robots" else "verify")))
     try:
-        response = request.registry.edr_client.get_subject(**details._asdict())
+        response = request.registry.edr_client.get_subject(request.authenticated_role, **details._asdict())
     except (requests.exceptions.ReadTimeout,
             requests.exceptions.ConnectTimeout):
         return error_handler(request, default_error_status, {"location": "url", "name": "id",
