@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-
+from mock import MagicMock
 from openprocurement.integrations.edr.tests.base import BaseWebTest
 from openprocurement.integrations.edr.utils import Db
+from openprocurement.integrations.edr.auth import user, authenticated_role
 
 config = {
     "cache_host": "127.0.0.1",
@@ -36,3 +37,11 @@ class TestUtils(BaseWebTest):
         self.assertFalse(db.has("111"))
         db.put("111", "test data")
         self.assertTrue(db.has("111"))
+
+    def test_user(self):
+        request = MagicMock(effective_principals=['system.1', 'system.2', 'robot', 'g:robots'])
+        self.assertEqual(user(request), 'robot')
+
+    def test_authenicated_role(self):
+        request = MagicMock(effective_principals=['g:robots', 'a', 'b'])
+        self.assertEqual(authenticated_role(request), 'robots')

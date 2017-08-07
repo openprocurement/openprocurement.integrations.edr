@@ -334,15 +334,11 @@ def get_sandbox_data(request, code):
         if request.authenticated_role == 'robots':
             res = get_sandbox_details(request, code)
             if res.get("errors"):
-                request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res),
-                                              request.registry.time_to_live_negative)
                 return error_handler(request, 404, res["errors"][0])
-            request.registry.cache_db.put(db_key(code, "details"), json.dumps(res), request.registry.time_to_live)
         elif TEST_DATA_VERIFY.get(code):
             LOGGER.info('Return test data for {} for platform'.format(code))
             res = {'data': [prepare_data(d) for d in TEST_DATA_VERIFY[code]],
                    'meta': {'sourceDate': datetime.now(tz=TZ).isoformat()}}
-            request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), request.registry.time_to_live)
         return res
 
 
@@ -396,8 +392,6 @@ def cached_details(request, code):
     if request.registry.cache_db.has(db_key(code, "details")):
         LOGGER.info("Code {} was found in cache at {}".format(code, db_key(code, "details")))
         redis_data = json.loads(request.registry.cache_db.get(db_key(code, "details")))
-        if redis_data.get("errors"):
-            return error_handler(request, default_error_status, redis_data["errors"][0])
         return redis_data
     elif request.registry.cache_db.has(db_key(code, "verify")):
         redis_data = json.loads(request.registry.cache_db.get(db_key(code, "verify")))
@@ -428,8 +422,9 @@ def form_edr_response(request, response, code):
         request.registry.cache_db.put(db_key(code, "verify"), json.dumps(res), request.registry.time_to_live)
         if request.authenticated_role == 'robots':  # get details for edr-bot
             data_details = user_details(request, [obj['id'] for obj in data])
-            request.registry.cache_db.put(db_key(code, "details"), json.dumps(data_details),
-                                          request.registry.time_to_live)
+            if not data_details.get("errors"):
+                request.registry.cache_db.put(db_key(code, "details"), json.dumps(data_details),
+                                              request.registry.time_to_live)
             return data_details
         return res
     else:

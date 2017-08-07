@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
-import os
-
 import yaml
-
 if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
@@ -17,9 +14,7 @@ LOGGER = getLogger("{}.init".format(__name__))
 
 
 def main(global_config, **settings):
-    from openprocurement.integrations.edr.auth import (
-        authenticated_role, user
-    )
+    from openprocurement.integrations.edr.auth import authenticated_role, user
     from openprocurement.integrations.edr.utils import (
         forbidden, add_logging_context, set_logging_context,
         request_params, set_renderer, Root, read_users

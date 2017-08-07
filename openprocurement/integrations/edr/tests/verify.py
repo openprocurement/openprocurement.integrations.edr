@@ -199,31 +199,31 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertTrue(self.redis.exists(db_key("14360570", "verify")))
         self.app.authorization = ('Basic', ('robot', 'robot'))
+        response = self.app.get('/verify?id=14360570', expect_errors=True)
+        expected_details_data = {u"additionalActivityKinds": [
+            {u"scheme": u"КВЕД", u"id": u"64.92", u"description": u"Інші види кредитування"},
+            {u"scheme": u"КВЕД", u"id": u"64.99",
+             u"description": u"Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."},
+            {u"scheme": u"КВЕД", u"id": u"66.11", u"description": u"Управління фінансовими ринками"},
+            {u"scheme": u"КВЕД", u"id": u"66.12",
+             u"description": u"Посередництво за договорами по цінних паперах або товарах"},
+            {u"scheme": u"КВЕД", u"id": u"66.19",
+             u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
+            u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
+            u"registrationStatusDetails": u"зареєстровано",
+            u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
+                                u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
+            u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
+                         u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
+            u"founders": [
+                {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
+            u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
+                              u"description": u"Інші види грошового посередництва"}}
         if SANDBOX_MODE:
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
         else:
-            response = self.app.get('/verify?id=14360570')
-            expected_details_data = {u"additionalActivityKinds": [
-                {u"scheme": u"КВЕД", u"id": u"64.92", u"description": u"Інші види кредитування"},
-                {u"scheme": u"КВЕД", u"id": u"64.99",
-                 u"description": u"Надання інших фінансових послуг (крім страхування та пенсійного забезпечення), н. в. і. у."},
-                {u"scheme": u"КВЕД", u"id": u"66.11", u"description": u"Управління фінансовими ринками"},
-                {u"scheme": u"КВЕД", u"id": u"66.12",
-                 u"description": u"Посередництво за договорами по цінних паперах або товарах"},
-                {u"scheme": u"КВЕД", u"id": u"66.19",
-                 u"description": u"Інша допоміжна діяльність у сфері фінансових послуг, крім страхування та пенсійного забезпечення"}],
-                u"management": u"ЗАГАЛЬНІ ЗБОРИ", u"name": u"ПАТ КБ \"ПРИВАТБАНК\"", u"registrationStatus": u"registered",
-                u"registrationStatusDetails": u"зареєстровано",
-                u"identification": {u"scheme": u"UA-EDR", u"id": u"14360570",
-                                    u"legalName": u"АКЦІОНЕРНЕ ТОВАРИСТВО КОМЕРЦІЙНИЙ БАНК \"ПРИВАТБАНК\""},
-                u"address": {u"postalCode": u"49094", u"countryName": u"УКРАЇНА",
-                             u"streetAddress": u"Дніпропетровська обл., місто Дніпропетровськ, Жовтневий район"},
-                u"founders": [
-                    {u"role_text": u"засновник", u"role": 4, u"name": u"АКЦІОНЕРИ - ЮРИДИЧНІ ТА ФІЗИЧНІ ОСОБИ"}],
-                u"activityKind": {u"scheme": u"КВЕД", u"id": u"64.19",
-                                  u"description": u"Інші види грошового посередництва"}}
             self.assertEqual(response.json['data'][0], expected_details_data)
             response = self.app.get('/verify?id=14360570')
             self.assertTrue(self.redis.exists(db_key("14360570", "details")))
@@ -418,7 +418,6 @@ class TestDetails(BaseWebTest):
                               u"description": u"Інші види грошового посередництва"}}
         response = self.app.get('/verify?id=14360570', expect_errors=True)
         if SANDBOX_MODE:
-            self.assertTrue(self.redis.exists(db_key("14360570", "verify")))
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
@@ -613,10 +612,6 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.json['data'], example_data)
             self.assertEqual(iso8601.parse_date(response.json['meta']['sourceDate']).replace(second=0, microsecond=0),
                              datetime.datetime.now(tz=TZ).replace(second=0, microsecond=0))
-            self.assertTrue(self.redis.exists(db_key("00037256", "details")))
-            response = self.app.get('/verify?id=00037256')
-            self.assertEqual(response.json['data'], example_data)
-            self.assertEqual(response.json, loads(self.redis.get("00037256_details_sandbox")))
         else:
             setup_routing(self.edr_api_app, func=sandbox_mode_data)
             setup_routing(self.edr_api_app, path='/1.0/subjects/999186', func=sandbox_mode_data_details)
@@ -626,3 +621,20 @@ class TestDetails(BaseWebTest):
             self.assertEqual(response.json['data'][0], example_data[0])
             self.assertEqual(response.json['meta'], {'sourceDate': '2017-04-25T11:56:36+00:00',
                                                      'detailsSourceDate': ['2017-04-25T11:56:36+00:00']})
+
+    def test_invalid_code(self):
+        """Check invalid EDRPOU(IPN) number 123"""
+        setup_routing(self.edr_api_app, func=response_code)
+        response = self.app.get('/verify?id=123', status=404)
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status, '404 Not Found')
+        expected_result = [{u'error': {u'errorDetails': u"Couldn't find this code in EDR.", u'code': u'notFound'},
+                           u'meta': {u'sourceDate': u'2017-04-25T11:56:36+00:00'}}]
+        if SANDBOX_MODE:
+            self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
+                             "Couldn't find this code in EDR.")
+        else:
+            self.assertTrue(self.redis.exists(db_key("123", "verify")))
+            self.assertEqual(response.json['errors'][0]['description'], expected_result)
+            response = self.app.get('/verify?id=123', status=404)
+            self.assertEqual(response.json, loads(self.redis.get(db_key("123", "verify"))))
