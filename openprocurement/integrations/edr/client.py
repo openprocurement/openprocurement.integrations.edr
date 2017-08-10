@@ -21,7 +21,6 @@ class EdrClient(object):
         keys = self.yaml_keys[role]
         for key in keys:
             response = self._do_request(url, timeout, key)
-            logger.info("Response {} with key {}".format(response, key))
             if response.status_code == 200:
                 return response
         return response
