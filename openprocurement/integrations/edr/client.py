@@ -10,12 +10,9 @@ logger = getLogger(__name__)
 class EdrClient(object):
     """Base class for making requests to EDR"""
 
-    def __init__(self, host, token, yaml_keys, port=443, timeout_min=1, timeout_max=300, timeout_step=2, timeout_mode='mult'):
+    def __init__(self, host, yaml_keys, port=443, timeout_min=1, timeout_max=300, timeout_step=2, timeout_mode='mult'):
         self.session = requests.Session()
-        self.token = token
         self.url = '{host}:{port}/1.0/subjects'.format(host=host, port=port)
-        self.headers = {"Accept": "application/json",
-                        "Authorization": "Token {token}".format(token=self.token)}
         self.yaml_keys = yaml_keys
         self.timeout_verify = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
         self.timeout_details = TimeoutHandler(timeout_min, timeout_max, timeout_step, timeout_mode)
