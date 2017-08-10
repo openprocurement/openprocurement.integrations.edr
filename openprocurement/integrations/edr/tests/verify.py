@@ -223,6 +223,7 @@ class TestVerify(BaseWebTest):
             self.assertEqual(response.status, '404 Not Found')
             self.assertEqual(response.json['errors'][0]['description'][0]['error']['errorDetails'],
                              "Couldn't find this code in EDR.")
+            self.assertFalse(self.redis.exists(db_key("14360570", "details")))
         else:
             self.assertEqual(response.json['data'][0], expected_details_data)
             response = self.app.get('/verify?id=14360570')
