@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from bottle import request, response
 from simplejson import dumps
-
+import time
 
 SOURCEDATE = 'Tue, 25 Apr 2017 11:56:36 GMT'
+DATE = {u'sourceDate': u'2017-04-25T11:56:36+00:00'}
 
 
 def setup_routing(app, func, path='/1.0/subjects', method='GET'):
@@ -113,6 +114,22 @@ def bad_gateway():
     response.content_type = 'application/json'
     response.headers['Date'] = SOURCEDATE
     return dumps({"errors": [{"message": "Message."}]})
+
+
+def create_long_read(delay_sec, response_type):
+    def long_read():
+        time.sleep(delay_sec)
+        if response_type == 'details':
+            return response_details()
+        elif response_type == 'verify':
+            return response_code()
+        else:
+            response.status = 200
+            response.content_type = 'application/json'
+            response.headers['Date'] = SOURCEDATE
+            return dumps({"result": "OK but too long!"})
+
+    return long_read
 
 
 def two_error_messages():
@@ -472,4 +489,3 @@ def sandbox_mode_data_details():
           "country": "УКРАЇНА"
         },
         "bankruptcy": None})
-
