@@ -146,7 +146,7 @@ class TestVerify(BaseWebTest):
         self.assertEqual(response.json, loads(self.redis.get(db_key("123", "verify"))))
 
     def test_unauthorized(self):
-        """Send request without token using tests_copy.ini conf file"""
+        """Send request with wrong token using tests_copy.ini conf file"""
         setup_routing(self.edr_api_app, func=check_headers)
         self.app_copy = webtest.TestApp("config:test_conf/tests_copy.ini", relative_to=os.path.dirname(__file__))
         self.app_copy.authorization = ('Basic', ('platform', 'platform'))

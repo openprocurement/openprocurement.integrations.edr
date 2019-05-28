@@ -310,7 +310,7 @@ def meta_data(date):
 def get_sandbox_details(request, code):
     """Compose a detailed sandbox data response if it exists, 404 otherwise"""
     if TEST_DATA_DETAILS.get(code):
-        LOGGER.info('Return test data for {} for robot'.format(code))
+        LOGGER.info('Return test data for {} for robots'.format(code))
         data = []
         details_source_date = []
         for i in xrange(len(TEST_DATA_DETAILS[code])):
@@ -363,7 +363,7 @@ def user_details(request, internal_ids):
     details_source_date = []
     for internal_id in internal_ids:
         try:
-            response = request.registry.edr_client.get_subject_details(internal_id)
+            response = request.registry.edr_client.get_subject_details(request.authenticated_role, internal_id)
         except (requests.exceptions.ReadTimeout,
                 requests.exceptions.ConnectTimeout):
             return error_handler(request, default_error_status, {"location": "url", "name": "id",
